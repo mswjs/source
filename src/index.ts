@@ -1,2 +1,1 @@
-export { add } from './add'
-export { multiply } from './multiply'
+export { createFromOpenAPI } from './oas/createFromOpenAPI'
