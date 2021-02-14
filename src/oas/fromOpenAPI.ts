@@ -2,7 +2,7 @@ import { rest } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import { parse } from '@apidevtools/swagger-parser'
 
-export async function createFromOpenAPI(
+export async function fromOpenAPI(
   document: string | OpenAPIV3.Document | OpenAPIV2.Document,
 ) {
   const api = await parse(document)

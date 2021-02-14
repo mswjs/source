@@ -12,5 +12,6 @@ module.exports = {
     'jest/no-disabled-tests': 'warn',
     'jest/no-focused-tests': 'error',
     'jest/no-identical-title': 'error',
+    '@typescript-eslint/no-var-requires': 'off',
   },
 }
