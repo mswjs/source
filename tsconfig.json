@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": false,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": false,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "outDir": "lib",
+    "declaration": true,
+    "declarationDir": "lib",
+    "baseUrl": "./",
+    "paths": {
+      "src/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

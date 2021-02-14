@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
+
+      - name: Build the library
+        run: yarn build
+
+      - name: Test the library
+        run: yarn test
