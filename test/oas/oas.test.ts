@@ -1,15 +1,14 @@
 import fetch from 'cross-fetch'
-import { setupServer } from 'msw/node'
 import { fromOpenAPI } from 'src/oas/fromOpenAPI'
+import { withMocks } from '../support/withMocks'
 
 it('supports explicit "example" JSON in the response schema', async () => {
   const document = require('./fixtures/response-example.json')
   const handlers = await fromOpenAPI(document)
-  const server = setupServer(...handlers)
-  server.listen()
 
-  const res = await fetch('http://oas.source.com/user')
-  server.close()
+  const res = await withMocks(handlers, () => {
+    return fetch('http://oas.source.com/user')
+  })
 
   expect(res.status).toBe(200)
   expect(res.headers.get('content-type')).toBe('application/json')
