@@ -1,0 +1,37 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Example specification",
+    "version": "1.0.0"
+  },
+  "basePath": "http://oas.source.com",
+  "paths": {
+    "/user": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "example": {
+          "id": "abc-123",
+          "firstName": "John",
+          "lastName": "Maverick"
+        }
+      }
+    }
+  }
+}

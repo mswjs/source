@@ -1,25 +1,47 @@
-# Library name
+# `@mswjs/source`
 
-> A short description about what your library is.
+## Install
 
-## Motivation
-
-> Elaborate on the reason behind this library: why may people need it? What issues does it solve? How is it different from the similar libraries?
-
-## Getting started
-
-> Go through the steps necessary to install, configure, and use your library.
-
-### Install
-
-```bash
-$ npm install <LIBRARY_NAME>
+```sh
+$ npm install @mswjs/source -D
+# or
+$ yarn add @mswjs/source -D
 ```
 
-## Documentation
+## Sources
 
-> Reference the documentation website, or write the documentation straight in this README file.
+### Browser traffic (HAR)
 
-## Contributing
+```js
+import { fromTraffic } from '@mswjs/source'
+import traffic from './github.com.har'
 
-Please read the [Contribution guidelines](CONTRIBUTING.md) to start with your awesome contributions!
+export const handlers = fromTraffic(traffic)
+```
+
+### Test runtime
+
+```js
+// jest.setup.js
+import { setupServer } from 'msw/node'
+import { fromRuntime } from '@mswjs/source'
+
+const server = setupServer()
+
+beforeAll(() => {
+  server.listen()
+  fromRuntime(server)
+})
+```
+
+### OpenAPI (Swagger)
+
+- Explain what spec properties are used as mocked responses.
+
+```js
+import { fromOpenApi } from '@mswjs/source'
+import apiDocument from 'api.spec.json'
+
+const apiDocument = fs.readFileSync('spec.json')
+export const handlers = fromOpenApi(apiDocument)
+```

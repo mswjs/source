@@ -1,13 +1,18 @@
-import { rest } from 'msw'
+import { RequestHandler, rest } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
-import { parse } from '@apidevtools/swagger-parser'
+import * as SwaggerParser from '@apidevtools/swagger-parser'
 
-export async function fromOpenAPI(
+const parser = new SwaggerParser()
+
+/**
+ * Generates request handlers fro the given OpenAPI document.
+ */
+export async function fromOpenApi(
   document: string | OpenAPIV3.Document | OpenAPIV2.Document,
-) {
-  const api = await parse(document)
+): Promise<RequestHandler[]> {
+  const api = await parser.dereference(document)
 
-  const handlers = Object.entries(api.paths).reduce<any>(
+  const handlers = Object.entries(api.paths).reduce<RequestHandler[]>(
     (handlers, [url, pathDef]) => {
       const nextHandlers = Object.entries(pathDef).map(
         ([method, def]: [string, any]) => {
@@ -15,13 +20,13 @@ export async function fromOpenAPI(
             return
           }
 
-          // @ts-expect-error tbd
+          // @ts-expect-error TBD
           const resolvedUrl = api.basePath
-            ? // @ts-expect-error tbd
+            ? // @ts-expect-error TBD
               new URL(url, api.basePath).toString()
             : url
 
-          // @ts-expect-error tbd
+          // @ts-expect-error TBD
           return rest[method](resolvedUrl, (req, res, ctx) => {
             const status = req.url.searchParams.get('response') || '200'
             const response = def.responses[status]

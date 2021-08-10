@@ -1,0 +1,8 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["test/oas/fixtures/*.json"],
+      "url": "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/f1adc846131b33be72df6a0c87e5e5da59dde0ff/schemas/v3.0/schema.json"
+    }
+  ]
+}

@@ -1,1 +1,1 @@
-export { fromOpenAPI } from './oas/fromOpenAPI'
+export { fromOpenApi } from './oas/fromOpenApi'
