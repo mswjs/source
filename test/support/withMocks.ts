@@ -1,10 +1,10 @@
 import { RequestHandler } from 'msw'
 import { setupServer } from 'msw/node'
 
-export async function withMocks(
+export async function withMocks<R>(
   handlers: RequestHandler[],
-  callback: () => Promise<any>,
-) {
+  callback: () => Promise<R>,
+): Promise<R> {
   const server = setupServer(...handlers)
   server.listen()
 

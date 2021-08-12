@@ -1,1 +1,2 @@
 - [ ] Export `cleanUrl` function from MSW.
+- [ ] Add the order integration tests for `fromTraffic`. In case there are multiple requests to the same URL with different responses. MSW should respect that (utilize `res.once()`).

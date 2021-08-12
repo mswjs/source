@@ -1,10 +1,10 @@
 import fetch from 'cross-fetch'
-import { fromOpenAPI } from 'src/oas/fromOpenAPI'
+import { fromOpenApi } from 'src/oas/fromOpenApi'
 import { withMocks } from '../support/withMocks'
 
 it('supports explicit "example" JSON in the response schema', async () => {
   const document = require('./fixtures/response-example.json')
-  const handlers = await fromOpenAPI(document)
+  const handlers = await fromOpenApi(document)
 
   const res = await withMocks(handlers, () => {
     return fetch('http://oas.source.com/user')
@@ -21,7 +21,7 @@ it('supports explicit "example" JSON in the response schema', async () => {
 
 it('supports response example by reference', async () => {
   const document = require('./fixtures/response-ref')
-  const handlers = await fromOpenAPI(document)
+  const handlers = await fromOpenApi(document)
 
   const res = await withMocks(handlers, () => {
     return fetch('http://oas.source.com/user')
