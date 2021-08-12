@@ -4,6 +4,8 @@ import { Cookie, parse } from 'set-cookie-parser'
 import { Headers, headersToObject } from 'headers-utils'
 import { RestHandler, rest, context, ResponseTransformer } from 'msw'
 
+export type MapEntryFn = (entry: Entry) => Entry
+
 function toRequestHandler(entry: Entry): RestHandler {
   const transformers: ResponseTransformer[] = []
   const { request, response, time } = entry
@@ -17,8 +19,14 @@ function toRequestHandler(entry: Entry): RestHandler {
 
   // Response headers and cookies.
   for (const header of response.headers) {
-    if (['set-cookie', 'set-cookie2'].includes(header.name.toLowerCase())) {
+    const headerName = header.name.toLowerCase()
+
+    if (['set-cookie', 'set-cookie2'].includes(headerName)) {
       responseCookies.push(...parse(header.value))
+      continue
+    }
+
+    if (headerName === 'content-encoding') {
       continue
     }
 
@@ -47,15 +55,10 @@ function toRequestHandler(entry: Entry): RestHandler {
   const { text: responseBody } = response.content
 
   if (responseBody) {
-    console.log('MSW res body', responseBody.slice(0, 10))
     /**
      * @todo Convert all response bodies to Buffer.
      * That way both buffer and non-buffer bodies can be sent.
      */
-
-    // const buffer = Uint8Array.from(atob(responseBody), (c) => c.charCodeAt(0))
-    // console.log('MSW RES:', buffer)
-
     transformers.push(context.body(responseBody))
   }
 
@@ -67,11 +70,13 @@ function toRequestHandler(entry: Entry): RestHandler {
 /**
  * Generates request handlers from the given HAR file.
  */
-export function fromTraffic(har: Har): RestHandler[] {
+export function fromTraffic(har: Har, mapEntry?: MapEntryFn): RestHandler[] {
   invariant(
     har.log.entries.length > 0,
     'Failed to generate request handlers from traffic: given HAR file has no entries.',
   )
 
-  return har.log.entries.map(toRequestHandler)
+  return har.log.entries.map((entry) => {
+    return toRequestHandler(mapEntry ? mapEntry(entry) : entry)
+  })
 }
