@@ -21,11 +21,17 @@ function toRequestHandler(entry: Entry): RestHandler {
   for (const header of response.headers) {
     const headerName = header.name.toLowerCase()
 
+    // Skip response cookie headers because a mocked response cookies
+    // are not implemented through headers (security consideration).
+    // Store the list of cookie headers to apply them via `ctx.cookie` later.
     if (['set-cookie', 'set-cookie2'].includes(headerName)) {
       responseCookies.push(...parse(header.value))
       continue
     }
 
+    // Skip the "Content-Encoding" header to prevent "incorrect header check" errors.
+    // MSW must not attempt to compress the response body, even if it was originally
+    // compressed. All response bodies are sent uncompressed.
     if (headerName === 'content-encoding') {
       continue
     }
@@ -35,6 +41,7 @@ function toRequestHandler(entry: Entry): RestHandler {
 
   transformers.push(context.set(headersToObject(responseHeaders)))
 
+  // Response cookies.
   if (responseCookies.length > 0) {
     responseCookies.forEach((cookie) => {
       const { name, value, ...cookieOptions } = cookie
@@ -55,10 +62,6 @@ function toRequestHandler(entry: Entry): RestHandler {
   const { text: responseBody } = response.content
 
   if (responseBody) {
-    /**
-     * @todo Convert all response bodies to Buffer.
-     * That way both buffer and non-buffer bodies can be sent.
-     */
     transformers.push(context.body(responseBody))
   }
 
