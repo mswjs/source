@@ -5,9 +5,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import fetch from 'cross-fetch'
 import { headersToObject } from 'headers-utils'
-import { setupServer } from 'msw/node'
 import { fromTraffic } from 'src/traffic/fromTraffic'
 import { readArchive, headersAfterMsw, normalizeLocalhost } from './utils'
+import { withHandlers } from 'test/support/withHandlers'
 
 // Archives.
 const empty = readArchive('test/traffic/fixtures/archives/empty.har')
@@ -27,23 +27,6 @@ const responseCookies = readArchive(
   'test/traffic/fixtures/archives/response-cookies.har',
 )
 
-const server = setupServer()
-
-beforeAll(async () => {
-  server.listen({
-    onUnhandledRequest: 'error',
-  })
-})
-
-afterEach(() => {
-  server.resetHandlers()
-})
-
-afterAll(async () => {
-  server.close()
-  jest.restoreAllMocks()
-})
-
 it('throws an exception given an HAR file with no entries', () => {
   expect(() => fromTraffic(empty)).toThrow(
     'Failed to generate request handlers from traffic: given HAR file has no entries.',
@@ -52,10 +35,9 @@ it('throws an exception given an HAR file with no entries', () => {
 
 it('mocks a recorded text response', async () => {
   const handlers = fromTraffic(responseText, normalizeLocalhost)
-  expect(handlers).toHaveLength(1)
-
-  server.use(...handlers)
-  const res = await fetch('http://localhost/text')
+  const res = await withHandlers(handlers, () => {
+    return fetch('http://localhost/text')
+  })
 
   expect(res.status).toEqual(200)
   expect(headersToObject(res.headers)).toEqual(
@@ -66,10 +48,9 @@ it('mocks a recorded text response', async () => {
 
 it('mocks a recorded JSON response', async () => {
   const handlers = fromTraffic(responseJson, normalizeLocalhost)
-  expect(handlers).toHaveLength(1)
-
-  server.use(...handlers)
-  const res = await fetch('http://localhost/json')
+  const res = await withHandlers(handlers, () => {
+    return fetch('http://localhost/json')
+  })
 
   expect(res.status).toEqual(200)
   expect(headersToObject(res.headers)).toEqual(
@@ -83,10 +64,9 @@ it('mocks a recorded JSON response', async () => {
 
 it('mocks a recorded binary (base64) response', async () => {
   const handlers = fromTraffic(responseBinary, normalizeLocalhost)
-  expect(handlers).toHaveLength(1)
-
-  server.use(...handlers)
-  const res = await fetch('http://localhost/binary')
+  const res = await withHandlers(handlers, () => {
+    return fetch('http://localhost/binary')
+  })
   const blob = await res.blob()
 
   expect(res.status).toEqual(200)
@@ -107,10 +87,9 @@ it('mocks a recorded binary (base64) response', async () => {
 
 it('mocks a compressed recorded JSON response', async () => {
   const handlers = fromTraffic(responseCompressed, normalizeLocalhost)
-  expect(handlers).toHaveLength(1)
-
-  server.use(...handlers)
-  const res = await fetch('http://localhost/json-compressed')
+  const res = await withHandlers(handlers, () => {
+    return fetch('http://localhost/json-compressed')
+  })
 
   expect(res.status).toEqual(200)
   expect(headersToObject(res.headers)).toEqual(
@@ -124,10 +103,9 @@ it('mocks a compressed recorded JSON response', async () => {
 
 it('propagates recoded response cookies to the mocked response', async () => {
   const handlers = fromTraffic(responseCookies, normalizeLocalhost)
-  expect(handlers).toHaveLength(1)
-
-  server.use(...handlers)
-  const res = await fetch('http://localhost/cookies')
+  const res = await withHandlers(handlers, () => {
+    return fetch('http://localhost/cookies')
+  })
 
   expect(res.status).toEqual(200)
   expect(headersToObject(res.headers)).toEqual(
@@ -136,5 +114,3 @@ it('propagates recoded response cookies to the mocked response', async () => {
   expect(document.cookie).toEqual('secret-token=abc-123')
   expect(await res.text()).toEqual('yummy')
 })
-
-// it.todo('respects the order of the same recorded requests')
