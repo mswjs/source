@@ -52,7 +52,7 @@ it('throws an exception given an HAR file with no entries', () => {
 
 it('mocks a recorded text response', async () => {
   const handlers = fromTraffic(responseText, normalizeLocalhost)
-  expect(handlers.length).toEqual(1)
+  expect(handlers).toHaveLength(1)
 
   server.use(...handlers)
   const res = await fetch('http://localhost/text')
@@ -66,7 +66,7 @@ it('mocks a recorded text response', async () => {
 
 it('mocks a recorded JSON response', async () => {
   const handlers = fromTraffic(responseJson, normalizeLocalhost)
-  expect(handlers.length).toEqual(1)
+  expect(handlers).toHaveLength(1)
 
   server.use(...handlers)
   const res = await fetch('http://localhost/json')
@@ -83,7 +83,7 @@ it('mocks a recorded JSON response', async () => {
 
 it('mocks a recorded binary (base64) response', async () => {
   const handlers = fromTraffic(responseBinary, normalizeLocalhost)
-  expect(handlers.length).toEqual(1)
+  expect(handlers).toHaveLength(1)
 
   server.use(...handlers)
   const res = await fetch('http://localhost/binary')
@@ -107,7 +107,7 @@ it('mocks a recorded binary (base64) response', async () => {
 
 it('mocks a compressed recorded JSON response', async () => {
   const handlers = fromTraffic(responseCompressed, normalizeLocalhost)
-  expect(handlers.length).toEqual(1)
+  expect(handlers).toHaveLength(1)
 
   server.use(...handlers)
   const res = await fetch('http://localhost/json-compressed')
@@ -124,7 +124,7 @@ it('mocks a compressed recorded JSON response', async () => {
 
 it('propagates recoded response cookies to the mocked response', async () => {
   const handlers = fromTraffic(responseCookies, normalizeLocalhost)
-  expect(handlers.length).toEqual(1)
+  expect(handlers).toHaveLength(1)
 
   server.use(...handlers)
   const res = await fetch('http://localhost/cookies')
