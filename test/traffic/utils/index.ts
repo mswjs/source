@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import { Har, Header } from 'har-format'
 import { HeadersObject, headersToObject } from 'headers-utils'
-import { MapEntryFn } from 'src/traffic/fromTraffic'
+import { MapEntryFn } from 'src/fromTraffic/fromTraffic'
 
 export function readArchive(archivePath: string): Har {
   return JSON.parse(fs.readFileSync(archivePath, 'utf8'))

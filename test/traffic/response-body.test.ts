@@ -5,7 +5,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import fetch from 'cross-fetch'
 import { headersToObject } from 'headers-utils'
-import { fromTraffic } from 'src/traffic/fromTraffic'
+import { fromTraffic } from 'src/fromTraffic/fromTraffic'
 import { readArchive, headersAfterMsw, normalizeLocalhost } from './utils'
 import { withHandlers } from 'test/support/withHandlers'
 

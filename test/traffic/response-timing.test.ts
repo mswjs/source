@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch'
-import { fromTraffic } from 'src/traffic/fromTraffic'
+import { fromTraffic } from 'src/fromTraffic/fromTraffic'
 import { normalizeLocalhost, readArchive } from './utils'
 import { withHandlers } from 'test/support/withHandlers'
 

@@ -1,1 +1,2 @@
-export { fromOpenApi } from './oas/fromOpenApi'
+export { fromTraffic } from './fromTraffic/fromTraffic'
+export { fromOpenApi } from './fromOpenApi/fromOpenApi'

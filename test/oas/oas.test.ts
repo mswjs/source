@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch'
-import { fromOpenApi } from 'src/oas/fromOpenApi'
+import { fromOpenApi } from 'src/fromOpenApi/fromOpenApi'
 import { withHandlers } from '../support/withHandlers'
 
 it('supports explicit "example" JSON in the response schema', async () => {
