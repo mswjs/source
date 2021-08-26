@@ -8,6 +8,8 @@ const HTML_PAGE_PATH = path.resolve(__dirname, 'page.html')
 export async function generateHttpArchive(
   traffic: TrafficDefinition,
 ): Promise<void> {
+  console.log('loading browser with traffic', traffic)
+
   const browser = await chromium.launch({
     headless: false,
     devtools: true,
@@ -24,8 +26,6 @@ export async function generateHttpArchive(
   // Add a debugging timeout so that the requests
   // can be inspected in the opened devtools.
   await page.waitForTimeout(750)
-
-  console.log('ALL DONE!')
 
   await page.evaluate((requests) => {
     return Promise.all(

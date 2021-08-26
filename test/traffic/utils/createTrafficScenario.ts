@@ -10,7 +10,10 @@ export async function createTrafficScenario(
   getTraffic: (server: ServerApi) => TrafficDefinition,
 ): Promise<void> {
   const httpServer = await createServer(middleware)
+  console.log('server is running at %s', httpServer.http.makeUrl(''))
+
   process.on('exit', async () => {
+    console.error('process exited, closing the server...')
     await httpServer.close()
   })
 

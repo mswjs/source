@@ -1,5 +1,5 @@
 import { invariant } from 'outvariant'
-import { Har, Entry, Request } from 'har-format'
+import { Har, Entry, Request, Response } from 'har-format'
 import { Cookie, parse } from 'set-cookie-parser'
 import { Headers, headersToObject } from 'headers-utils'
 import {
@@ -10,6 +10,7 @@ import {
   ResponseTransformer,
   ResponseComposition,
 } from 'msw'
+import { decodeBase64String } from './utils/decodeBase64String'
 
 export type MapEntryFn = (entry: Entry) => Entry
 type ResponseProducer = (
@@ -35,8 +36,16 @@ function toRequestHandler(
   const responseHeaders: Headers = new Headers()
   const responseCookies: Cookie[] = []
 
+  const applyTransformers = (
+    ...nextTransformers: Array<ResponseTransformer | undefined>
+  ): void => {
+    transformers.push(
+      ...(nextTransformers.filter(Boolean) as ResponseTransformer[]),
+    )
+  }
+
   // Response status and status text.
-  transformers.push(context.status(response.status, response.statusText))
+  applyTransformers(context.status(response.status, response.statusText))
 
   // Response headers and cookies.
   for (const header of response.headers) {
@@ -60,13 +69,14 @@ function toRequestHandler(
     responseHeaders.set(header.name, header.value)
   }
 
-  transformers.push(context.set(headersToObject(responseHeaders)))
+  applyTransformers(context.set(headersToObject(responseHeaders)))
 
   // Response cookies.
   if (responseCookies.length > 0) {
     responseCookies.forEach((cookie) => {
       const { name, value, ...cookieOptions } = cookie
-      transformers.push(
+
+      applyTransformers(
         context.cookie(name, value, {
           ...cookieOptions,
           sameSite: cookieOptions.sameSite === '',
@@ -77,18 +87,30 @@ function toRequestHandler(
 
   // Response time.
   const responseTime = time || 0
-  transformers.push(context.delay(responseTime))
+  applyTransformers(context.delay(responseTime))
 
   // Response body.
-  const { text: responseBody } = response.content
-
-  if (responseBody) {
-    transformers.push(context.body(responseBody))
-  }
+  const responseBody = toResponseBody(response)
+  applyTransformers(responseBody)
 
   return rest[method](request.url, (req, res) => {
     return produceResponse(res, transformers)
   })
+}
+
+function toResponseBody(response: Response): ResponseTransformer | undefined {
+  const { text, encoding, mimeType } = response.content
+
+  if (!text) {
+    return
+  }
+
+  if (encoding === 'base64' && mimeType.includes('text')) {
+    const responseBody = decodeBase64String(text)
+    return context.body(responseBody)
+  }
+
+  return context.body(text)
 }
 
 /**
