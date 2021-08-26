@@ -3,6 +3,7 @@
     "strict": true,
     "allowJs": false,
     "moduleResolution": "node",
+    "downlevelIteration": true,
     "allowSyntheticDefaultImports": false,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
