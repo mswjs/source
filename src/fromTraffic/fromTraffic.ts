@@ -24,31 +24,35 @@ const defaultResponseProducer: ResponseProducer = (res, transformers) => {
 }
 
 /**
- * Creates a request handler from the given Network Archive entry.
+ * Create a request handler from the given Network Archive entry.
  */
 function toRequestHandler(
   entry: Entry,
   produceResponse: ResponseProducer = defaultResponseProducer,
 ): RestHandler {
-  const transformers: ResponseTransformer[] = []
-  const { request, response, time } = entry
+  const { request } = entry
   const method = request.method.toLowerCase() as keyof typeof rest
+  const transformers = toResponseTransformers(entry)
 
-  const responseHeaders: Headers = new Headers()
+  return rest[method](request.url, (req, res) => {
+    return produceResponse(res, transformers)
+  })
+}
+
+/**
+ * Map a traffic entry to the array of response transformers.
+ */
+export function toResponseTransformers(entry: Entry): ResponseTransformer[] {
+  const { response, time } = entry
+
+  const transformers: ResponseTransformer[] = []
+  const responseHeaders = new Headers()
   const responseCookies: Cookie[] = []
 
-  const applyTransformers = (
-    ...nextTransformers: Array<ResponseTransformer | undefined>
-  ): void => {
-    transformers.push(
-      ...(nextTransformers.filter(Boolean) as ResponseTransformer[]),
-    )
-  }
-
   // Response status and status text.
-  applyTransformers(context.status(response.status, response.statusText))
+  transformers.push(context.status(response.status, response.statusText))
 
-  // Response headers and cookies.
+  // Response headers.
   for (const header of response.headers) {
     const headerName = header.name.toLowerCase()
 
@@ -70,33 +74,33 @@ function toRequestHandler(
     responseHeaders.set(header.name, header.value)
   }
 
-  applyTransformers(context.set(headersToObject(responseHeaders)))
+  transformers.push(context.set(headersToObject(responseHeaders)))
 
   // Response cookies.
-  if (responseCookies.length > 0) {
-    responseCookies.forEach((cookie) => {
-      const { name, value, ...cookieOptions } = cookie
+  for (const cookie of responseCookies) {
+    const { name, value, ...options } = cookie
 
-      applyTransformers(
-        context.cookie(name, value, {
-          ...cookieOptions,
-          sameSite: cookieOptions.sameSite === '',
-        }),
-      )
-    })
+    transformers.push(
+      context.cookie(name, value, {
+        ...options,
+        sameSite: options.sameSite === '',
+      }),
+    )
   }
 
-  // Response time.
-  const responseTime = time || 0
-  applyTransformers(context.delay(responseTime))
+  // Response delay.
+  if (time) {
+    transformers.push(context.delay(time))
+  }
 
   // Response body.
   const responseBody = toResponseBody(response)
-  applyTransformers(responseBody ? context.body(responseBody) : undefined)
 
-  return rest[method](request.url, (req, res) => {
-    return produceResponse(res, transformers)
-  })
+  if (responseBody) {
+    transformers.push(context.body(responseBody))
+  }
+
+  return transformers
 }
 
 /**
@@ -121,7 +125,7 @@ export function toResponseBody(
 }
 
 /**
- * Generates request handlers from the given HAR file.
+ * Generate request handlers from the given HAR file.
  */
 export function fromTraffic(har: Har, mapEntry?: MapEntryFn): RestHandler[] {
   invariant(
