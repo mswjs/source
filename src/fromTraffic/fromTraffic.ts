@@ -12,7 +12,8 @@ import {
 } from 'msw'
 import { decodeBase64String } from './utils/decodeBase64String'
 
-export type MapEntryFn = (entry: Entry) => Entry
+export type MapEntryFn = (entry: Entry) => Entry | undefined
+
 type ResponseProducer = (
   res: ResponseComposition<unknown>,
   transformers: ResponseTransformer<unknown>[],
@@ -91,14 +92,20 @@ function toRequestHandler(
 
   // Response body.
   const responseBody = toResponseBody(response)
-  applyTransformers(responseBody)
+  applyTransformers(responseBody ? context.body(responseBody) : undefined)
 
   return rest[method](request.url, (req, res) => {
     return produceResponse(res, transformers)
   })
 }
 
-function toResponseBody(response: Response): ResponseTransformer | undefined {
+/**
+ * Extract a response body from the given HAR response entry.
+ * Decodes any base64-encoded text response bodies.
+ */
+export function toResponseBody(
+  response: Response,
+): Uint8Array | string | undefined {
   const { text, encoding, mimeType } = response.content
 
   if (!text) {
@@ -107,10 +114,10 @@ function toResponseBody(response: Response): ResponseTransformer | undefined {
 
   if (encoding === 'base64' && mimeType.includes('text')) {
     const responseBody = decodeBase64String(text)
-    return context.body(responseBody)
+    return responseBody
   }
 
-  return context.body(text)
+  return text
 }
 
 /**
@@ -119,20 +126,25 @@ function toResponseBody(response: Response): ResponseTransformer | undefined {
 export function fromTraffic(har: Har, mapEntry?: MapEntryFn): RestHandler[] {
   invariant(
     har,
-    'Failed to generate request handler from traffic: expected an HAR but got %s',
+    'Failed to generate request handlers from traffic: expected an HAR object but got %s.',
     typeof har,
   )
 
   invariant(
     har.log.entries.length > 0,
-    'Failed to generate request handlers from traffic: given HAR file has no entries.',
+    'Failed to generate request handlers from traffic: given HAR object has no entries.',
   )
 
   const requestPaths = new Set<string>()
 
   const handlers = har.log.entries.reduceRight<RestHandler[]>(
     (handlers, entry) => {
-      const resolvedEntry = mapEntry?.(entry) || entry
+      const resolvedEntry = mapEntry ? mapEntry(entry) : entry
+
+      if (!resolvedEntry) {
+        return handlers
+      }
+
       const requestPath = createRequestPath(resolvedEntry.request)
       const isUniqueHandler = !requestPaths.has(requestPath)
 

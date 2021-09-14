@@ -10,7 +10,6 @@ import { readArchive, headersAfterMsw, normalizeLocalhost } from './utils'
 import { withHandlers } from 'test/support/withHandlers'
 
 // Archives.
-const empty = readArchive('test/traffic/fixtures/archives/empty.har')
 const responseText = readArchive(
   'test/traffic/fixtures/archives/response-text.har',
 )
@@ -26,12 +25,6 @@ const responseCompressed = readArchive(
 const responseCookies = readArchive(
   'test/traffic/fixtures/archives/response-cookies.har',
 )
-
-it('throws an exception given an HAR file with no entries', () => {
-  expect(() => fromTraffic(empty)).toThrow(
-    'Failed to generate request handlers from traffic: given HAR file has no entries.',
-  )
-})
 
 it('mocks a recorded text response', async () => {
   const handlers = fromTraffic(responseText, normalizeLocalhost)
