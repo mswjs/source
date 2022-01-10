@@ -1,5 +1,7 @@
 # `@mswjs/source`
 
+A library that allows you to generate request handlers for [Mock Service Worker](https://github.com/mswjs/msw) from various sources (HAR files, OpenAPI specification, runtime).
+
 ## Install
 
 ```sh
@@ -10,7 +12,7 @@ $ yarn add @mswjs/source -D
 
 ## Browser traffic (HAR file)
 
-You can use an [HTTP Archive (HAR)](<https://en.wikipedia.org/wiki/HAR_(file_format)>) file to generate request handlers the following way:
+You can use the `fromTraffic` function to generate request handlers from an [HTTP Archive (HAR)](<https://en.wikipedia.org/wiki/HAR_(file_format)>):
 
 ```js
 import { fromTraffic } from '@mswjs/source'
@@ -18,6 +20,8 @@ import har from './github.com.har'
 
 export const handlers = fromTraffic(har)
 ```
+
+> Note that `*.har` files are written in JSON so you don't have to process their imports in any way.
 
 ### How to export a HAR file
 
@@ -63,7 +67,7 @@ If the same request has multiple responses in the archive, those responses will 
 
 > Note that this library does a straightforward request URL matching and disregards any other parameters (like request headers or body) when looking up an appropriate chronological response.
 
-Consider the following HAR that has different responses for the same `GET https://exxample.com/user` endpoint:
+Consider the following HAR that has different responses for the same `GET https://example.com/user` endpoint:
 
 ```json
 {
@@ -110,7 +114,7 @@ fetch('https://example.com/user').then((res) => res.text())
 // "User Not Found"
 ```
 
-Note that any subsequent request to the same endpoint will receive the _latest_ response it has in the HAR. In the example above, any subsequent request will receive a mocked `404` response.
+Note that any subsequent request to the same endpoint **will receive the _latest_ response** it has in the HAR. In the example above, any subsequent request will receive a mocked `404` response.
 
 ### Customizing generated handlers
 
@@ -128,31 +132,4 @@ fromTraffic(har, (entry) => {
 })
 ```
 
-> Do not forget to return the `entry` object if you wish to generate a request handler from it.
-
-## Test runtime
-
-```js
-// jest.setup.js
-import { setupServer } from 'msw/node'
-import { fromRuntime } from '@mswjs/source'
-
-const server = setupServer()
-
-beforeAll(() => {
-  server.listen()
-  fromRuntime(server)
-})
-```
-
-## OpenAPI (Swagger)
-
-- Explain what spec properties are used as mocked responses.
-
-```js
-import { fromOpenApi } from '@mswjs/source'
-import apiDocument from 'api.spec.json'
-
-const apiDocument = fs.readFileSync('spec.json')
-export const handlers = fromOpenApi(apiDocument)
-```
+> Return the `entry` object if you wish to generate a request handler for it, or return nothing if the current HAR entry must not have any associated handlers.
