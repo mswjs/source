@@ -10,39 +10,57 @@ const parser = new SwaggerParser()
 export async function fromOpenApi(
   document: string | OpenAPIV3.Document | OpenAPIV2.Document,
 ): Promise<RequestHandler[]> {
-  const api = await parser.dereference(document)
+  const specification = await parser.dereference(document)
 
-  const handlers = Object.entries(api.paths).reduce<RequestHandler[]>(
-    (handlers, [url, pathDef]) => {
-      const nextHandlers = Object.entries(pathDef).map(
-        ([method, def]: [string, any]) => {
-          if (!(method in rest)) {
-            return
-          }
+  const handlers = Object.entries(specification.paths).reduce<RequestHandler[]>(
+    (
+      handlers,
+      [url, pathItem]: [
+        string,
+        OpenAPIV2.PathItemObject | OpenAPIV3.PathItemObject,
+      ],
+    ) => {
+      for (const key of Object.keys(pathItem)) {
+        const method = key as unknown as keyof OpenAPIV2.PathItemObject
 
-          // @ts-expect-error TBD
-          const resolvedUrl = api.basePath
-            ? // @ts-expect-error TBD
-              new URL(url, api.basePath).toString()
-            : url
+        if (
+          method !== 'get' &&
+          method !== 'put' &&
+          method !== 'post' &&
+          method !== 'delete' &&
+          method !== 'options' &&
+          method !== 'head' &&
+          method !== 'patch'
+        ) {
+          continue
+        }
 
-          // @ts-expect-error TBD
-          return rest[method](resolvedUrl, (req, res, ctx) => {
-            const status = req.url.searchParams.get('response') || '200'
-            const response = def.responses[status]
-            const contentType = Object.keys(response.content)[0]
-            const responseNode = response.content[contentType]
+        const operation = pathItem[method]
 
-            return res(
-              ctx.status(Number(status)),
-              ctx.set('Content-Type', contentType),
-              ctx.body(JSON.stringify(responseNode.schema.example)),
-            )
-          })
-        },
-      )
+        const baseUrl =
+          'basePath' in specification
+            ? specification.basePath
+            : window.document.baseURI
 
-      return handlers.concat(nextHandlers)
+        const resolvedUrl = new URL(url, baseUrl).href
+
+        const handler = rest[method](resolvedUrl, (req, res, ctx) => {
+          const status = req.url.searchParams.get('response') || '200'
+          const response = operation?.responses?.[status]
+          const contentType = Object.keys(response.content)[0]
+          const responseNode = response.content[contentType]
+
+          return res(
+            ctx.status(Number(status)),
+            ctx.set('Content-Type', contentType),
+            ctx.body(JSON.stringify(responseNode.schema.example)),
+          )
+        })
+
+        handlers.push(handler)
+      }
+
+      return handlers
     },
     [],
   )
