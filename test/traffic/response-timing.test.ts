@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch'
-import { fromTraffic } from 'src/fromTraffic/fromTraffic'
+import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
+import { withHandlers } from '../../test/support/withHandlers'
 import { normalizeLocalhost, readArchive } from './utils'
-import { withHandlers } from 'test/support/withHandlers'
 
 const responseTiming = readArchive(
   'test/traffic/fixtures/archives/response-timing.har',

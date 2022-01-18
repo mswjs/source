@@ -5,9 +5,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import fetch from 'cross-fetch'
 import { headersToObject } from 'headers-utils'
-import { fromTraffic } from 'src/fromTraffic/fromTraffic'
+import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
+import { withHandlers } from '../../test/support/withHandlers'
 import { readArchive, headersAfterMsw, normalizeLocalhost } from './utils'
-import { withHandlers } from 'test/support/withHandlers'
 
 // Archives.
 const responseText = readArchive(

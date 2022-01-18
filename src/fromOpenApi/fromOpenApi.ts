@@ -1,8 +1,12 @@
+import { invariant } from 'outvariant'
+import { datatype, internet } from 'faker'
+import { randexp } from 'randexp'
 import {
+  RestContext,
+  MockedRequest,
   RequestHandler,
   ResponseResolver,
-  MockedRequest,
-  RestContext,
+  ResponseTransformer,
   rest,
 } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
@@ -74,19 +78,183 @@ function createResponseResolver(
 ): ResponseResolver<MockedRequest, RestContext> {
   return (req, res, ctx) => {
     const status = req.url.searchParams.get('response') || '200'
-    const response = operation.responses?.[status]
+    const response = operation.responses?.[status] as
+      | OpenAPIV2.ResponseObject
+      | OpenAPIV3.ResponseObject
+      | undefined
 
     if (!response) {
       return res(ctx.status(501))
     }
 
-    const contentType = Object.keys(response.content)[0]
-    const { schema } = response.content[contentType]
+    const transformers: ResponseTransformer[] = []
+    transformers.push(ctx.status(Number(status)))
 
-    return res(
-      ctx.status(Number(status)),
-      ctx.set('Content-Type', contentType),
-      ctx.body(JSON.stringify(schema.example)),
-    )
+    /**
+     * @todo Support "response.headers" schema.
+     */
+
+    if ('content' in response && response.content != null) {
+      let body: unknown
+
+      const explicitContentType = req.url.searchParams.get('type')
+      const contentType = explicitContentType
+        ? explicitContentType
+        : Object.keys(response.content)[0]
+
+      transformers.push(ctx.set('Content-Type', contentType))
+
+      const mediaTypeObject = response.content[contentType]
+
+      // An explicit example is used first.
+      if (mediaTypeObject.example) {
+        body = mediaTypeObject.example
+      }
+      // The first of the multiple "examples"
+      // is used afterwards.
+      else if (mediaTypeObject.examples) {
+        const { value } = Object.values(
+          mediaTypeObject.examples,
+        )[0] as OpenAPIV3.ExampleObject
+
+        // Response body must always be string.
+        body = value
+      }
+      // JSON Schema is populated with random values.
+      else if (mediaTypeObject.schema) {
+        invariant(
+          !('$ref' in mediaTypeObject.schema),
+          'Failed to use a JSON schema (%j) as a mocked response body: found an unresolved reference.',
+          mediaTypeObject.schema,
+        )
+
+        body = evolveJsonSchema(mediaTypeObject.schema)
+      }
+
+      if (body) {
+        transformers.push(ctx.body(toString(body)))
+      }
+    }
+
+    return res(...transformers)
   }
+}
+
+function evolveJsonSchema(
+  schema: OpenAPIV3.SchemaObject,
+): string | number | boolean | unknown[] | Record<string, unknown> | undefined {
+  // Always use an explicit example first.
+  if (schema.example) {
+    return schema.example
+  }
+
+  // Otherwise evolve the schema recursively.
+  switch (schema.type) {
+    case 'string': {
+      if (schema.pattern) {
+        return randexp(schema.pattern)
+      }
+
+      switch (schema.format?.toLowerCase()) {
+        case 'uuid': {
+          return datatype.uuid()
+        }
+
+        case 'email': {
+          return internet.email()
+        }
+
+        case 'password': {
+          return internet.password()
+        }
+      }
+
+      const value = datatype.string(schema.minLength)
+      return value.slice(0, schema.maxLength)
+    }
+
+    case 'integer': {
+      const value = datatype.float({
+        min: schema.minimum,
+        max: schema.maximum,
+      })
+      return value
+    }
+
+    case 'boolean': {
+      return datatype.boolean()
+    }
+
+    case 'number': {
+      const value = datatype.number({
+        min: schema.minimum,
+        max: schema.maximum,
+      })
+      return value
+    }
+
+    case 'array': {
+      const { items: arraySchema } = schema
+
+      invariant(
+        !('$ref' in arraySchema),
+        'Failed to generate mock from schema array (%j): found unresolved reference.',
+        arraySchema,
+      )
+
+      const minLength = schema.minLength || 2
+      const arrayLength = datatype.number({
+        min: minLength,
+        max: schema.maxLength || minLength + 4,
+      })
+
+      const value: unknown[] = new Array(arrayLength)
+        .fill(null)
+        .reduce<unknown[]>((array) => {
+          const value = evolveJsonSchema(arraySchema)
+          if (value) {
+            // Push instead of concating to support
+            // nested arrays.
+            array.push(value)
+          }
+          return array
+        }, [])
+
+      return value
+    }
+
+    case 'object': {
+      // Always us an explicit example, if provided.
+      if (schema.example) {
+        return schema.example
+      }
+
+      // Otherwise evolve the properties to the value object.
+      if (schema.properties) {
+        const json = Object.entries(schema.properties).reduce<
+          Record<string, unknown>
+        >((json, [key, propertyDefinition]) => {
+          invariant(
+            !('$ref' in propertyDefinition),
+            'Failed to generate mock from the schema property definition (%j): found unresolved reference.',
+            propertyDefinition,
+          )
+
+          const value = evolveJsonSchema(propertyDefinition)
+
+          if (typeof value !== 'undefined') {
+            json[key] = value
+          }
+
+          return json
+        }, {})
+
+        return json
+      }
+    }
+  }
+}
+
+function toString(value: unknown): string {
+  return typeof value !== 'string' ? JSON.stringify(value) : value
 }

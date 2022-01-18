@@ -13,12 +13,10 @@
             "description": "User detail response",
             "content": {
               "application/json": {
-                "schema": {
-                  "example": {
-                    "id": "abc-123",
-                    "firstName": "John",
-                    "lastName": "Maverick"
-                  }
+                "example": {
+                  "id": "abc-123",
+                  "firstName": "John",
+                  "lastName": "Maverick"
                 }
               }
             }
