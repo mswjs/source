@@ -140,7 +140,7 @@ function createResponseResolver(
   }
 }
 
-function evolveJsonSchema(
+export function evolveJsonSchema(
   schema: OpenAPIV3.SchemaObject,
 ): string | number | boolean | unknown[] | Record<string, unknown> | undefined {
   // Always use an explicit example first.

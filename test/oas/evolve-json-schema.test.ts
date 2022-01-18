@@ -1,47 +1,13 @@
-import fetch from 'cross-fetch'
 import { seed } from 'faker'
-import { OpenAPIV3 } from 'openapi-types'
-import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
-import { withHandlers } from '../support/withHandlers'
-
-async function withJsonSchema(
-  schema: OpenAPIV3.SchemaObject,
-): Promise<Record<string, unknown>> {
-  const document: OpenAPIV3.Document = {
-    openapi: '3.0.0',
-    info: {
-      title: 'Basic types',
-      version: '1.0.0',
-    },
-    paths: {
-      '/test': {
-        get: {
-          responses: {
-            '200': {
-              description: 'Test response',
-              content: {
-                'text/plain': {
-                  schema,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  }
-  const handlers = await fromOpenApi(document)
-  const res = await withHandlers(handlers, () => fetch('http://localhost/test'))
-  return res.json()
-}
+import { evolveJsonSchema } from '../../src/fromOpenApi/fromOpenApi'
 
 beforeAll(() => {
   seed(1)
 })
 
 describe('string', () => {
-  it('supports a plain string value', async () => {
-    const json = await withJsonSchema({
+  it('supports a plain string value', () => {
+    const data = evolveJsonSchema({
       type: 'object',
       properties: {
         firstName: {
@@ -49,11 +15,11 @@ describe('string', () => {
         },
       },
     })
-    expect(json).toEqual({ firstName: 'G}cw!,=}.6' })
+    expect(data).toEqual({ firstName: 'G}cw!,=}.6' })
   })
 
-  it('supports the "example" value', async () => {
-    const json = await withJsonSchema({
+  it('supports the "example" value', () => {
+    const data = evolveJsonSchema({
       type: 'object',
       properties: {
         firstName: {
@@ -62,11 +28,11 @@ describe('string', () => {
         },
       },
     })
-    expect(json).toEqual({ firstName: 'John' })
+    expect(data).toEqual({ firstName: 'John' })
   })
 
-  it('supports "minLength"', async () => {
-    const json = await withJsonSchema({
+  it('supports "minLength"', () => {
+    const data = evolveJsonSchema({
       type: 'object',
       properties: {
         email: {
@@ -75,11 +41,11 @@ describe('string', () => {
         },
       },
     })
-    expect(json).toEqual({ email: expect.stringMatching(/^\S{10,}$/) })
+    expect(data).toEqual({ email: expect.stringMatching(/^\S{10,}$/) })
   })
 
-  it('supports the "pattern" expression', async () => {
-    const json = await withJsonSchema({
+  it('supports the "pattern" expression', () => {
+    const json = evolveJsonSchema({
       type: 'object',
       properties: {
         otp: {
@@ -91,8 +57,8 @@ describe('string', () => {
     expect(json).toEqual({ otp: expect.stringMatching(/^[0-9]{3}-[0-9]{3}$/) })
   })
 
-  it('supports the "uuid" format', async () => {
-    const json = await withJsonSchema({
+  it('supports the "uuid" format', () => {
+    const json = evolveJsonSchema({
       type: 'object',
       properties: {
         id: {
@@ -104,8 +70,8 @@ describe('string', () => {
     expect(json).toEqual({ id: '65a837e3-08ae-4678-a2f3-ccbfc51b8ede' })
   })
 
-  it('supports the "email" format', async () => {
-    const json = await withJsonSchema({
+  it('supports the "email" format', () => {
+    const json = evolveJsonSchema({
       type: 'object',
       properties: {
         email: {
@@ -117,8 +83,8 @@ describe('string', () => {
     expect(json).toEqual({ email: 'Arvel27@hotmail.com' })
   })
 
-  it('supports the "password" format', async () => {
-    const json = await withJsonSchema({
+  it('supports the "password" format', () => {
+    const json = evolveJsonSchema({
       type: 'object',
       properties: {
         password: {
@@ -132,8 +98,8 @@ describe('string', () => {
 })
 
 describe('boolean', () => {
-  it('supports a plain boolean value', async () => {
-    const json = await withJsonSchema({
+  it('supports a plain boolean value', () => {
+    const json = evolveJsonSchema({
       type: 'object',
       properties: {
         isNewUser: {
@@ -144,8 +110,8 @@ describe('boolean', () => {
     expect(json).toEqual({ isNewUser: false })
   })
 
-  it('supports the "example" value', async () => {
-    const json = await withJsonSchema({
+  it('supports the "example" value', () => {
+    const json = evolveJsonSchema({
       type: 'object',
       properties: {
         subscribed: {
@@ -159,29 +125,29 @@ describe('boolean', () => {
 })
 
 describe('number', () => {
-  it('supports a plain number value', async () => {
-    const number = await withJsonSchema({ type: 'number' })
+  it('supports a plain number value', () => {
+    const number = evolveJsonSchema({ type: 'number' })
     expect(number).toEqual(28044)
   })
 
-  it('supports the "minimum" option', async () => {
-    const number = await withJsonSchema({
+  it('supports the "minimum" option', () => {
+    const number = evolveJsonSchema({
       type: 'number',
       minimum: 100,
     })
     expect(number).toBeGreaterThanOrEqual(100)
   })
 
-  it('supports the "maximum" option', async () => {
-    const number = await withJsonSchema({
+  it('supports the "maximum" option', () => {
+    const number = evolveJsonSchema({
       type: 'number',
       maximum: 50,
     })
     expect(number).toBeLessThanOrEqual(50)
   })
 
-  it('supports both the "minimum" and "maximum" options', async () => {
-    const number = await withJsonSchema({
+  it('supports both the "minimum" and "maximum" options', () => {
+    const number = evolveJsonSchema({
       type: 'number',
       minimum: 25,
       maximum: 50,
@@ -192,16 +158,16 @@ describe('number', () => {
 })
 
 describe('array', () => {
-  it('supports a plain array of numbers', async () => {
-    const array = await withJsonSchema({
+  it('supports a plain array of numbers', () => {
+    const array = evolveJsonSchema({
       type: 'array',
       items: { type: 'number' },
     })
     expect(array).toEqual([7336, 44789])
   })
 
-  it('supports a plain array of strings', async () => {
-    const array = await withJsonSchema({
+  it('supports a plain array of strings', () => {
+    const array = evolveJsonSchema({
       type: 'array',
       items: { type: 'string' },
     })
@@ -213,8 +179,8 @@ describe('array', () => {
     ])
   })
 
-  it('supports a plain array of objects', async () => {
-    const array = await withJsonSchema({
+  it('supports a plain array of objects', () => {
+    const array = evolveJsonSchema({
       type: 'array',
       items: {
         type: 'object',
@@ -251,15 +217,15 @@ describe('array', () => {
     ])
   })
 
-  it('supports nested arrays', async () => {
-    const array = await withJsonSchema({
+  it('supports nested arrays', () => {
+    const data = evolveJsonSchema({
       type: 'array',
       items: {
         type: 'array',
         items: { type: 'number' },
       },
     })
-    expect(array).toEqual([
+    expect(data).toEqual([
       [31736, 53182, 98861, 10933],
       [14603, 38014, 50878, 55094],
       [74533, 91644, 66923],
@@ -267,28 +233,28 @@ describe('array', () => {
     ])
   })
 
-  it('supports the "minLength" option', async () => {
-    const array = await withJsonSchema({
+  it('supports the "minLength" option', () => {
+    const data = evolveJsonSchema({
       type: 'array',
       minLength: 10,
       items: { type: 'number' },
-    })
-    expect(array.length).toBeGreaterThanOrEqual(10)
+    }) as number[]
+    expect(data.length).toBeGreaterThanOrEqual(10)
   })
 
-  it('supports the "maxLength" option', async () => {
-    const array = await withJsonSchema({
+  it('supports the "maxLength" option', () => {
+    const data = evolveJsonSchema({
       type: 'array',
       maxLength: 10,
       items: { type: 'number' },
-    })
-    expect(array.length).toBeLessThanOrEqual(10)
+    }) as number[]
+    expect(data.length).toBeLessThanOrEqual(10)
   })
 })
 
 describe('object', () => {
-  it('supports a plain object', async () => {
-    const json = await withJsonSchema({
+  it('supports a plain object', () => {
+    const data = evolveJsonSchema({
       type: 'object',
       properties: {
         id: {
@@ -305,15 +271,15 @@ describe('object', () => {
         },
       },
     })
-    expect(json).toEqual({
+    expect(data).toEqual({
       id: '451bb8cb-e2ea-4063-b9cf-6fe83e0ae647',
       firstName: '0Y#TKwlvCE',
       age: 67,
     })
   })
 
-  it('supports a nested object', async () => {
-    const json = await withJsonSchema({
+  it('supports a nested object', () => {
+    const data = evolveJsonSchema({
       type: 'object',
       properties: {
         firstName: {
@@ -329,7 +295,7 @@ describe('object', () => {
         },
       },
     })
-    expect(json).toEqual({
+    expect(data).toEqual({
       firstName: 'z$1A,(-aP"',
       nested: {
         isNested: false,
@@ -337,15 +303,15 @@ describe('object', () => {
     })
   })
 
-  it('supports the "example" value', async () => {
-    const json = await withJsonSchema({
+  it('supports the "example" value', () => {
+    const data = evolveJsonSchema({
       type: 'object',
       example: {
         id: 'abc-123',
         firstName: 'John',
       },
     })
-    expect(json).toEqual({
+    expect(data).toEqual({
       id: 'abc-123',
       firstName: 'John',
     })
