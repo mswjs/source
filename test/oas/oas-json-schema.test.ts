@@ -2,7 +2,7 @@ import fetch from 'cross-fetch'
 import { seed } from 'faker'
 import { OpenAPIV3 } from 'openapi-types'
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
-import { withHandlers } from '../../test/support/withHandlers'
+import { withHandlers } from '../support/withHandlers'
 
 async function withJsonSchema(
   schema: OpenAPIV3.SchemaObject,
@@ -287,5 +287,67 @@ describe('array', () => {
 })
 
 describe('object', () => {
-  it.todo('supports everything')
+  it('supports a plain object', async () => {
+    const json = await withJsonSchema({
+      type: 'object',
+      properties: {
+        id: {
+          type: 'string',
+          format: 'uuid',
+        },
+        firstName: {
+          type: 'string',
+        },
+        age: {
+          type: 'number',
+          minimum: 18,
+          maximum: 99,
+        },
+      },
+    })
+    expect(json).toEqual({
+      id: '451bb8cb-e2ea-4063-b9cf-6fe83e0ae647',
+      firstName: '0Y#TKwlvCE',
+      age: 67,
+    })
+  })
+
+  it('supports a nested object', async () => {
+    const json = await withJsonSchema({
+      type: 'object',
+      properties: {
+        firstName: {
+          type: 'string',
+        },
+        nested: {
+          type: 'object',
+          properties: {
+            isNested: {
+              type: 'boolean',
+            },
+          },
+        },
+      },
+    })
+    expect(json).toEqual({
+      firstName: 'z$1A,(-aP"',
+      nested: {
+        isNested: false,
+      },
+    })
+  })
+
+  it('supports the "example" value', async () => {
+    const json = await withJsonSchema({
+      type: 'object',
+      example: {
+        id: 'abc-123',
+        firstName: 'John',
+      },
+    })
+    expect(json).toEqual({
+      id: 'abc-123',
+      firstName: 'John',
+    })
+  })
 })
