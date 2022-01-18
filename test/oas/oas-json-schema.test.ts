@@ -1,12 +1,7 @@
 import fetch from 'cross-fetch'
-import { seed } from 'faker'
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { withHandlers } from '../support/withHandlers'
 import { createOpenApiSpec } from '../support/createOpenApiSpec'
-
-beforeEach(() => {
-  seed(1)
-})
 
 it('supports JSON Schema object', async () => {
   const handlers = await fromOpenApi(

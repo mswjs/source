@@ -1,9 +1,4 @@
-import { seed } from 'faker'
 import { evolveJsonSchema } from '../../src/fromOpenApi/fromOpenApi'
-
-beforeAll(() => {
-  seed(1)
-})
 
 describe('string', () => {
   it('supports a plain string value', () => {
