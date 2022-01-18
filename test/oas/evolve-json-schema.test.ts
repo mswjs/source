@@ -10,7 +10,9 @@ describe('string', () => {
         },
       },
     })
-    expect(data).toEqual({ firstName: 'G}cw!,=}.6' })
+    expect(data).toEqual({
+      firstName: expect.stringMatching(/^\S+$/),
+    })
   })
 
   it('supports the "example" value', () => {
@@ -23,7 +25,10 @@ describe('string', () => {
         },
       },
     })
-    expect(data).toEqual({ firstName: 'John' })
+    expect(data).toEqual({
+      // Explicit examples are always used as-is.
+      firstName: 'John',
+    })
   })
 
   it('supports "minLength"', () => {
@@ -36,7 +41,9 @@ describe('string', () => {
         },
       },
     })
-    expect(data).toEqual({ email: expect.stringMatching(/^\S{10,}$/) })
+    expect(data).toEqual({
+      email: expect.stringMatching(/^\S{10,}$/),
+    })
   })
 
   it('supports the "pattern" expression', () => {
@@ -49,7 +56,9 @@ describe('string', () => {
         },
       },
     })
-    expect(json).toEqual({ otp: expect.stringMatching(/^[0-9]{3}-[0-9]{3}$/) })
+    expect(json).toEqual({
+      otp: expect.stringMatching(/^[0-9]{3}-[0-9]{3}$/),
+    })
   })
 
   it('supports the "uuid" format', () => {
@@ -62,7 +71,11 @@ describe('string', () => {
         },
       },
     })
-    expect(json).toEqual({ id: '65a837e3-08ae-4678-a2f3-ccbfc51b8ede' })
+    expect(json).toEqual({
+      id: expect.stringMatching(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      ),
+    })
   })
 
   it('supports the "email" format', () => {
@@ -75,7 +88,9 @@ describe('string', () => {
         },
       },
     })
-    expect(json).toEqual({ email: 'Arvel27@hotmail.com' })
+    expect(json).toEqual({
+      email: expect.stringMatching(/^\S+@\S+\.\w+$/),
+    })
   })
 
   it('supports the "password" format', () => {
@@ -88,7 +103,9 @@ describe('string', () => {
         },
       },
     })
-    expect(json).toEqual({ password: '1tYIHS3bbkpHh_h' })
+    expect(json).toEqual({
+      password: expect.stringMatching(/^\S+$/),
+    })
   })
 })
 
@@ -101,8 +118,10 @@ describe('boolean', () => {
           type: 'boolean',
         },
       },
-    })
-    expect(json).toEqual({ isNewUser: false })
+    }) as { isNewUser: boolean }
+
+    expect(Object.keys(json)).toEqual(['isNewUser'])
+    expect(typeof json.isNewUser).toEqual('boolean')
   })
 
   it('supports the "example" value', () => {
@@ -115,14 +134,16 @@ describe('boolean', () => {
         },
       },
     })
-    expect(json).toEqual({ subscribed: true })
+    expect(json).toEqual({
+      subscribed: true,
+    })
   })
 })
 
 describe('number', () => {
   it('supports a plain number value', () => {
     const number = evolveJsonSchema({ type: 'number' })
-    expect(number).toEqual(28044)
+    expect(typeof number).toEqual('number')
   })
 
   it('supports the "minimum" option', () => {
@@ -157,21 +178,24 @@ describe('array', () => {
     const array = evolveJsonSchema({
       type: 'array',
       items: { type: 'number' },
+    }) as number[]
+
+    expect(array).toBeInstanceOf(Array)
+    array.forEach((value) => {
+      expect(typeof value).toEqual('number')
     })
-    expect(array).toEqual([7336, 44789])
   })
 
   it('supports a plain array of strings', () => {
     const array = evolveJsonSchema({
       type: 'array',
       items: { type: 'string' },
+    }) as string[]
+
+    expect(array).toBeInstanceOf(Array)
+    array.forEach((value) => {
+      expect(value).toMatch(/^\S+$/)
     })
-    expect(array).toEqual([
-      'u)<u;,-Q"(',
-      '`v4u9<NW%U',
-      'VZ.yW9b6*R',
-      'GyaNGS%hR%',
-    ])
   })
 
   it('supports a plain array of objects', () => {
@@ -187,29 +211,15 @@ describe('array', () => {
           title: { type: 'string' },
         },
       },
+    }) as Array<{ id: string; title: string }>
+
+    expect(array).toBeInstanceOf(Array)
+    array.forEach((value) => {
+      expect(value.id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+      )
+      expect(value.title).toMatch(/^\S+$/)
     })
-    expect(array).toEqual([
-      {
-        id: '28cf09ee-8272-4ec6-a82a-e559cab2eb9a',
-        title: 'fAAg:BtgHr',
-      },
-      {
-        id: 'f0a7911c-f175-49f6-a3ce-c940c925980e',
-        title: 'bBLuhZL":w',
-      },
-      {
-        id: 'db8f1272-be3b-4713-88c3-e0b812060108',
-        title: '7*p;S6Tzo:',
-      },
-      {
-        id: '134199f6-850d-4c43-bc96-6dcb68625021',
-        title: 'x%v*i5Zc$U',
-      },
-      {
-        id: 'a0214f59-4314-42b2-bf95-f0db34739fde',
-        title: '/g"]\'$NlYg',
-      },
-    ])
   })
 
   it('supports nested arrays', () => {
@@ -219,13 +229,15 @@ describe('array', () => {
         type: 'array',
         items: { type: 'number' },
       },
+    }) as number[][]
+
+    expect(data).toBeInstanceOf(Array)
+    data.forEach((value) => {
+      expect(value).toBeInstanceOf(Array)
+      value.forEach((number) => {
+        expect(typeof number).toEqual('number')
+      })
     })
-    expect(data).toEqual([
-      [31736, 53182, 98861, 10933],
-      [14603, 38014, 50878, 55094],
-      [74533, 91644, 66923],
-      [26491, 13226, 6633, 76424],
-    ])
   })
 
   it('supports the "minLength" option', () => {
@@ -265,12 +277,15 @@ describe('object', () => {
           maximum: 99,
         },
       },
-    })
-    expect(data).toEqual({
-      id: '451bb8cb-e2ea-4063-b9cf-6fe83e0ae647',
-      firstName: '0Y#TKwlvCE',
-      age: 67,
-    })
+    }) as Record<string, unknown>
+    expect(Object.keys(data)).toEqual(['id', 'firstName', 'age'])
+
+    expect(data.id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    )
+    expect(data.firstName).toMatch(/^\S+$/)
+    expect(data.age).toBeGreaterThanOrEqual(18)
+    expect(data.age).toBeLessThanOrEqual(99)
   })
 
   it('supports a nested object', () => {
@@ -289,13 +304,12 @@ describe('object', () => {
           },
         },
       },
-    })
-    expect(data).toEqual({
-      firstName: 'z$1A,(-aP"',
-      nested: {
-        isNested: false,
-      },
-    })
+    }) as { firstName: string; nested: { isNested: boolean } }
+
+    expect(Object.keys(data)).toEqual(['firstName', 'nested'])
+    expect(data.firstName).toMatch(/^\S+$/)
+    expect(Object.keys(data.nested)).toEqual(['isNested'])
+    expect(typeof data.nested.isNested).toEqual('boolean')
   })
 
   it('supports the "example" value', () => {

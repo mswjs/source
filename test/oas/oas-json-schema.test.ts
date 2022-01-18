@@ -53,17 +53,23 @@ it('supports JSON Schema object', async () => {
 
   expect(res.status).toEqual(200)
   expect(res.headers.get('content-type')).toEqual('application/json')
-  expect(await res.json()).toEqual({
-    id: '6fbe024f-2316-4265-a6e8-d65a837e308a',
-    items: [
-      {
-        id: '67862f3c-cbfc-451b-8ede-d1d0420ea196',
-        price: 67164.74,
-      },
-      {
-        id: 'f683b452-acd6-400c-9fab-447c31177e14',
-        price: 90336.12,
-      },
-    ],
+
+  const json: {
+    id: string
+    items: Array<{ id: string; price: number }>
+  } = await res.json()
+
+  expect(Object.keys(json)).toEqual(['id', 'items'])
+  expect(json.id).toMatch(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+  )
+  expect(json.items).toBeInstanceOf(Array)
+
+  json.items.forEach((item) => {
+    expect(Object.keys(item)).toEqual(['id', 'price'])
+    expect(item.id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    )
+    expect(typeof item.price).toEqual('number')
   })
 })
