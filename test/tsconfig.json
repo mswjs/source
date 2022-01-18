@@ -4,5 +4,5 @@
     "noEmit": true,
     "lib": ["dom"]
   },
-  "include": ["**/*.test.ts"]
+  "include": ["**/*.test.ts"],
 }

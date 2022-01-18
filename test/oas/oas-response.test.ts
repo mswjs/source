@@ -1,8 +1,8 @@
 import fetch from 'cross-fetch'
-import { fromOpenApi } from 'src/fromOpenApi/fromOpenApi'
+import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { withHandlers } from '../support/withHandlers'
 
-it('supports explicit "example" JSON in the response schema', async () => {
+it('supports explicit response example', async () => {
   const document = require('./fixtures/response-example.json')
   const handlers = await fromOpenApi(document)
 
@@ -19,7 +19,7 @@ it('supports explicit "example" JSON in the response schema', async () => {
   })
 })
 
-it('supports response example by reference', async () => {
+it('supports a referenced response example', async () => {
   const document = require('./fixtures/response-ref')
   const handlers = await fromOpenApi(document)
 

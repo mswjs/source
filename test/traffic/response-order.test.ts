@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch'
-import { fromTraffic } from 'src/fromTraffic/fromTraffic'
-import { withHandlers } from 'test/support/withHandlers'
+import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
+import { withHandlers } from '../../test/support/withHandlers'
 import { normalizeLocalhost, readArchive } from './utils'
 
 const requestOrder = readArchive(

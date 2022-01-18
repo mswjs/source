@@ -14,7 +14,7 @@
     "har:fixture": "ts-node test/traffic/fixtures/requests/command.ts",
     "clean": "rimraf ./lib",
     "build": "yarn lint && yarn clean && rollup -c rollup.config.ts",
-    "test": "jest test",
+    "test": "jest",
     "prepublishOnly": "yarn build && yarn test:lib && yarn test"
   },
   "files": [
@@ -69,9 +69,12 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.0.2",
+    "@types/faker": "^5.5.9",
     "@types/har-format": "^1.2.7",
+    "faker": "5.x",
     "headers-utils": "^3.0.2",
     "openapi-types": "^7.2.3",
-    "outvariant": "^1.2.1"
+    "outvariant": "^1.2.1",
+    "randexp": "^0.5.3"
   }
 }
