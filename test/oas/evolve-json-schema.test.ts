@@ -2,150 +2,87 @@ import { evolveJsonSchema } from '../../src/fromOpenApi/fromOpenApi'
 
 describe('string', () => {
   it('supports a plain string value', () => {
-    const data = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        firstName: {
-          type: 'string',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
     })
-    expect(data).toEqual({
-      firstName: expect.stringMatching(/^\S+$/),
-    })
+    expect(value).toMatch(/^\S+$/)
   })
 
   it('supports the "example" value', () => {
-    const data = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        firstName: {
-          type: 'string',
-          example: 'John',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      example: 'John',
     })
-    expect(data).toEqual({
-      // Explicit examples are always used as-is.
-      firstName: 'John',
-    })
+    // Explicit examples are always used as-is.
+    expect(value).toEqual('John')
   })
 
   it('supports "minLength"', () => {
-    const data = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        email: {
-          type: 'string',
-          minLength: 10,
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      minLength: 10,
     })
-    expect(data).toEqual({
-      email: expect.stringMatching(/^\S{10,}$/),
-    })
+    expect(value).toMatch(/^\S{10,}$/)
   })
 
   it('supports the "pattern" expression', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        otp: {
-          type: 'string',
-          pattern: '^[0-9]{3}-[0-9]{3}$',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      pattern: '^[0-9]{3}-[0-9]{3}$',
     })
-    expect(json).toEqual({
-      otp: expect.stringMatching(/^[0-9]{3}-[0-9]{3}$/),
-    })
+    expect(value).toMatch(/^[0-9]{3}-[0-9]{3}$/)
   })
 
   it('supports the "enum" value', () => {
-    const data = evolveJsonSchema({
+    const value = evolveJsonSchema({
       type: 'string',
       enum: ['active', 'pending', 'stale'],
     })
 
-    expect(data).toMatch(/^(active|pending|stale)$/)
+    expect(value).toMatch(/^(active|pending|stale)$/)
   })
 
   it('supports the "uuid" format', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          format: 'uuid',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'uuid',
     })
-    expect(json).toEqual({
-      id: expect.stringMatching(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-      ),
-    })
+    expect(value).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    )
   })
 
   it('supports the "email" format', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        email: {
-          type: 'string',
-          format: 'email',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'email',
     })
-    expect(json).toEqual({
-      email: expect.stringMatching(/^\S+@\S+\.\w+$/),
-    })
+    expect(value).toMatch(/^\S+@\S+\.\w+$/)
   })
 
   it('supports the "password" format', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        password: {
-          type: 'string',
-          format: 'password',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'password',
     })
-    expect(json).toEqual({
-      password: expect.stringMatching(/^\S+$/),
-    })
+    expect(value).toMatch(/^\S+$/)
   })
 })
 
 describe('boolean', () => {
   it('supports a plain boolean value', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        isNewUser: {
-          type: 'boolean',
-        },
-      },
-    }) as { isNewUser: boolean }
-
-    expect(Object.keys(json)).toEqual(['isNewUser'])
-    expect(typeof json.isNewUser).toEqual('boolean')
+    const value = evolveJsonSchema({
+      type: 'boolean',
+    }) as boolean
+    expect(typeof value).toEqual('boolean')
   })
 
   it('supports the "example" value', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        subscribed: {
-          type: 'boolean',
-          example: true,
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'boolean',
+      example: true,
     })
-    expect(json).toEqual({
-      subscribed: true,
-    })
+    expect(value).toEqual(true)
   })
 })
 
