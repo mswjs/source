@@ -121,9 +121,26 @@ function createResponseResolver(
     const transformers: ResponseTransformer[] = []
     transformers.push(ctx.status(Number(status)))
 
-    /**
-     * @todo Support "response.headers" schema.
-     */
+    // Set response headers.
+    if (response.headers) {
+      for (const [headerName, headerDefinition] of Object.entries(
+        response.headers,
+      )) {
+        invariant(
+          !('$ref' in headerDefinition),
+          'Failed to generate mock response headers: found an unresolved reference',
+          headerDefinition,
+        )
+
+        const headerSchema = headerDefinition.schema as OpenAPIV3.SchemaObject
+        const headerValue = evolveJsonSchema(headerSchema)
+        if (!headerValue) {
+          continue
+        }
+
+        transformers.push(ctx.set(headerName, toString(headerValue)))
+      }
+    }
 
     if ('content' in response && response.content != null) {
       let body: unknown

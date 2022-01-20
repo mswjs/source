@@ -10,12 +10,7 @@
     "noImplicitAny": true,
     "outDir": "lib",
     "declaration": true,
-    "declarationDir": "lib",
-    "baseUrl": "./",
-    "paths": {
-      "src/*": ["src/*"],
-      "test/*": ["test/*"]
-    }
+    "declarationDir": "lib"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
