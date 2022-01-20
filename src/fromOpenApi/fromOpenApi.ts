@@ -176,6 +176,10 @@ export function evolveJsonSchema(
         case 'password': {
           return internet.password()
         }
+
+        case 'date-time': {
+          return datatype.datetime(schema.maximum).toISOString()
+        }
       }
 
       // Use a random value from the specified enums list.
