@@ -278,7 +278,7 @@ describe('object', () => {
   })
 
   it('supports a nested object', () => {
-    const data = evolveJsonSchema({
+    const value = evolveJsonSchema({
       type: 'object',
       properties: {
         firstName: {
@@ -295,23 +295,55 @@ describe('object', () => {
       },
     }) as { firstName: string; nested: { isNested: boolean } }
 
-    expect(Object.keys(data)).toEqual(['firstName', 'nested'])
-    expect(data.firstName).toMatch(/^\S+$/)
-    expect(Object.keys(data.nested)).toEqual(['isNested'])
-    expect(typeof data.nested.isNested).toEqual('boolean')
+    expect(Object.keys(value)).toEqual(['firstName', 'nested'])
+    expect(value.firstName).toMatch(/^\S+$/)
+    expect(Object.keys(value.nested)).toEqual(['isNested'])
+    expect(typeof value.nested.isNested).toEqual('boolean')
   })
 
   it('supports the "example" value', () => {
-    const data = evolveJsonSchema({
+    const value = evolveJsonSchema({
       type: 'object',
       example: {
         id: 'abc-123',
         firstName: 'John',
       },
     })
-    expect(data).toEqual({
+    expect(value).toEqual({
       id: 'abc-123',
       firstName: 'John',
     })
+  })
+
+  it('supports "additionalProperties"', () => {
+    const value = evolveJsonSchema({
+      type: 'object',
+      additionalProperties: true,
+    }) as Record<string, string>
+
+    const keys = Object.keys(value)
+    if (keys.length > 0) {
+      expect(keys).toEqual(expect.arrayContaining([expect.any(String)]))
+      expect(Object.values(value)).toEqual(
+        expect.arrayContaining([expect.anything()]),
+      )
+    }
+  })
+
+  it('supports "additionalProperties" with a strict type', () => {
+    const value = evolveJsonSchema({
+      type: 'object',
+      additionalProperties: {
+        type: 'string',
+      },
+    }) as Record<string, string>
+
+    const keys = Object.keys(value)
+    if (keys.length > 0) {
+      expect(keys).toEqual(expect.arrayContaining([expect.any(String)]))
+      expect(Object.values(value)).toEqual(
+        expect.arrayContaining([expect.any(String)]),
+      )
+    }
   })
 })

@@ -1,5 +1,5 @@
 import { invariant } from 'outvariant'
-import { datatype, internet } from 'faker'
+import { datatype, internet, random } from 'faker'
 import { randexp } from 'randexp'
 import {
   RestContext,
@@ -258,11 +258,13 @@ export function evolveJsonSchema(
         return schema.example
       }
 
-      // Otherwise evolve the properties to the value object.
+      const json: Record<string, unknown> = {}
+
+      // Support explicit "properties".
       if (schema.properties) {
-        const json = Object.entries(schema.properties).reduce<
-          Record<string, unknown>
-        >((json, [key, propertyDefinition]) => {
+        for (const [key, propertyDefinition] of Object.entries(
+          schema.properties,
+        )) {
           invariant(
             !('$ref' in propertyDefinition),
             'Failed to generate mock from the schema property definition (%j): found unresolved reference.',
@@ -270,20 +272,48 @@ export function evolveJsonSchema(
           )
 
           const value = evolveJsonSchema(propertyDefinition)
-
           if (typeof value !== 'undefined') {
             json[key] = value
           }
+        }
+      }
+
+      // Support "additionalProperties".
+      if (schema.additionalProperties) {
+        const additionalPropertiesSchema = schema.additionalProperties
+
+        if (additionalPropertiesSchema === true) {
+          repeat(0, 4, () => {
+            const propertyName = random.word().toLowerCase()
+            json[propertyName] = datatype.string()
+          })
 
           return json
-        }, {})
+        }
 
-        return json
+        invariant(
+          !('$ref' in additionalPropertiesSchema),
+          'Failed to generate mock from the "additionalProperties" schema: found unresolved reference.',
+        )
+
+        repeat(0, 4, () => {
+          const propertyName = random.word().toLowerCase()
+          json[propertyName] = evolveJsonSchema(additionalPropertiesSchema)
+        })
       }
+
+      return json
     }
   }
 }
 
 function toString(value: unknown): string {
   return typeof value !== 'string' ? JSON.stringify(value) : value
+}
+
+function repeat(minTimes: number, maxTimes: number, callback: () => void) {
+  const count = datatype.number({ min: minTimes, max: maxTimes })
+  for (let i = 0; i < count; i++) {
+    callback()
+  }
 }
