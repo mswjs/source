@@ -73,3 +73,23 @@ it('supports JSON Schema object', async () => {
     expect(typeof item.price).toEqual('number')
   })
 })
+
+it('normalizes path parameters', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/pet/{petId}': {
+          get: { responses: { 200: {} } },
+        },
+        '/pet/{petId}/{foodId}': {
+          get: { responses: { 200: {} } },
+        },
+      },
+    }),
+  )
+
+  expect(handlers[0].info.header).toEqual('GET http://localhost/pet/:petId')
+  expect(handlers[1].info.header).toEqual(
+    'GET http://localhost/pet/:petId/:foodId',
+  )
+})

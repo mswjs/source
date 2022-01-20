@@ -55,7 +55,7 @@ export async function fromOpenApi(
             ? specification.basePath
             : window.document.baseURI
 
-        const resolvedUrl = new URL(url, baseUrl).href
+        const resolvedUrl = new URL(normalizeUrl(url), baseUrl).href
 
         const handler = rest[method](
           resolvedUrl,
@@ -71,6 +71,15 @@ export async function fromOpenApi(
   )
 
   return handlers
+}
+
+function normalizeUrl(url: string): string {
+  return (
+    url
+      // Replace OpenAPI style parameters (/pet/{petId})
+      // with the common path parameters (/pet/:petId).
+      .replace(/\{(.+?)\}/g, ':$1')
+  )
 }
 
 function createResponseResolver(
