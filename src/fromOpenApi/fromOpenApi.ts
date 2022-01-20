@@ -86,16 +86,38 @@ function createResponseResolver(
   operation: OpenAPIV2.OperationObject | OpenAPIV3.OperationObject,
 ): ResponseResolver<MockedRequest, RestContext> {
   return (req, res, ctx) => {
-    const status = req.url.searchParams.get('response') || '200'
-    const response = operation.responses?.[status] as
-      | OpenAPIV2.ResponseObject
-      | OpenAPIV3.ResponseObject
-      | undefined
-
-    if (!response) {
+    // Operations that do not describe any responses
+    // are treated as not implemented.
+    if (
+      operation.responses == null ||
+      Object.keys(operation.responses || {}).length === 0
+    ) {
       return res(ctx.status(501))
     }
 
+    let response: OpenAPIV3.ResponseObject
+    const explicitResponseStatus = req.url.searchParams.get('response')
+
+    if (explicitResponseStatus) {
+      const explicitResponse = operation.responses[explicitResponseStatus]
+
+      if (!explicitResponse) {
+        return res(ctx.status(501))
+      }
+
+      response = explicitResponse
+    } else {
+      const fallbackResponse =
+        operation.responses['200'] || operation.responses.default
+
+      if (!fallbackResponse) {
+        return res()
+      }
+
+      response = fallbackResponse
+    }
+
+    const status = explicitResponseStatus || '200'
     const transformers: ResponseTransformer[] = []
     transformers.push(ctx.status(Number(status)))
 
