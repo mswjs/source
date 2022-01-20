@@ -61,6 +61,15 @@ describe('string', () => {
     })
   })
 
+  it('supports the "enum" value', () => {
+    const data = evolveJsonSchema({
+      type: 'string',
+      enum: ['active', 'pending', 'stale'],
+    })
+
+    expect(data).toMatch(/^(active|pending|stale)$/)
+  })
+
   it('supports the "uuid" format', () => {
     const json = evolveJsonSchema({
       type: 'object',
@@ -170,6 +179,49 @@ describe('number', () => {
     })
     expect(number).toBeGreaterThanOrEqual(25)
     expect(number).toBeLessThanOrEqual(50)
+  })
+})
+
+describe('integer', () => {
+  it('supports a plain integer', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+    }) as number
+    expect(number.toString()).toMatch(/^\d+\.\d+$/)
+  })
+
+  it('supports the "minimum" option', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+      minimum: 100,
+    })
+    expect(number).toBeGreaterThanOrEqual(100)
+  })
+
+  it('supports the "maximum" option', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+      maximum: 100,
+    })
+    expect(number).toBeLessThanOrEqual(100)
+  })
+
+  it('suports both the "minimum" and "maximum" options', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+      minimum: 100,
+      maximum: 100,
+    })
+    expect(number).toBeGreaterThanOrEqual(100)
+    expect(number).toBeLessThanOrEqual(100)
+  })
+
+  it('supports a "int64" format integer', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+      format: 'int64',
+    }) as number
+    expect(number.toString()).toMatch(/^\d+$/)
   })
 })
 

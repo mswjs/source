@@ -178,16 +178,36 @@ export function evolveJsonSchema(
         }
       }
 
+      // Use a random value from the specified enums list.
+      if (schema.enum) {
+        const enumIndex = datatype.number({
+          min: 0,
+          max: schema.enum.length - 1,
+        })
+
+        return schema.enum[enumIndex]
+      }
+
       const value = datatype.string(schema.minLength)
       return value.slice(0, schema.maxLength)
     }
 
     case 'integer': {
-      const value = datatype.float({
-        min: schema.minimum,
-        max: schema.maximum,
-      })
-      return value
+      switch (schema.format) {
+        case 'int64': {
+          return datatype.number({
+            min: schema.minimum,
+            max: schema.maximum,
+          })
+        }
+
+        default: {
+          return datatype.float({
+            min: schema.minimum,
+            max: schema.maximum,
+          })
+        }
+      }
     }
 
     case 'boolean': {
