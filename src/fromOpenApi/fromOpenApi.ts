@@ -194,6 +194,8 @@ export function evolveJsonSchema(
 
     case 'integer': {
       switch (schema.format) {
+        case 'int16':
+        case 'int32':
         case 'int64': {
           return datatype.number({
             min: schema.minimum,
