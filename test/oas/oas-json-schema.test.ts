@@ -73,3 +73,103 @@ it('supports JSON Schema object', async () => {
     expect(typeof item.price).toEqual('number')
   })
 })
+
+it('normalizes path parameters', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/pet/{petId}': {
+          get: { responses: { 200: {} } },
+        },
+        '/pet/{petId}/{foodId}': {
+          get: { responses: { 200: {} } },
+        },
+      },
+    }),
+  )
+
+  expect(handlers[0].info.header).toEqual('GET http://localhost/pet/:petId')
+  expect(handlers[1].info.header).toEqual(
+    'GET http://localhost/pet/:petId/:foodId',
+  )
+})
+
+it('treats operations without "responses" as not implemented (501)', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/no-responses': {
+          get: {},
+        },
+        '/empty-responses': {
+          get: { responses: null },
+        },
+      },
+    }),
+  )
+
+  await withHandlers(handlers, () =>
+    fetch('http://localhost/no-responses'),
+  ).then((res) => {
+    expect(res.status).toEqual(501)
+  })
+
+  await withHandlers(handlers, () =>
+    fetch('http://localhost/empty-responses'),
+  ).then((res) => {
+    expect(res.status).toEqual(501)
+  })
+})
+
+it('responds with an empty 200 to a request without explicit 200 response', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/no-200': {
+          get: {
+            responses: {
+              400: { description: 'Invalid request' },
+              403: { description: 'Not authorized' },
+            },
+          },
+        },
+      },
+    }),
+  )
+
+  const res = await withHandlers(handlers, () =>
+    fetch('http://localhost/no-200'),
+  )
+  expect(res.status).toEqual(200)
+  expect(await res.text()).toEqual('')
+})
+
+it('responds with 501 to a request for explicit non-existing response status', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/resource': {
+          get: {
+            responses: {
+              400: { description: 'Invalid request' },
+            },
+          },
+        },
+      },
+    }),
+  )
+
+  await withHandlers(handlers, () =>
+    fetch('http://localhost/resource?response=200'),
+  ).then(async (res) => {
+    expect(res.status).toEqual(501)
+    expect(await res.text()).toEqual('')
+  })
+
+  await withHandlers(handlers, () =>
+    fetch('http://localhost/resource?response=404'),
+  ).then(async (res) => {
+    expect(res.status).toEqual(501)
+    expect(await res.text()).toEqual('')
+  })
+})

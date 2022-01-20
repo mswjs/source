@@ -2,141 +2,95 @@ import { evolveJsonSchema } from '../../src/fromOpenApi/fromOpenApi'
 
 describe('string', () => {
   it('supports a plain string value', () => {
-    const data = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        firstName: {
-          type: 'string',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
     })
-    expect(data).toEqual({
-      firstName: expect.stringMatching(/^\S+$/),
-    })
+    expect(value).toMatch(/^\S+$/)
   })
 
   it('supports the "example" value', () => {
-    const data = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        firstName: {
-          type: 'string',
-          example: 'John',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      example: 'John',
     })
-    expect(data).toEqual({
-      // Explicit examples are always used as-is.
-      firstName: 'John',
-    })
+    // Explicit examples are always used as-is.
+    expect(value).toEqual('John')
   })
 
   it('supports "minLength"', () => {
-    const data = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        email: {
-          type: 'string',
-          minLength: 10,
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      minLength: 10,
     })
-    expect(data).toEqual({
-      email: expect.stringMatching(/^\S{10,}$/),
-    })
+    expect(value).toMatch(/^\S{10,}$/)
   })
 
   it('supports the "pattern" expression', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        otp: {
-          type: 'string',
-          pattern: '^[0-9]{3}-[0-9]{3}$',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      pattern: '^[0-9]{3}-[0-9]{3}$',
     })
-    expect(json).toEqual({
-      otp: expect.stringMatching(/^[0-9]{3}-[0-9]{3}$/),
+    expect(value).toMatch(/^[0-9]{3}-[0-9]{3}$/)
+  })
+
+  it('supports the "enum" value', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      enum: ['active', 'pending', 'stale'],
     })
+
+    expect(value).toMatch(/^(active|pending|stale)$/)
   })
 
   it('supports the "uuid" format', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        id: {
-          type: 'string',
-          format: 'uuid',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'uuid',
     })
-    expect(json).toEqual({
-      id: expect.stringMatching(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-      ),
-    })
+    expect(value).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    )
   })
 
   it('supports the "email" format', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        email: {
-          type: 'string',
-          format: 'email',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'email',
     })
-    expect(json).toEqual({
-      email: expect.stringMatching(/^\S+@\S+\.\w+$/),
-    })
+    expect(value).toMatch(/^\S+@\S+\.\w+$/)
   })
 
   it('supports the "password" format', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        password: {
-          type: 'string',
-          format: 'password',
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'password',
     })
-    expect(json).toEqual({
-      password: expect.stringMatching(/^\S+$/),
+    expect(value).toMatch(/^\S+$/)
+  })
+
+  it('supports the "date-time" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'date-time',
     })
+    expect(value).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+?Z$/)
   })
 })
 
 describe('boolean', () => {
   it('supports a plain boolean value', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        isNewUser: {
-          type: 'boolean',
-        },
-      },
-    }) as { isNewUser: boolean }
-
-    expect(Object.keys(json)).toEqual(['isNewUser'])
-    expect(typeof json.isNewUser).toEqual('boolean')
+    const value = evolveJsonSchema({
+      type: 'boolean',
+    }) as boolean
+    expect(typeof value).toEqual('boolean')
   })
 
   it('supports the "example" value', () => {
-    const json = evolveJsonSchema({
-      type: 'object',
-      properties: {
-        subscribed: {
-          type: 'boolean',
-          example: true,
-        },
-      },
+    const value = evolveJsonSchema({
+      type: 'boolean',
+      example: true,
     })
-    expect(json).toEqual({
-      subscribed: true,
-    })
+    expect(value).toEqual(true)
   })
 })
 
@@ -170,6 +124,49 @@ describe('number', () => {
     })
     expect(number).toBeGreaterThanOrEqual(25)
     expect(number).toBeLessThanOrEqual(50)
+  })
+})
+
+describe('integer', () => {
+  it('supports a plain integer', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+    }) as number
+    expect(number.toString()).toMatch(/^\d+\.\d+$/)
+  })
+
+  it('supports the "minimum" option', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+      minimum: 100,
+    })
+    expect(number).toBeGreaterThanOrEqual(100)
+  })
+
+  it('supports the "maximum" option', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+      maximum: 100,
+    })
+    expect(number).toBeLessThanOrEqual(100)
+  })
+
+  it('suports both the "minimum" and "maximum" options', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+      minimum: 100,
+      maximum: 100,
+    })
+    expect(number).toBeGreaterThanOrEqual(100)
+    expect(number).toBeLessThanOrEqual(100)
+  })
+
+  it('supports a "int64" format integer', () => {
+    const number = evolveJsonSchema({
+      type: 'integer',
+      format: 'int64',
+    }) as number
+    expect(number.toString()).toMatch(/^\d+$/)
   })
 })
 
@@ -289,7 +286,7 @@ describe('object', () => {
   })
 
   it('supports a nested object', () => {
-    const data = evolveJsonSchema({
+    const value = evolveJsonSchema({
       type: 'object',
       properties: {
         firstName: {
@@ -306,23 +303,55 @@ describe('object', () => {
       },
     }) as { firstName: string; nested: { isNested: boolean } }
 
-    expect(Object.keys(data)).toEqual(['firstName', 'nested'])
-    expect(data.firstName).toMatch(/^\S+$/)
-    expect(Object.keys(data.nested)).toEqual(['isNested'])
-    expect(typeof data.nested.isNested).toEqual('boolean')
+    expect(Object.keys(value)).toEqual(['firstName', 'nested'])
+    expect(value.firstName).toMatch(/^\S+$/)
+    expect(Object.keys(value.nested)).toEqual(['isNested'])
+    expect(typeof value.nested.isNested).toEqual('boolean')
   })
 
   it('supports the "example" value', () => {
-    const data = evolveJsonSchema({
+    const value = evolveJsonSchema({
       type: 'object',
       example: {
         id: 'abc-123',
         firstName: 'John',
       },
     })
-    expect(data).toEqual({
+    expect(value).toEqual({
       id: 'abc-123',
       firstName: 'John',
     })
+  })
+
+  it('supports "additionalProperties"', () => {
+    const value = evolveJsonSchema({
+      type: 'object',
+      additionalProperties: true,
+    }) as Record<string, string>
+
+    const keys = Object.keys(value)
+    if (keys.length > 0) {
+      expect(keys).toEqual(expect.arrayContaining([expect.any(String)]))
+      expect(Object.values(value)).toEqual(
+        expect.arrayContaining([expect.anything()]),
+      )
+    }
+  })
+
+  it('supports "additionalProperties" with a strict type', () => {
+    const value = evolveJsonSchema({
+      type: 'object',
+      additionalProperties: {
+        type: 'string',
+      },
+    }) as Record<string, string>
+
+    const keys = Object.keys(value)
+    if (keys.length > 0) {
+      expect(keys).toEqual(expect.arrayContaining([expect.any(String)]))
+      expect(Object.values(value)).toEqual(
+        expect.arrayContaining([expect.any(String)]),
+      )
+    }
   })
 })

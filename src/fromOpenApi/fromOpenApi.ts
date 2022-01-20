@@ -1,5 +1,5 @@
 import { invariant } from 'outvariant'
-import { datatype, internet } from 'faker'
+import { datatype, internet, random } from 'faker'
 import { randexp } from 'randexp'
 import {
   RestContext,
@@ -55,7 +55,7 @@ export async function fromOpenApi(
             ? specification.basePath
             : window.document.baseURI
 
-        const resolvedUrl = new URL(url, baseUrl).href
+        const resolvedUrl = new URL(normalizeUrl(url), baseUrl).href
 
         const handler = rest[method](
           resolvedUrl,
@@ -73,20 +73,51 @@ export async function fromOpenApi(
   return handlers
 }
 
+function normalizeUrl(url: string): string {
+  return (
+    url
+      // Replace OpenAPI style parameters (/pet/{petId})
+      // with the common path parameters (/pet/:petId).
+      .replace(/\{(.+?)\}/g, ':$1')
+  )
+}
+
 function createResponseResolver(
   operation: OpenAPIV2.OperationObject | OpenAPIV3.OperationObject,
 ): ResponseResolver<MockedRequest, RestContext> {
   return (req, res, ctx) => {
-    const status = req.url.searchParams.get('response') || '200'
-    const response = operation.responses?.[status] as
-      | OpenAPIV2.ResponseObject
-      | OpenAPIV3.ResponseObject
-      | undefined
-
-    if (!response) {
+    // Operations that do not describe any responses
+    // are treated as not implemented.
+    if (
+      operation.responses == null ||
+      Object.keys(operation.responses || {}).length === 0
+    ) {
       return res(ctx.status(501))
     }
 
+    let response: OpenAPIV3.ResponseObject
+    const explicitResponseStatus = req.url.searchParams.get('response')
+
+    if (explicitResponseStatus) {
+      const explicitResponse = operation.responses[explicitResponseStatus]
+
+      if (!explicitResponse) {
+        return res(ctx.status(501))
+      }
+
+      response = explicitResponse
+    } else {
+      const fallbackResponse =
+        operation.responses['200'] || operation.responses.default
+
+      if (!fallbackResponse) {
+        return res()
+      }
+
+      response = fallbackResponse
+    }
+
+    const status = explicitResponseStatus || '200'
     const transformers: ResponseTransformer[] = []
     transformers.push(ctx.status(Number(status)))
 
@@ -167,6 +198,20 @@ export function evolveJsonSchema(
         case 'password': {
           return internet.password()
         }
+
+        case 'date-time': {
+          return datatype.datetime(schema.maximum).toISOString()
+        }
+      }
+
+      // Use a random value from the specified enums list.
+      if (schema.enum) {
+        const enumIndex = datatype.number({
+          min: 0,
+          max: schema.enum.length - 1,
+        })
+
+        return schema.enum[enumIndex]
       }
 
       const value = datatype.string(schema.minLength)
@@ -174,11 +219,23 @@ export function evolveJsonSchema(
     }
 
     case 'integer': {
-      const value = datatype.float({
-        min: schema.minimum,
-        max: schema.maximum,
-      })
-      return value
+      switch (schema.format) {
+        case 'int16':
+        case 'int32':
+        case 'int64': {
+          return datatype.number({
+            min: schema.minimum,
+            max: schema.maximum,
+          })
+        }
+
+        default: {
+          return datatype.float({
+            min: schema.minimum,
+            max: schema.maximum,
+          })
+        }
+      }
     }
 
     case 'boolean': {
@@ -229,11 +286,13 @@ export function evolveJsonSchema(
         return schema.example
       }
 
-      // Otherwise evolve the properties to the value object.
+      const json: Record<string, unknown> = {}
+
+      // Support explicit "properties".
       if (schema.properties) {
-        const json = Object.entries(schema.properties).reduce<
-          Record<string, unknown>
-        >((json, [key, propertyDefinition]) => {
+        for (const [key, propertyDefinition] of Object.entries(
+          schema.properties,
+        )) {
           invariant(
             !('$ref' in propertyDefinition),
             'Failed to generate mock from the schema property definition (%j): found unresolved reference.',
@@ -241,20 +300,48 @@ export function evolveJsonSchema(
           )
 
           const value = evolveJsonSchema(propertyDefinition)
-
           if (typeof value !== 'undefined') {
             json[key] = value
           }
+        }
+      }
+
+      // Support "additionalProperties".
+      if (schema.additionalProperties) {
+        const additionalPropertiesSchema = schema.additionalProperties
+
+        if (additionalPropertiesSchema === true) {
+          repeat(0, 4, () => {
+            const propertyName = random.word().toLowerCase()
+            json[propertyName] = datatype.string()
+          })
 
           return json
-        }, {})
+        }
 
-        return json
+        invariant(
+          !('$ref' in additionalPropertiesSchema),
+          'Failed to generate mock from the "additionalProperties" schema: found unresolved reference.',
+        )
+
+        repeat(0, 4, () => {
+          const propertyName = random.word().toLowerCase()
+          json[propertyName] = evolveJsonSchema(additionalPropertiesSchema)
+        })
       }
+
+      return json
     }
   }
 }
 
 function toString(value: unknown): string {
   return typeof value !== 'string' ? JSON.stringify(value) : value
+}
+
+function repeat(minTimes: number, maxTimes: number, callback: () => void) {
+  const count = datatype.number({ min: minTimes, max: maxTimes })
+  for (let i = 0; i < count; i++) {
+    callback()
+  }
 }
