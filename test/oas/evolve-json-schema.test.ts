@@ -68,6 +68,14 @@ describe('string', () => {
     expect(value).toMatch(/^\S+$/)
   })
 
+  it('supports the "date" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'date',
+    })
+    expect(value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+  })
+
   it('supports the "date-time" format', () => {
     const value = evolveJsonSchema({
       type: 'string',

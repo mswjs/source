@@ -221,6 +221,13 @@ export function evolveJsonSchema(
           return internet.password()
         }
 
+        case 'date': {
+          return datatype
+            .datetime(schema.maximum)
+            .toISOString()
+            .replace(/T.+$/g, '')
+        }
+
         case 'date-time': {
           return datatype.datetime(schema.maximum).toISOString()
         }
