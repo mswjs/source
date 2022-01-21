@@ -11,6 +11,7 @@ import {
 } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import * as SwaggerParser from '@apidevtools/swagger-parser'
+import { toBase64 } from './utils/base64'
 
 const parser = new SwaggerParser()
 
@@ -204,6 +205,10 @@ export function evolveJsonSchema(
       }
 
       switch (schema.format?.toLowerCase()) {
+        case 'byte': {
+          return toBase64(datatype.string())
+        }
+
         case 'uuid': {
           return datatype.uuid()
         }

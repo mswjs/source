@@ -83,6 +83,14 @@ describe('string', () => {
     })
     expect(value).toMatch(/^https?:\/\/\w+\.\w+?$/)
   })
+
+  it('supports the "byte" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'byte',
+    })
+    expect(value).toMatch(/^\w+==$/)
+  })
 })
 
 describe('boolean', () => {
