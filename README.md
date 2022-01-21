@@ -215,12 +215,18 @@ import specification from './v2.json'
 const handlers = fromOpenApi(specification)
 ```
 
-OpenAPI support goes far beyond generating mocks from your schemas. Take a look at the list of features that you can utilize:
+OpenAPI support implies two major features: generating request handlers from the `paths`, and seeding the schema with random, fake data based on the schema types (`string`, `array`, `object`, etc.).
 
-- References support;
-- [Conditional responses](#conditional-responses), accessible on runtime;
-- Randomly generated data based on [JSON Schema types](#json-schema);
-- Coercing request paths without responses as `501 Not Implemented` responses;
+### Custom formats
+
+In addition to the [standard formats](https://swagger.io/docs/specification/data-models/data-types/#format), this library supports the following custom `format` values:
+
+#### `string`
+
+| Format  | Description           |
+| ------- | --------------------- |
+| `uuid`  | Random UUID string.   |
+| `email` | Random email address. |
 
 ### Response body
 
