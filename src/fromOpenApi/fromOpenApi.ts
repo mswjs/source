@@ -219,6 +219,10 @@ export function evolveJsonSchema(
         case 'date-time': {
           return datatype.datetime(schema.maximum).toISOString()
         }
+
+        case 'uri': {
+          return internet.url()
+        }
       }
 
       // Use a random value from the specified enums list.

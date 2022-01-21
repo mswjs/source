@@ -75,6 +75,14 @@ describe('string', () => {
     })
     expect(value).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+?Z$/)
   })
+
+  it('supports the "uri" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'uri',
+    })
+    expect(value).toMatch(/^https?:\/\/\w+\.\w+?$/)
+  })
 })
 
 describe('boolean', () => {
