@@ -11,6 +11,8 @@ import {
 } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import * as SwaggerParser from '@apidevtools/swagger-parser'
+import { toBase64 } from './utils/toBase64'
+import { toBinary } from './utils/toBinary'
 
 const parser = new SwaggerParser()
 
@@ -204,6 +206,19 @@ export function evolveJsonSchema(
       }
 
       switch (schema.format?.toLowerCase()) {
+        case 'byte': {
+          return toBase64(datatype.string())
+        }
+
+        case 'binary': {
+          return toBinary([
+            datatype.number({ min: 0, max: 255 }),
+            datatype.number({ min: 0, max: 255 }),
+            datatype.number({ min: 0, max: 255 }),
+            datatype.number({ min: 0, max: 255 }),
+          ])
+        }
+
         case 'uuid': {
           return datatype.uuid()
         }
@@ -214,6 +229,13 @@ export function evolveJsonSchema(
 
         case 'password': {
           return internet.password()
+        }
+
+        case 'date': {
+          return datatype
+            .datetime(schema.maximum)
+            .toISOString()
+            .replace(/T.+$/g, '')
         }
 
         case 'date-time': {

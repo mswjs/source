@@ -68,6 +68,14 @@ describe('string', () => {
     expect(value).toMatch(/^\S+$/)
   })
 
+  it('supports the "date" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'date',
+    })
+    expect(value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+  })
+
   it('supports the "date-time" format', () => {
     const value = evolveJsonSchema({
       type: 'string',
@@ -82,6 +90,22 @@ describe('string', () => {
       format: 'uri',
     })
     expect(value).toMatch(/^https?:\/\/\w+\.\w+?$/)
+  })
+
+  it('supports the "byte" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'byte',
+    })
+    expect(value).toMatch(/^\w+==$/)
+  })
+
+  it('supports the "binary" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'binary',
+    })
+    expect(value).toMatch(/^\d{1,8} \d{1,8} \d{1,8} \d{1,8}$/)
   })
 })
 
