@@ -11,7 +11,7 @@ import {
 } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import * as SwaggerParser from '@apidevtools/swagger-parser'
-import { toBase64 } from './utils/base64'
+import { toBase64 } from './utils/toBase64'
 
 const parser = new SwaggerParser()
 
