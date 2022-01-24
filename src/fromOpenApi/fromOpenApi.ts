@@ -1,5 +1,6 @@
 import { invariant } from 'outvariant'
 import { datatype, internet, random } from 'faker'
+import { headersToObject } from 'headers-utils'
 import { randexp } from 'randexp'
 import {
   RestContext,
@@ -147,10 +148,23 @@ function createResponseResolver(
     if ('content' in response && response.content != null) {
       let body: unknown
 
-      const explicitContentType = req.url.searchParams.get('type')
-      const contentType = explicitContentType
-        ? explicitContentType
-        : Object.keys(response.content)[0]
+      const requestHeaders = headersToObject(req.headers)
+      const acceptedMimeTypes = ([] as string[]).concat(requestHeaders.accept)
+      const explicitContentType = acceptedMimeTypes[0]
+      const explicitContentTypeRegexp = new RegExp(
+        explicitContentType.replace(/\/+/g, '\\/').replace(/\*/g, '.+?'),
+      )
+
+      const allContentTypes = Object.keys(response.content)
+
+      const contentType =
+        allContentTypes.find((contentType) => {
+          // Find the first declared response content type
+          // that matches the "Accept" request header.
+          // Keep in mind that values like "*/*" and "application/*"
+          // are completely valid.
+          return explicitContentTypeRegexp.test(contentType)
+        }) || allContentTypes[0]
 
       transformers.push(ctx.set('Content-Type', contentType))
 
@@ -167,7 +181,7 @@ function createResponseResolver(
           mediaTypeObject.examples,
         )[0] as OpenAPIV3.ExampleObject
 
-        // Response body must always be string.
+        // Response body must always be a string.
         body = value
       }
       // JSON Schema is populated with random values.

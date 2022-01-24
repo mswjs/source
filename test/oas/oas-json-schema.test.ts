@@ -173,3 +173,53 @@ it('responds with 501 to a request for explicit non-existing response status', a
     expect(await res.text()).toEqual('')
   })
 })
+
+it('respects the "Accept" request header', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/user': {
+          get: {
+            responses: {
+              200: {
+                content: {
+                  'application/json': {
+                    example: { id: 'user-1' },
+                  },
+                  'application/xml': {
+                    example: `<id>xml-1</id>`,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+  )
+
+  // The "Accept" request header with a single value.
+  await withHandlers(handlers, () => {
+    return fetch('http://localhost/user', {
+      headers: {
+        Accept: 'application/xml',
+      },
+    })
+  }).then(async (res) => {
+    expect(res.status).toEqual(200)
+    expect(await res.text()).toEqual(`<id>xml-1</id>`)
+  })
+
+  // The "Accept" request header with multiple values.
+  await withHandlers(handlers, () => {
+    return fetch('http://localhost/user', {
+      headers: {
+        Accept: 'application/json, application/xml',
+      },
+    })
+  }).then(async (res) => {
+    expect(res.status).toEqual(200)
+    // The first MimeType is used for the mocked data.
+    expect(await res.text()).toEqual(`{"id":"user-1"}`)
+  })
+})
