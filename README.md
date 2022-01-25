@@ -346,3 +346,19 @@ const res = await fetch('/user?response=500')
 const json = await res.json()
 // { "code": "ER-1443", "message": "Test message" }
 ```
+
+### Content types
+
+You can control what content types are returned from the mocked response via the `Accept` request header.
+
+For example, if your resource defined both `application/json` and `application/xml` responses, here's how you'd ensure your client gets the XML response from the mock:
+
+```js
+fetch('/resource', {
+  headers: {
+    Accept: 'application/xml',
+  },
+})
+```
+
+> Wildcard values like `*/*` and `application/*` are also supported. When provided, the first response which mime type matches the header would be used as the mocked response.
