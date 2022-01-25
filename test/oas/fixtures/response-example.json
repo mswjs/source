@@ -4,7 +4,7 @@
     "title": "Example specification",
     "version": "1.0.0"
   },
-  "basePath": "http://oas.source.com",
+  "basePath": "https://example.com",
   "paths": {
     "/user": {
       "get": {

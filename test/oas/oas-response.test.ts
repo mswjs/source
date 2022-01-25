@@ -7,7 +7,7 @@ it('supports explicit response example', async () => {
   const handlers = await fromOpenApi(document)
 
   const res = await withHandlers(handlers, () => {
-    return fetch('http://oas.source.com/user')
+    return fetch('https://example.com/user')
   })
 
   expect(res.status).toBe(200)
@@ -24,7 +24,7 @@ it('supports a referenced response example', async () => {
   const handlers = await fromOpenApi(document)
 
   const res = await withHandlers(handlers, () => {
-    return fetch('http://oas.source.com/user')
+    return fetch('https://example.com/user')
   })
 
   expect(res.status).toBe(200)

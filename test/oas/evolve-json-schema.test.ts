@@ -1,4 +1,4 @@
-import { evolveJsonSchema } from '../../src/fromOpenApi/fromOpenApi'
+import { evolveJsonSchema } from '../../src/fromOpenApi/schema/evolve'
 
 describe('string', () => {
   it('supports a plain string value', () => {
