@@ -2,6 +2,7 @@ import { RequestHandler, rest } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import * as SwaggerParser from '@apidevtools/swagger-parser'
 import { createResponseResolver } from './response/createResponseResolver'
+import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl'
 
 const parser = new SwaggerParser()
 
@@ -46,7 +47,7 @@ export async function fromOpenApi(
             ? specification.basePath
             : window.document.baseURI
 
-        const resolvedUrl = new URL(normalizeUrl(url), baseUrl).href
+        const resolvedUrl = new URL(normalizeSwaggerUrl(url), baseUrl).href
 
         const handler = rest[method](
           resolvedUrl,
@@ -62,13 +63,4 @@ export async function fromOpenApi(
   )
 
   return handlers
-}
-
-function normalizeUrl(url: string): string {
-  return (
-    url
-      // Replace OpenAPI style parameters (/pet/{petId})
-      // with the common path parameters (/pet/:petId).
-      .replace(/\{(.+?)\}/g, ':$1')
-  )
 }
