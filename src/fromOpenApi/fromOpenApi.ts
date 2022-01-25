@@ -3,6 +3,8 @@ import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import * as SwaggerParser from '@apidevtools/swagger-parser'
 import { createResponseResolver } from './response/createResponseResolver'
 import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl'
+import { getServers } from './utils/getServers'
+import { joinPaths } from './utils/url'
 
 const parser = new SwaggerParser()
 
@@ -42,19 +44,21 @@ export async function fromOpenApi(
           continue
         }
 
-        const baseUrl =
-          'basePath' in specification
-            ? specification.basePath
-            : window.document.baseURI
+        const serverUrls = getServers(specification)
 
-        const resolvedUrl = new URL(normalizeSwaggerUrl(url), baseUrl).href
+        serverUrls.forEach((baseUrl) => {
+          const path = normalizeSwaggerUrl(url)
+          const requestUrl = isAbsoluteUrl(baseUrl)
+            ? new URL(path, baseUrl).href
+            : joinPaths(path, baseUrl)
 
-        const handler = rest[method](
-          resolvedUrl,
-          createResponseResolver(operation),
-        )
+          const handler = rest[method](
+            requestUrl,
+            createResponseResolver(operation),
+          )
 
-        handlers.push(handler)
+          handlers.push(handler)
+        })
       }
 
       return handlers
@@ -63,4 +67,14 @@ export async function fromOpenApi(
   )
 
   return handlers
+}
+
+//
+function isAbsoluteUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch (error) {
+    return false
+  }
 }
