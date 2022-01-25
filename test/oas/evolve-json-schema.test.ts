@@ -107,6 +107,14 @@ describe('string', () => {
     })
     expect(value).toMatch(/^\d{1,8} \d{1,8} \d{1,8} \d{1,8}$/)
   })
+
+  it('supports the "hostname" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'hostname',
+    })
+    expect(value).toMatch(/^\w+?\.\w{2,}$/)
+  })
 })
 
 describe('boolean', () => {

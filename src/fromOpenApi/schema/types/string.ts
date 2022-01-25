@@ -49,6 +49,10 @@ export function evolveString(schema: OpenAPIV3.SchemaObject): string {
     case 'uri': {
       return internet.url()
     }
+
+    case 'hostname': {
+      return internet.domainName()
+    }
   }
 
   // Use a random value from the specified enums list.
