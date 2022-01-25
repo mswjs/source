@@ -53,6 +53,14 @@ export function evolveString(schema: OpenAPIV3.SchemaObject): string {
     case 'hostname': {
       return internet.domainName()
     }
+
+    case 'ipv4': {
+      return internet.ip()
+    }
+
+    case 'ipv6': {
+      return internet.ipv6()
+    }
   }
 
   // Use a random value from the specified enums list.

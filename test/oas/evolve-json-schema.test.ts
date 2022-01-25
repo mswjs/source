@@ -115,6 +115,22 @@ describe('string', () => {
     })
     expect(value).toMatch(/^\w+?\.\w{2,}$/)
   })
+
+  it('supports the "ipv4" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'ipv4',
+    })
+    expect(value).toMatch(/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/)
+  })
+
+  it('supports the "ipv6" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'ipv6',
+    })
+    expect(value).toMatch(/^([a-f0-9:]+:+)+[a-f0-9]+$/)
+  })
 })
 
 describe('boolean', () => {
