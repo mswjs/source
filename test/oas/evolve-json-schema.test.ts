@@ -131,6 +131,14 @@ describe('string', () => {
     })
     expect(value).toMatch(/^([a-f0-9:]+:+)+[a-f0-9]+$/)
   })
+
+  it('supports the "creditcard" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'creditcard',
+    })
+    expect(value).toMatch(/[0-9]+(-)?/)
+  })
 })
 
 describe('boolean', () => {
