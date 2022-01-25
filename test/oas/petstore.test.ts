@@ -2,6 +2,7 @@ import fetch from 'cross-fetch'
 import { RequestHandler } from 'msw'
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { withHandlers } from '../../test/support/withHandlers'
+
 const petstoreSpecification = require('./fixtures/petstore.json')
 
 let handlers: RequestHandler[]
@@ -51,7 +52,7 @@ const entities = {
 
 it('POST /pet', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/pet', { method: 'POST' })
+    return fetch('http://localhost/v3/pet', { method: 'POST' })
   })
 
   expect(res.status).toEqual(200)
@@ -61,7 +62,7 @@ it('POST /pet', async () => {
 
 it('PUT /pet', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/pet', { method: 'PUT' })
+    return fetch('http://localhost/v3/pet', { method: 'PUT' })
   })
 
   expect(res.status).toEqual(200)
@@ -71,7 +72,7 @@ it('PUT /pet', async () => {
 
 it('GET /pet/findByStatus', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/pet/findByStatus')
+    return fetch('http://localhost/v3/pet/findByStatus')
   })
 
   expect(res.status).toEqual(200)
@@ -83,7 +84,7 @@ it('GET /pet/findByStatus', async () => {
 
 it('GET /pet/findByTags', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/pet/findByTags')
+    return fetch('http://localhost/v3/pet/findByTags')
   })
 
   expect(res.status).toEqual(200)
@@ -95,7 +96,7 @@ it('GET /pet/findByTags', async () => {
 
 it('GET /pet/{petId}', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/pet/abc-123')
+    return fetch('http://localhost/v3/pet/abc-123')
   })
 
   expect(res.status).toEqual(200)
@@ -105,7 +106,7 @@ it('GET /pet/{petId}', async () => {
 
 it('POST /pet/{petId}', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/pet/abc-123', { method: 'POST' })
+    return fetch('http://localhost/v3/pet/abc-123', { method: 'POST' })
   })
 
   expect(res.status).toEqual(200)
@@ -115,7 +116,7 @@ it('POST /pet/{petId}', async () => {
 
 it('DELETE /pet/{petId}', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/pet/abc-123', { method: 'DELETE' })
+    return fetch('http://localhost/v3/pet/abc-123', { method: 'DELETE' })
   })
 
   // The "DELETE /pet/{petId}" does not describe a 200 response.
@@ -126,9 +127,11 @@ it('DELETE /pet/{petId}', async () => {
   expect(await res.text()).toEqual('')
 })
 
-it('POST http://localhost/pet/:petId/uploadImage', async () => {
+it('POST http://localhost/v3/pet/:petId/uploadImage', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/pet/abc-123/uploadImage', { method: 'POST' })
+    return fetch('http://localhost/v3/pet/abc-123/uploadImage', {
+      method: 'POST',
+    })
   })
 
   expect(res.status).toEqual(200)
@@ -145,7 +148,7 @@ it('POST http://localhost/pet/:petId/uploadImage', async () => {
  */
 it('GET /store/inventory', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/store/inventory')
+    return fetch('http://localhost/v3/store/inventory')
   })
 
   expect(res.status).toEqual(200)
@@ -168,7 +171,7 @@ it('GET /store/inventory', async () => {
 
 it('POST /store/order', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/store/order', { method: 'POST' })
+    return fetch('http://localhost/v3/store/order', { method: 'POST' })
   })
 
   expect(res.status).toEqual(200)
@@ -178,7 +181,7 @@ it('POST /store/order', async () => {
 
 it('GET /store/order/{orderId}', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/store/order/abc-123')
+    return fetch('http://localhost/v3/store/order/abc-123')
   })
 
   expect(res.status).toEqual(200)
@@ -191,7 +194,7 @@ it('GET /store/order/{orderId}', async () => {
  */
 it('POST /user', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/user', { method: 'POST' })
+    return fetch('http://localhost/v3/user', { method: 'POST' })
   })
 
   expect(res.status).toEqual(200)
@@ -201,7 +204,7 @@ it('POST /user', async () => {
 
 it('POST /user/createWithList', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/user/createWithList', { method: 'POST' })
+    return fetch('http://localhost/v3/user/createWithList', { method: 'POST' })
   })
 
   expect(res.status).toEqual(200)
@@ -211,7 +214,7 @@ it('POST /user/createWithList', async () => {
 
 it('GET /user/login', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/user/login')
+    return fetch('http://localhost/v3/user/login')
   })
 
   expect(res.status).toEqual(200)
@@ -221,7 +224,7 @@ it('GET /user/login', async () => {
 
 it('GET /user/logout', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/user/logout')
+    return fetch('http://localhost/v3/user/logout')
   })
 
   expect(res.status).toEqual(200)
@@ -231,7 +234,7 @@ it('GET /user/logout', async () => {
 
 it('GET /user/:username', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/user/john-james')
+    return fetch('http://localhost/v3/user/john-james')
   })
 
   expect(res.status).toEqual(200)
@@ -241,7 +244,7 @@ it('GET /user/:username', async () => {
 
 it('PUT /user/:username', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/user/john-james', { method: 'PUT' })
+    return fetch('http://localhost/v3/user/john-james', { method: 'PUT' })
   })
 
   expect(res.status).toEqual(200)
@@ -251,7 +254,7 @@ it('PUT /user/:username', async () => {
 
 it('DELETE /user/:username', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/user/john-james', { method: 'DELETE' })
+    return fetch('http://localhost/v3/user/john-james', { method: 'DELETE' })
   })
 
   expect(res.status).toEqual(200)

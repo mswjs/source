@@ -88,10 +88,8 @@ it('normalizes path parameters', async () => {
     }),
   )
 
-  expect(handlers[0].info.header).toEqual('GET http://localhost/pet/:petId')
-  expect(handlers[1].info.header).toEqual(
-    'GET http://localhost/pet/:petId/:foodId',
-  )
+  expect(handlers[0].info.header).toEqual('GET /pet/:petId')
+  expect(handlers[1].info.header).toEqual('GET /pet/:petId/:foodId')
 })
 
 it('treats operations without "responses" as not implemented (501)', async () => {
