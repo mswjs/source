@@ -65,6 +65,10 @@ export function evolveString(schema: OpenAPIV3.SchemaObject): string {
     case 'creditcard': {
       return finance.creditCardNumber()
     }
+
+    case 'hexcolor': {
+      return internet.color()
+    }
   }
 
   // Use a random value from the specified enums list.

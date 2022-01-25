@@ -139,6 +139,14 @@ describe('string', () => {
     })
     expect(value).toMatch(/[0-9]+(-)?/)
   })
+
+  it('supports the "hexcolor" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'hexcolor',
+    })
+    expect(value).toMatch(/^#[a-f0-9]{6}$/)
+  })
 })
 
 describe('boolean', () => {
