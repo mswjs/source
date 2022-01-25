@@ -217,6 +217,38 @@ const handlers = fromOpenApi(specification)
 
 OpenAPI support implies two major features: generating request handlers from the `paths`, and seeding the schema with random, fake data based on the schema types (`string`, `array`, `object`, etc.).
 
+### Base path
+
+This library respects the [base paths](https://swagger.io/docs/specification/api-host-and-base-path/) when generating request handlers URLs.
+
+Take a look at the following OpenAPI 3.0 specification as an example:
+
+```json
+{
+  "openapi": "3.0.0",
+  "servers": [
+    { "url": "https://api.github.com" },
+    { "url": "https://api.github.com/v2" }
+  ],
+  "paths": {
+    "/user": {
+      "get": {
+        /* Response specification */
+      }
+    }
+  }
+}
+```
+
+The following request handlers will be generated, respecting the `servers`:
+
+```
+- GET https://api.github.com/user
+- GET https://api.github.com/v2/user
+```
+
+> Note that both request handlers will have the same resolver as defined per `paths['/user'].get`.
+
 ### Custom formats
 
 In addition to the [standard formats](https://swagger.io/docs/specification/data-models/data-types/#format), this library supports the following custom `format` values:
