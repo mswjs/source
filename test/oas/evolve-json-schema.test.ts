@@ -107,6 +107,54 @@ describe('string', () => {
     })
     expect(value).toMatch(/^\d{1,8} \d{1,8} \d{1,8} \d{1,8}$/)
   })
+
+  it('supports the "hostname" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'hostname',
+    })
+    expect(value).toMatch(/^\w+?\.\w{2,}$/)
+  })
+
+  it('supports the "ipv4" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'ipv4',
+    })
+    expect(value).toMatch(/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/)
+  })
+
+  it('supports the "ipv6" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'ipv6',
+    })
+    expect(value).toMatch(/^([a-f0-9:]+:+)+[a-f0-9]+$/)
+  })
+
+  it('supports the "creditcard" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'creditcard',
+    })
+    expect(value).toMatch(/[0-9]+(-)?/)
+  })
+
+  it('supports the "hexcolor" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'hexcolor',
+    })
+    expect(value).toMatch(/^#[a-f0-9]{6}$/)
+  })
+
+  it('supports the "mac" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'mac',
+    })
+    expect(value).toMatch(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
+  })
 })
 
 describe('boolean', () => {

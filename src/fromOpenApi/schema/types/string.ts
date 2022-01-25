@@ -1,4 +1,4 @@
-import { datatype, internet } from 'faker'
+import { datatype, internet, finance } from 'faker'
 import { OpenAPIV3 } from 'openapi-types'
 import { randexp } from 'randexp'
 import { toBase64 } from '../../utils/toBase64'
@@ -48,6 +48,30 @@ export function evolveString(schema: OpenAPIV3.SchemaObject): string {
 
     case 'uri': {
       return internet.url()
+    }
+
+    case 'hostname': {
+      return internet.domainName()
+    }
+
+    case 'ipv4': {
+      return internet.ip()
+    }
+
+    case 'ipv6': {
+      return internet.ipv6()
+    }
+
+    case 'creditcard': {
+      return finance.creditCardNumber()
+    }
+
+    case 'hexcolor': {
+      return internet.color()
+    }
+
+    case 'mac': {
+      return internet.mac()
     }
   }
 

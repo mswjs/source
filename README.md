@@ -253,12 +253,17 @@ The following request handlers will be generated, respecting the `servers`:
 
 In addition to the [standard formats](https://swagger.io/docs/specification/data-models/data-types/#format), this library supports the following custom `format` values:
 
-#### `string`
+#### string
 
-| Format  | Description           |
-| ------- | --------------------- |
-| `uuid`  | Random UUID string.   |
-| `email` | Random email address. |
+- `uuid`
+- `email`
+- `password`
+- `hostname`
+- `ipv4`
+- `ipv6`
+- `hexcolor`
+- `creditcard`
+- `mac`
 
 ### Response body
 
