@@ -97,7 +97,7 @@ describe('string', () => {
       type: 'string',
       format: 'byte',
     })
-    expect(value).toMatch(/^\w+==$/)
+    expect(value).toMatch(/^.+?==$/)
   })
 
   it('supports the "binary" format', () => {
