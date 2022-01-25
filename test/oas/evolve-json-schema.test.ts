@@ -147,6 +147,14 @@ describe('string', () => {
     })
     expect(value).toMatch(/^#[a-f0-9]{6}$/)
   })
+
+  it('supports the "mac" format', () => {
+    const value = evolveJsonSchema({
+      type: 'string',
+      format: 'mac',
+    })
+    expect(value).toMatch(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
+  })
 })
 
 describe('boolean', () => {

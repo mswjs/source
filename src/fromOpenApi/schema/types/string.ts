@@ -69,6 +69,10 @@ export function evolveString(schema: OpenAPIV3.SchemaObject): string {
     case 'hexcolor': {
       return internet.color()
     }
+
+    case 'mac': {
+      return internet.mac()
+    }
   }
 
   // Use a random value from the specified enums list.
