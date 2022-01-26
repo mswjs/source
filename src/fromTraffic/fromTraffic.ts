@@ -9,14 +9,15 @@ import {
   ResponseFunction,
   ResponseTransformer,
   ResponseComposition,
+  DefaultRequestBody,
 } from 'msw'
 import { decodeBase64String } from './utils/decodeBase64String'
 
 export type MapEntryFn = (entry: Entry) => Entry | undefined
 
 type ResponseProducer = (
-  res: ResponseComposition<unknown>,
-  transformers: ResponseTransformer<unknown>[],
+  res: ResponseComposition<DefaultRequestBody>,
+  transformers: ResponseTransformer<DefaultRequestBody>[],
 ) => ReturnType<ResponseFunction>
 
 const defaultResponseProducer: ResponseProducer = (res, transformers) => {
