@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "module": "esnext",
+    "target": "ES2015",
     "strict": true,
     "allowJs": false,
     "moduleResolution": "node",
