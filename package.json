@@ -20,7 +20,7 @@
     "har:fixture": "ts-node test/traffic/fixtures/requests/command.ts",
     "build": "yarn lint && tsup src/index.ts --format cjs,esm --out-dir lib --dts --clean",
     "test": "jest",
-    "prepublishOnly": "yarn build && yarn test:lib && yarn test"
+    "prepublishOnly": "yarn test && yarn build"
   },
   "files": [
     "lib",
