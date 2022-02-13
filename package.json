@@ -15,10 +15,11 @@
   "author": "Artem Zakharchenko <kettanaito@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "tsc -w",
+    "start": "yarn build --watch",
     "lint": "eslint ./{src,test}/**/*.ts",
     "har:fixture": "ts-node test/traffic/fixtures/requests/command.ts",
-    "build": "yarn lint && tsup src/index.ts --format cjs,esm --out-dir lib --dts --clean",
+    "prebuild": "yarn lint",
+    "build": "tsup src/index.ts --format cjs,esm --out-dir lib --dts --clean",
     "test": "jest",
     "prepublishOnly": "yarn test && yarn build"
   },
