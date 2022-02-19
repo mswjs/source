@@ -1,12 +1,10 @@
 import { RequestHandler, rest } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
-import * as SwaggerParser from '@apidevtools/swagger-parser'
+import SwaggerParser from '@apidevtools/swagger-parser'
 import { createResponseResolver } from './response/createResponseResolver'
 import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl'
 import { getServers } from './utils/getServers'
 import { joinPaths } from './utils/url'
-
-const parser = new SwaggerParser()
 
 /**
  * Generates request handlers from the given OpenAPI V2/V3 document.
@@ -14,7 +12,7 @@ const parser = new SwaggerParser()
 export async function fromOpenApi(
   document: string | OpenAPIV3.Document | OpenAPIV2.Document,
 ): Promise<RequestHandler[]> {
-  const specification = await parser.dereference(document)
+  const specification = await SwaggerParser.dereference(document)
 
   const handlers = Object.entries(specification.paths).reduce<RequestHandler[]>(
     (
