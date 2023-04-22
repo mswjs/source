@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="source-logo.png" width="64" alt="Source Logo" />
+  <img src="source-logo.png" width="100" alt="Source Logo" />
 </p>
 
 <h1 align="center">Source</h1>
