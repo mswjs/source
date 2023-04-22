@@ -1,16 +1,18 @@
-# `@mswjs/source`
+<p align="center">
+  <img src="source-logo.png" width="100" alt="Source Logo" />
+</p>
 
-A library that allows you to generate request handlers for [Mock Service Worker](https://github.com/mswjs/msw) (MSW) from various sources (HAR files, OpenAPI specification, runtime).
+<h1 align="center">Source</h1>
+
+Generate request handlers for [Mock Service Worker](https://github.com/mswjs/msw) from various sources (HAR files, OpenAPI specification, runtime).
 
 ## Install
 
 ```sh
-$ npm install @mswjs/source -D
-# or
-$ yarn add @mswjs/source -D
+npm install @mswjs/source --save-dev
 ```
 
-## Usage
+## Use
 
 This library is meant to generate [request handlers](https://mswjs.io/docs/basics/request-handler)—functions that describe which requests to intercept and how to respond to them. Once you got the handlers from the [source type](#source-types) of your choice, provide them to Mock Service Worker to set up API mocking.
 
