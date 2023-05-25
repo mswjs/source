@@ -73,10 +73,12 @@
     "@apidevtools/swagger-parser": "^10.0.2",
     "@types/faker": "^5.5.9",
     "@types/har-format": "^1.2.7",
+    "@types/set-cookie-parser": "^2.4.2",
     "faker": "5.x",
     "headers-utils": "^3.0.2",
     "openapi-types": "^7.2.3",
     "outvariant": "^1.2.1",
-    "randexp": "^0.5.3"
+    "randexp": "^0.5.3",
+    "set-cookie-parser": "^2.6.0"
   }
 }
