@@ -13,7 +13,6 @@
   },
   "repository": "git@github.com:mswjs/source.git",
   "author": "Artem Zakharchenko <kettanaito@gmail.com>",
-  "license": "MIT",
   "scripts": {
     "start": "yarn build --watch",
     "lint": "eslint ./{src,test}/**/*.ts",
