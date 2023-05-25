@@ -14,13 +14,13 @@
   "repository": "git@github.com:mswjs/source.git",
   "author": "Artem Zakharchenko <kettanaito@gmail.com>",
   "scripts": {
-    "start": "yarn build --watch",
+    "start": "pnpm build --watch",
     "lint": "eslint ./{src,test}/**/*.ts",
     "har:fixture": "ts-node test/traffic/fixtures/requests/command.ts",
-    "prebuild": "yarn lint",
+    "prebuild": "pnpm lint",
     "build": "tsup src/index.ts --format cjs,esm --out-dir lib --dts --clean",
     "test": "jest",
-    "prepublishOnly": "yarn test && yarn build"
+    "prepublishOnly": "pnpm test && pnpm build"
   },
   "files": [
     "lib",
@@ -47,6 +47,7 @@
     "@open-draft/test-server": "^0.2.3",
     "@types/compression": "^1.7.1",
     "@types/jest": "^26.0.20",
+    "@types/node": "18",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",
     "compression": "^1.7.4",
