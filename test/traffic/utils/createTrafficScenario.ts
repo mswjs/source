@@ -1,16 +1,14 @@
-import {
-  createServer,
-  ServerApi,
-  ServerMiddleware,
-} from '@open-draft/test-server'
+import { HttpServer, HttpServerMiddleware } from '@open-draft/test-server/http'
 import { generateHttpArchive, TrafficDefinition } from './generateHttpArchive'
 
 export async function createTrafficScenario(
-  middleware: ServerMiddleware,
-  getTraffic: (server: ServerApi) => TrafficDefinition,
+  middleware: HttpServerMiddleware,
+  getTraffic: (server: HttpServer) => TrafficDefinition,
 ): Promise<void> {
-  const httpServer = await createServer(middleware)
-  console.log('server is running at %s', httpServer.http.makeUrl(''))
+  const httpServer = new HttpServer(middleware)
+  await httpServer.listen()
+
+  console.log('server is running at %s', httpServer.http.url())
 
   process.on('exit', async () => {
     console.error('process exited, closing the server...')
