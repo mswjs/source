@@ -1,4 +1,4 @@
-import fetch from 'cross-fetch'
+import { beforeAll, it, expect } from 'vitest'
 import { RequestHandler } from 'msw'
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { withHandlers } from '../../test/support/withHandlers'
@@ -204,7 +204,9 @@ it('POST /user', async () => {
 
 it('POST /user/createWithList', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/v3/user/createWithList', { method: 'POST' })
+    return fetch('http://localhost/v3/user/createWithList', {
+      method: 'POST',
+    })
   })
 
   expect(res.status).toEqual(200)
@@ -254,7 +256,9 @@ it('PUT /user/:username', async () => {
 
 it('DELETE /user/:username', async () => {
   const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/v3/user/john-james', { method: 'DELETE' })
+    return fetch('http://localhost/v3/user/john-james', {
+      method: 'DELETE',
+    })
   })
 
   expect(res.status).toEqual(200)

@@ -15,7 +15,7 @@ export function getBodyTransformers(
 
   const requestHeaders = headersToObject(req.headers)
   const acceptedMimeTypes = ([] as string[]).concat(requestHeaders.accept)
-  const explicitContentType = acceptedMimeTypes[0]
+  const explicitContentType = acceptedMimeTypes[0] || ''
   const explicitContentTypeRegexp = new RegExp(
     explicitContentType.replace(/\/+/g, '\\/').replace(/\*/g, '.+?'),
   )
