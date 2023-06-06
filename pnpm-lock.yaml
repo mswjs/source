@@ -27,7 +27,7 @@ specifiers:
   openapi-types: ^7.2.3
   outvariant: ^1.2.1
   playwright: ^1.13.1
-  prettier: ^2.3.2
+  prettier: ^2.8.8
   randexp: ^0.5.3
   rimraf: ^3.0.2
   set-cookie-parser: ^2.6.0
