@@ -9,19 +9,19 @@ import {
   ResponseFunction,
   ResponseTransformer,
   ResponseComposition,
-  DefaultRequestBody,
+  DefaultBodyType,
 } from 'msw'
 import { decodeBase64String } from './utils/decodeBase64String'
 
 export type MapEntryFn = (entry: Entry) => Entry | undefined
 
 type ResponseProducer = (
-  res: ResponseComposition<DefaultRequestBody>,
-  transformers: ResponseTransformer<DefaultRequestBody>[],
+  response: ResponseComposition<DefaultBodyType>,
+  transformers: ResponseTransformer<DefaultBodyType>[],
 ) => ReturnType<ResponseFunction>
 
-const defaultResponseProducer: ResponseProducer = (res, transformers) => {
-  return res(...transformers)
+const defaultResponseProducer: ResponseProducer = (response, transformers) => {
+  return response(...transformers)
 }
 
 /**
@@ -35,8 +35,8 @@ function toRequestHandler(
   const method = request.method.toLowerCase() as keyof typeof rest
   const transformers = toResponseTransformers(entry)
 
-  return rest[method](request.url, (req, res) => {
-    return produceResponse(res, transformers)
+  return rest[method](request.url, (_, response) => {
+    return produceResponse(response, transformers)
   })
 }
 
