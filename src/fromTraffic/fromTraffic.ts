@@ -119,8 +119,7 @@ export function toResponseBody(
   }
 
   if (encoding === 'base64' && mimeType.includes('text')) {
-    const responseBody = decodeBase64String(text)
-    return responseBody
+    return decodeBase64String(text)
   }
 
   return text
@@ -129,7 +128,10 @@ export function toResponseBody(
 /**
  * Generate request handlers from the given HAR file.
  */
-export function fromTraffic(har: Har, mapEntry?: MapEntryFn): RestHandler[] {
+export function fromTraffic(
+  har: Har,
+  mapEntry?: MapEntryFn,
+): Array<RestHandler> {
   invariant(
     har,
     'Failed to generate request handlers from traffic: expected an HAR object but got %s.',
@@ -141,7 +143,7 @@ export function fromTraffic(har: Har, mapEntry?: MapEntryFn): RestHandler[] {
     'Failed to generate request handlers from traffic: given HAR object has no entries.',
   )
 
-  const requestPaths = new Set<string>()
+  const requestIds = new Set<string>()
 
   const handlers = har.log.entries.reduceRight<RestHandler[]>(
     (handlers, entry) => {
@@ -151,8 +153,8 @@ export function fromTraffic(har: Har, mapEntry?: MapEntryFn): RestHandler[] {
         return handlers
       }
 
-      const requestPath = createRequestPath(resolvedEntry.request)
-      const isUniqueHandler = !requestPaths.has(requestPath)
+      const requestId = createRequestId(resolvedEntry.request)
+      const isUniqueHandler = !requestIds.has(requestId)
 
       const handler = toRequestHandler(resolvedEntry, (res, transformers) => {
         // Reducing the entries from right to left implies that the first
@@ -168,7 +170,7 @@ export function fromTraffic(har: Har, mapEntry?: MapEntryFn): RestHandler[] {
       // from right to left, but the order of handlers must correspond
       // to the chronological order of requests.
       handlers.unshift(handler)
-      requestPaths.add(requestPath)
+      requestIds.add(requestId)
 
       return handlers
     },
@@ -178,6 +180,6 @@ export function fromTraffic(har: Har, mapEntry?: MapEntryFn): RestHandler[] {
   return handlers
 }
 
-function createRequestPath(request: Request): string {
+function createRequestId(request: Request): string {
   return `${request.method}+${request.url}`
 }

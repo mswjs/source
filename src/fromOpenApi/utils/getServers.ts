@@ -1,24 +1,17 @@
 import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
 
 /**
- * Returns the list of servers where the given specification
- * can be hosted.
+ * Returns the list of servers specified in the given OpenAPI document.
  */
 export function getServers(
-  specification: OpenAPIV2.Document | OpenAPIV3.Document,
-): string[] {
-  if (
-    'basePath' in specification &&
-    typeof specification.basePath !== 'undefined'
-  ) {
-    return [specification.basePath]
+  document: OpenAPIV2.Document | OpenAPIV3.Document,
+): Array<string> {
+  if ('basePath' in document && typeof document.basePath !== 'undefined') {
+    return [document.basePath]
   }
 
-  if (
-    'servers' in specification &&
-    typeof specification.servers !== 'undefined'
-  ) {
-    return specification.servers.map((server) => server.url)
+  if ('servers' in document && typeof document.servers !== 'undefined') {
+    return document.servers.map((server) => server.url)
   }
 
   return ['/']

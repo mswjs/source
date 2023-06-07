@@ -4,7 +4,7 @@
 
 <h1 align="center">Source</h1>
 
-This library allows you to generate request handlers for [Mock Service Worker](https://github.com/mswjs/msw) from different sources, like an HAR file, an OpenAPI specification, or Node.js process runtime. 
+This library allows you to generate request handlers for [Mock Service Worker](https://github.com/mswjs/msw) from different sources, like an HAR file, an OpenAPI specification, or Node.js process runtime.
 
 Once generated, you can supply the request handlers to whichever MSW setup you need to enable API mocking as usual.
 
@@ -52,7 +52,7 @@ export const handlers = fromTraffic(networkSnapshot)
 
 ### Exporting an HAR file
 
-There are multiple ways to obtain an HAR file. The most common one is exporting the network snapshot directly from your browser. 
+There are multiple ways to obtain an HAR file. The most common one is exporting the network snapshot directly from your browser.
 
 Below, you can find detailed instructions on how to do that in modern browsers.
 
@@ -218,7 +218,7 @@ import { fromOpenApi } from '@mswjs/source'
 // Import your OpenAPI (Swagger) speficiation (JSON).
 import specification from './v2.json'
 
-const handlers = fromOpenApi(specification)
+const handlers = await fromOpenApi(specification)
 ```
 
 OpenAPI support implies two major features: generating request handlers from the `paths`, and seeding the schema with random, fake data based on the schema types (`string`, `array`, `object`, etc.).
