@@ -67,7 +67,6 @@ export async function fromOpenApi(
   return handlers
 }
 
-//
 function isAbsoluteUrl(url: string): boolean {
   try {
     new URL(url)
