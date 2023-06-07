@@ -24,7 +24,7 @@ $ touch test/traffic/fixtures/request/<NEW-SCENARIO>.ts
 Run the usage example in the browser:
 
 ```sh
-$ yarn har:fixture <NEW-SCENARIO>.ts
+$ pnpm har:fixture test/traffic/fixtures/request/<NEW-SCENARIO>.ts
 ```
 
 Export the Network log as the `*.har` file using the browser's Dev Tools.

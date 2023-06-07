@@ -15,7 +15,7 @@ createTrafficScenario(
   },
   (server) => [
     // Intentionally request two same endpoints.
-    [server.http.makeUrl('/resource')],
-    [server.http.makeUrl('/resource')],
+    [server.http.url('/resource')],
+    [server.http.url('/resource')],
   ],
 )

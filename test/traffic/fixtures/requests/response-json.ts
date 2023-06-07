@@ -9,5 +9,5 @@ createTrafficScenario(
       })
     })
   },
-  (server) => [[server.http.makeUrl('/json')]],
+  (server) => [[server.http.url('/json')]],
 )

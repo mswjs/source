@@ -23,5 +23,5 @@ createTrafficScenario(
       res.end()
     })
   },
-  (server) => [[server.http.makeUrl('/stream')]],
+  (server) => [[server.http.url('/stream')]],
 )

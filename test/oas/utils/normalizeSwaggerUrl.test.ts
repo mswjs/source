@@ -1,3 +1,4 @@
+import { it, expect } from 'vitest'
 import { normalizeSwaggerUrl } from '../../../src/fromOpenApi/utils/normalizeSwaggerUrl'
 
 it('replaces swagger path parameters with colons', () => {

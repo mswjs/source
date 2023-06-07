@@ -12,5 +12,5 @@ createTrafficScenario(
       })
     })
   },
-  (server) => [[server.http.makeUrl('/json-compressed')]],
+  (server) => [[server.http.url('/json-compressed')]],
 )

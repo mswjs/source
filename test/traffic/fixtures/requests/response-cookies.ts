@@ -6,5 +6,5 @@ createTrafficScenario(
       res.cookie('secret-token', 'abc-123').send('yummy')
     })
   },
-  (server) => [[server.http.makeUrl('/cookies')]],
+  (server) => [[server.http.url('/cookies')]],
 )

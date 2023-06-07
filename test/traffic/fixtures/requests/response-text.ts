@@ -6,5 +6,5 @@ createTrafficScenario(
       res.send('hello world')
     })
   },
-  (server) => [[server.http.makeUrl('/text')]],
+  (server) => [[server.http.url('/text')]],
 )

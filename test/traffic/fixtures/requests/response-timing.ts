@@ -12,7 +12,7 @@ createTrafficScenario(
     })
   },
   (server) => [
-    [server.http.makeUrl('/timing/instant')],
-    [server.http.makeUrl('/timing/delayed')],
+    [server.http.url('/timing/instant')],
+    [server.http.url('/timing/delayed')],
   ],
 )

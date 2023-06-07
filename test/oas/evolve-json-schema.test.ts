@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { evolveJsonSchema } from '../../src/fromOpenApi/schema/evolve'
 
 describe('string', () => {

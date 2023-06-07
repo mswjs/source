@@ -6,6 +6,7 @@ export async function withHandlers<R>(
   callback: () => Promise<R>,
 ): Promise<R> {
   const server = setupServer(...handlers)
+
   server.listen({
     onUnhandledRequest: 'error',
   })

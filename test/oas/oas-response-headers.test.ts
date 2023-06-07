@@ -1,4 +1,4 @@
-import fetch from 'cross-fetch'
+import { it, expect } from 'vitest'
 import { Headers } from 'headers-utils'
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { createOpenApiSpec } from '../../test/support/createOpenApiSpec'

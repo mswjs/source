@@ -16,5 +16,5 @@ createTrafficScenario(
       res.end(imageBinary)
     })
   },
-  (server) => [[server.http.makeUrl('/binary')]],
+  (server) => [[server.http.url('/binary')]],
 )

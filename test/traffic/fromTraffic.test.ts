@@ -1,6 +1,7 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
+import { vi, describe, it, expect } from 'vitest'
 import { Har, Response } from 'har-format'
 import { fromTraffic, toResponseBody } from '../../src/fromTraffic/fromTraffic'
 import { decodeBase64String } from '../../src/fromTraffic/utils/decodeBase64String'
@@ -27,7 +28,7 @@ describe('fromTraffic', () => {
     const traffic = readArchive(
       'test/traffic/fixtures/archives/request-order.har',
     )
-    const mapEntry = jest.fn()
+    const mapEntry = vi.fn()
     fromTraffic(traffic, mapEntry)
 
     expect(mapEntry).toHaveBeenCalledTimes(traffic.log.entries.length)
