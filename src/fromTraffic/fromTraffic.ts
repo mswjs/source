@@ -10,6 +10,7 @@ import {
   ResponseTransformer,
   ResponseComposition,
   DefaultBodyType,
+  cleanUrl,
 } from 'msw'
 import { decodeBase64String } from './utils/decodeBase64String'
 
@@ -35,7 +36,7 @@ function toRequestHandler(
   const method = request.method.toLowerCase() as keyof typeof rest
   const transformers = toResponseTransformers(entry)
 
-  return rest[method](request.url, (_, response) => {
+  return rest[method](cleanUrl(request.url), (_, response) => {
     return produceResponse(response, transformers)
   })
 }
