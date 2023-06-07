@@ -23,7 +23,7 @@ specifiers:
   msw: ^1.2.1
   openapi-types: ^7.2.3
   outvariant: ^1.2.1
-  playwright: ^1.13.1
+  playwright: ^1.34.3
   prettier: ^2.8.8
   randexp: ^0.5.3
   rimraf: ^3.0.2
