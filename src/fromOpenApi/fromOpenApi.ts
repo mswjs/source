@@ -4,17 +4,19 @@ import SwaggerParser from '@apidevtools/swagger-parser'
 import { createResponseResolver } from './response/createResponseResolver'
 import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl'
 import { getServers } from './utils/getServers'
-import { joinPaths } from './utils/url'
+import { isAbsoluteUrl, joinPaths } from './utils/url'
 
 /**
  * Generates request handlers from the given OpenAPI V2/V3 document.
  */
 export async function fromOpenApi(
   document: string | OpenAPIV3.Document | OpenAPIV2.Document,
-): Promise<RequestHandler[]> {
+): Promise<Array<RequestHandler>> {
   const specification = await SwaggerParser.dereference(document)
 
-  const handlers = Object.entries(specification.paths).reduce<RequestHandler[]>(
+  const handlers = Object.entries(specification.paths).reduce<
+    Array<RequestHandler>
+  >(
     (
       handlers,
       [url, pathItem]: [
@@ -44,19 +46,16 @@ export async function fromOpenApi(
 
         const serverUrls = getServers(specification)
 
-        serverUrls.forEach((baseUrl) => {
+        for (const baseUrl of serverUrls) {
           const path = normalizeSwaggerUrl(url)
           const requestUrl = isAbsoluteUrl(baseUrl)
             ? new URL(path, baseUrl).href
             : joinPaths(path, baseUrl)
 
-          const handler = rest[method](
-            requestUrl,
-            createResponseResolver(operation),
+          handlers.push(
+            rest[method](requestUrl, createResponseResolver(operation)),
           )
-
-          handlers.push(handler)
-        })
+        }
       }
 
       return handlers
@@ -65,13 +64,4 @@ export async function fromOpenApi(
   )
 
   return handlers
-}
-
-function isAbsoluteUrl(url: string): boolean {
-  try {
-    new URL(url)
-    return true
-  } catch (error) {
-    return false
-  }
 }
