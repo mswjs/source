@@ -5,7 +5,14 @@ export async function createTrafficScenario(
   middleware: HttpServerMiddleware,
   getTraffic: (server: HttpServer) => TrafficDefinition,
 ): Promise<void> {
-  const httpServer = new HttpServer(middleware)
+  const httpServer = new HttpServer((app) => {
+    app.use((req, res, next) => {
+      res.set('Access-Control-Allow-Origin', '*')
+      return next()
+    })
+
+    middleware(app)
+  })
   await httpServer.listen()
 
   console.log('server is running at %s', httpServer.http.url())

@@ -14,7 +14,7 @@ export async function generateHttpArchive(
     headless: false,
     devtools: true,
   })
-  process.addListener('exit', async () => {
+  process.on('exit', async () => {
     await browser.close()
   })
 
@@ -27,14 +27,18 @@ export async function generateHttpArchive(
   // can be inspected in the opened devtools.
   await page.waitForTimeout(750)
 
-  await page.evaluate((requests) => {
+  await page.evaluate((requests: TrafficDefinition) => {
     return Promise.all(
       requests.map(([init, info]) => {
-        return fetch(init, info).then((res) => {
-          // Read the response body so that "playwright-har" reacts to that
-          // and saves the read textual body in the HAR file.
-          return res.text()
-        })
+        return fetch(init, info)
+          .then((response) => {
+            // Read the response body so that "playwright-har" reacts to that
+            // and saves the read textual body in the HAR file.
+            return response.text()
+          })
+          .catch((error) => {
+            console.error('FETCH FAILED!', init, info, error)
+          })
       }),
     )
   }, traffic)
