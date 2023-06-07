@@ -20,7 +20,7 @@
     "prepare": "pnpm simple-git-hooks init",
     "prebuild": "pnpm lint",
     "build": "tsup src/index.ts --format cjs,esm --out-dir lib --dts --clean",
-    "test": "vitest",
+    "test": "vitest run",
     "prepublishOnly": "pnpm test && pnpm build"
   },
   "files": [
