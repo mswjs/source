@@ -1,4 +1,3 @@
-import { headersToObject } from 'headers-utils/lib'
 import { MockedRequest, ResponseTransformer, RestContext } from 'msw'
 import { OpenAPIV3 } from 'openapi-types'
 import { evolveJsonSchema } from '../../schema/evolve'
@@ -13,7 +12,7 @@ export function getBodyTransformers(
     return []
   }
 
-  const requestHeaders = headersToObject(req.headers)
+  const requestHeaders = Object.fromEntries(req.headers.entries())
   const acceptedMimeTypes = ([] as string[]).concat(requestHeaders.accept)
   const explicitContentType = acceptedMimeTypes[0] || ''
   const explicitContentTypeRegexp = new RegExp(

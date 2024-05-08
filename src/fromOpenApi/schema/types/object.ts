@@ -1,8 +1,8 @@
 import { datatype, random } from 'faker'
 import { OpenAPIV3 } from 'openapi-types'
 import { invariant } from 'outvariant'
-import { repeat } from '../../utils/repeat'
-import { evolveJsonSchema } from '../evolve'
+import { repeat } from '../../utils/repeat.js'
+import { evolveJsonSchema } from '../evolve.js'
 
 export function evolveObject(
   schema: OpenAPIV3.NonArraySchemaObject,

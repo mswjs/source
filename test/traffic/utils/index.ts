@@ -1,6 +1,5 @@
 import * as fs from 'fs'
 import { Har, Header } from 'har-format'
-import { HeadersObject, headersToObject } from 'headers-utils'
 import { MapEntryFn } from '../../../src/fromTraffic/fromTraffic'
 
 export function readArchive(archivePath: string): Har {
@@ -29,7 +28,9 @@ function toHeaders(trafficHeaders: Header[]): Headers {
   }, new Headers())
 }
 
-export function headersAfterMsw(trafficHeaders: Header[]): HeadersObject {
+export function headersAfterMsw(
+  trafficHeaders: Header[],
+): Record<string, unknown> {
   const headers = toHeaders(trafficHeaders)
 
   // "Content-Encoding" header is removed when creating a request handler.
@@ -39,9 +40,14 @@ export function headersAfterMsw(trafficHeaders: Header[]): HeadersObject {
   // The custom "X-Powered-By" header is appended by the library,
   // which creates a wrong order of this header's multiple values.
   headers.append('x-powered-by', 'msw')
-  const headersObject = headersToObject(headers)
-  const poweredBy = headersObject['x-powered-by'] as string[]
-  poweredBy.reverse()
+  const headersObject = Object.fromEntries(headers.entries())
+  const poweredBy = headersObject['x-powered-by']
+  const poweredByList = Array.isArray(poweredBy)
+    ? poweredBy
+    : poweredBy.split(', ')
+
+  poweredByList.reverse()
+  headersObject['x-powered-by'] = poweredByList.join(', ')
 
   return headersObject
 }

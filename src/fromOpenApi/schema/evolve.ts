@@ -1,10 +1,10 @@
 import type { OpenAPIV3 } from 'openapi-types'
-import { evolveString } from './types/string'
-import { evolveInteger } from './types/integer'
-import { evolveBoolean } from './types/boolean'
-import { evolveNumber } from './types/number'
-import { evolveArray } from './types/array'
-import { evolveObject } from './types/object'
+import { evolveString } from './types/string.js'
+import { evolveInteger } from './types/integer.js'
+import { evolveBoolean } from './types/boolean.js'
+import { evolveNumber } from './types/number.js'
+import { evolveArray } from './types/array.js'
+import { evolveObject } from './types/object.js'
 
 export function evolveJsonSchema(
   schema: OpenAPIV3.SchemaObject,

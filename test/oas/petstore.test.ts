@@ -1,4 +1,3 @@
-import { beforeAll, it, expect } from 'vitest'
 import { RequestHandler } from 'msw'
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { withHandlers } from '../../test/support/withHandlers'

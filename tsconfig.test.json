@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "references": [
+    {
+      "path": "./tsconfig.build.json"
+    }
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "types": ["vitest/globals"],
+    "lib": ["dom", "DOM.Iterable"]
+  },
+  "include": ["test"]
+}

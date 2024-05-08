@@ -1,4 +1,3 @@
-import { it, expect } from 'vitest'
 import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
 import { withHandlers } from '../../test/support/withHandlers'
 import { normalizeLocalhost, readArchive } from './utils'
