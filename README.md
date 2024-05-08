@@ -4,9 +4,9 @@
 
 <h1 align="center">Source</h1>
 
-This library allows you to generate request handlers for [Mock Service Worker](https://github.com/mswjs/msw) from different sources, like an HAR file, an OpenAPI specification, or Node.js process runtime.
+Generate [MSW](https://github.com/mswjs/msw) request handlers from OpenAPI documents, HAR archives, and other sources.
 
-Once generated, you can supply the request handlers to whichever MSW setup you need to enable API mocking as usual.
+Here's an exampe of the [Node.js integration](https://mswjs.io/docs/integrations/node) of MSW using request handlers generated from a `github.com.har` file:
 
 ```js
 import { setupServer } from 'msw/node'
