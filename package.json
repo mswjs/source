@@ -11,8 +11,9 @@
       "import": "./lib/index.mjs"
     }
   },
+  "files": ["lib"],
   "repository": "git@github.com:mswjs/source.git",
-  "author": "Artem Zakharchenko <kettanaito@gmail.com>",
+  "author": "Artem Zakharchenko <me@kettanaito.com>",
   "scripts": {
     "start": "pnpm build --watch",
     "lint": "eslint ./{src,test}/**/*.ts",
@@ -23,7 +24,6 @@
     "test": "vitest run",
     "prepublishOnly": "pnpm test && pnpm build"
   },
-  "files": ["lib"],
   "lint-staged": {
     "*.ts": ["prettier --write", "eslint --fix"]
   },
