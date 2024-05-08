@@ -1,20 +1,35 @@
 <p align="center">
-  <img src="source-logo.png" width="100" alt="Source Logo" />
+  <img src="./media/source-logo.svg?a" width="100" alt="Source Logo" />
 </p>
 
 <h1 align="center">Source</h1>
 
-Generate [MSW](https://github.com/mswjs/msw) request handlers from OpenAPI documents, HAR archives, and other sources.
+<p align="center">Generate <a href="https://github.com/mswjs/msw">MSW</a> request handlers from OpenAPI documents, HAR archives, and other sources.</p>
 
-Here's an exampe of the [Node.js integration](https://mswjs.io/docs/integrations/node) of MSW using request handlers generated from a `github.com.har` file:
+## Motivation
+
+[Request handlers](https://mswjs.io/docs/concepts/request-handler) act as a great format to describe your network when working with MSW. In some cases, writing them by hand leads to a suboptimal experience, specifically:
+
+- When migrating a large number of test suites to MSW;
+- When writing regression tests for the network scenario reproduced and recorded elsewhere.
+
+Source is designed to breach the gap and allow you to generate request handlers from supported inputs, like `*.har` files, for example.
+
+When creating Source, I imagined the following workflow: you were finally able to reproduce an annoying issue in the browser, and now your job is to write a regression test for it. Refresh the page—and the issue is gone. So instead, save the network recording into an HAR file, put it next to your test suite, and use Source to generate request handlers from a fixed network snapshot to create reliable replay of the network.
 
 ```js
+// regressions/missing-headers.test.js
 import { setupServer } from 'msw/node'
 import { fromTraffic } from '@mswjs/source'
-import networkSnapshot from './github.com.har'
 
-const handlers = fromTraffic(networkSnapshot)
+// 1. Import the HAR recording of the network.
+import snapshot from './snapshot.har'
 
+// 2. Generate MSW request handlers from the HAR file.
+const handlers = fromTraffic(snapshot)
+
+// 3. Use the generated request handlers anywhere,
+// like in this regression test in Node.js.
 const server = setupServer(...handlers)
 server.listen()
 ```
