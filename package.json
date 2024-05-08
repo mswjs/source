@@ -1,7 +1,7 @@
 {
   "name": "@mswjs/source",
   "version": "0.0.0",
-  "description": "Generate request handlers for Mock Service Worker from various sources.",
+  "description": "Generate MSW request handlers from OpenAPI specs, HAR archives, and other sources.",
   "main": "./lib/index.js",
   "module": "./lib/index.mjs",
   "types": "./lib/index.d.ts",
@@ -23,7 +23,7 @@
     "test": "vitest run",
     "prepublishOnly": "pnpm test && pnpm build"
   },
-  "files": ["lib", "README.md"],
+  "files": ["lib"],
   "lint-staged": {
     "*.ts": ["prettier --write", "eslint --fix"]
   },
