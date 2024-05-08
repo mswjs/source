@@ -23,15 +23,9 @@
     "test": "vitest run",
     "prepublishOnly": "pnpm test && pnpm build"
   },
-  "files": [
-    "lib",
-    "README.md"
-  ],
+  "files": ["lib", "README.md"],
   "lint-staged": {
-    "*.ts": [
-      "prettier --write",
-      "eslint --fix"
-    ]
+    "*.ts": ["prettier --write", "eslint --fix"]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",
@@ -40,6 +34,7 @@
   "engines": {
     "node": ">=18"
   },
+  "packageManager": "pnpm@8.15",
   "peerDependencies": {
     "msw": "^1.2.1"
   },
