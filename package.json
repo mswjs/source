@@ -32,9 +32,9 @@
     "commit-msg": "pnpm commitlint --edit $1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20.11"
   },
-  "packageManager": "pnpm@8.15",
+  "packageManager": "pnpm@8.15.6",
   "peerDependencies": {
     "msw": "^1.2.1"
   },
