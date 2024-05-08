@@ -4,7 +4,6 @@
 import { it, expect } from 'vitest'
 import * as fs from 'fs'
 import * as path from 'path'
-import { headersToObject } from 'headers-utils'
 import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
 import { withHandlers } from '../../test/support/withHandlers'
 import { readArchive, headersAfterMsw, normalizeLocalhost } from './utils'
@@ -33,7 +32,7 @@ it('mocks a recorded text response', async () => {
   })
 
   expect(res.status).toEqual(200)
-  expect(headersToObject(res.headers)).toEqual(
+  expect(Object.fromEntries(res.headers.entries())).toEqual(
     headersAfterMsw(responseText.log.entries[0].response.headers),
   )
   expect(await res.text()).toEqual('hello world')
@@ -46,7 +45,7 @@ it('mocks a recorded JSON response', async () => {
   })
 
   expect(res.status).toEqual(200)
-  expect(headersToObject(res.headers)).toEqual(
+  expect(Object.fromEntries(res.headers.entries())).toEqual(
     headersAfterMsw(responseJson.log.entries[0].response.headers),
   )
   expect(await res.json()).toEqual({
@@ -63,7 +62,7 @@ it('mocks a recorded binary (base64) response', async () => {
   const blob = await res.blob()
 
   expect(res.status).toEqual(200)
-  expect(headersToObject(res.headers)).toEqual(
+  expect(Object.fromEntries(res.headers.entries())).toEqual(
     headersAfterMsw(responseBinary.log.entries[0].response.headers),
   )
 
@@ -85,7 +84,7 @@ it('mocks a compressed recorded JSON response', async () => {
   })
 
   expect(res.status).toEqual(200)
-  expect(headersToObject(res.headers)).toEqual(
+  expect(Object.fromEntries(res.headers.entries())).toEqual(
     headersAfterMsw(responseCompressed.log.entries[0].response.headers),
   )
   expect(await res.json()).toEqual({
@@ -101,7 +100,7 @@ it('propagates recoded response cookies to the mocked response', async () => {
   })
 
   expect(res.status).toEqual(200)
-  expect(headersToObject(res.headers)).toEqual(
+  expect(Object.fromEntries(res.headers.entries())).toEqual(
     headersAfterMsw(responseCookies.log.entries[0].response.headers),
   )
   expect(document.cookie).toEqual('secret-token=abc-123')

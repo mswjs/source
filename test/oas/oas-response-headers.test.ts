@@ -1,5 +1,4 @@
 import { it, expect } from 'vitest'
-import { Headers } from 'headers-utils'
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { createOpenApiSpec } from '../../test/support/createOpenApiSpec'
 import { withHandlers } from '../support/withHandlers'
@@ -47,7 +46,7 @@ it('supports response headers', async () => {
   expect(res.status).toEqual(200)
   const headers = new Headers(res.headers)
 
-  expect(headers.all()).toEqual({
+  expect(Object.fromEntries(headers.entries())).toEqual({
     'content-type': 'text/plain',
     'x-powered-by': 'msw',
     // Header values are always strings.

@@ -1,7 +1,6 @@
 import { invariant } from 'outvariant'
 import { Har, Entry, Request, Response } from 'har-format'
 import { Cookie, parse } from 'set-cookie-parser'
-import { Headers, headersToObject } from 'headers-utils'
 import {
   RestHandler,
   rest,
@@ -76,7 +75,7 @@ export function toResponseTransformers(entry: Entry): ResponseTransformer[] {
     responseHeaders.set(header.name, header.value)
   }
 
-  transformers.push(context.set(headersToObject(responseHeaders)))
+  transformers.push(context.set(Object.fromEntries(responseHeaders.entries())))
 
   // Response cookies.
   for (const cookie of responseCookies) {

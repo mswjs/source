@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "module": "nodenext",
     "target": "es2015",
     "strict": true,
     "allowJs": false,
