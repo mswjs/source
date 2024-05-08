@@ -1,4 +1,3 @@
-import { it, expect } from 'vitest'
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { createOpenApiSpec } from '../../test/support/createOpenApiSpec'
 import { withHandlers } from '../support/withHandlers'

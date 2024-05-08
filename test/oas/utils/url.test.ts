@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'vitest'
 import { joinPaths } from '../../../src/fromOpenApi/utils/url'
 
 describe(joinPaths, () => {

@@ -1,10 +1,10 @@
 import { RequestHandler, rest } from 'msw'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import SwaggerParser from '@apidevtools/swagger-parser'
-import { createResponseResolver } from './response/createResponseResolver'
-import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl'
-import { getServers } from './utils/getServers'
-import { isAbsoluteUrl, joinPaths } from './utils/url'
+import { createResponseResolver } from './response/createResponseResolver.js'
+import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl.js'
+import { getServers } from './utils/getServers.js'
+import { isAbsoluteUrl, joinPaths } from './utils/url.js'
 
 /**
  * Generates request handlers from the given OpenAPI V2/V3 document.

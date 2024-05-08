@@ -1,7 +1,6 @@
 /**
  * @vitest-environment jsdom
  */
-import { it, expect } from 'vitest'
 import { getServers } from '../../../src/fromOpenApi/utils/getServers'
 import { createOpenApiSpec } from '../../support/createOpenApiSpec'
 

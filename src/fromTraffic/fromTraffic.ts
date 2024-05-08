@@ -11,7 +11,7 @@ import {
   DefaultBodyType,
   cleanUrl,
 } from 'msw'
-import { decodeBase64String } from './utils/decodeBase64String'
+import { decodeBase64String } from './utils/decodeBase64String.js'
 
 export type MapEntryFn = (entry: Entry) => Entry | undefined
 

@@ -1,7 +1,6 @@
 /**
  * @vitest-environment jsdom
  */
-import { it, expect } from 'vitest'
 import * as fs from 'fs'
 import * as path from 'path'
 import { fromTraffic } from '../../src/fromTraffic/fromTraffic'

@@ -1,7 +1,7 @@
 import { datatype } from 'faker'
 import { OpenAPIV3 } from 'openapi-types'
 import { invariant } from 'outvariant'
-import { evolveJsonSchema } from '../evolve'
+import { evolveJsonSchema } from '../evolve.js'
 
 export function evolveArray(schema: OpenAPIV3.ArraySchemaObject): unknown[] {
   const { items: arraySchema } = schema

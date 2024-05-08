@@ -1,20 +1,12 @@
 {
-  "compilerOptions": {
-    "module": "nodenext",
-    "target": "es2015",
-    "strict": true,
-    "allowJs": false,
-    "moduleResolution": "nodenext",
-    "esModuleInterop": true,
-    "downlevelIteration": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "noImplicitAny": true,
-    "outDir": "lib",
-    "declaration": true,
-    "declarationDir": "lib"
-  },
-  "include": ["src/**/*.ts"],
+  "references": [
+    {
+      "path": "./tsconfig.build.json"
+    },
+    {
+      "path": "./tsconfig.test.json"
+    }
+  ],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }

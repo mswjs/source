@@ -11,7 +11,9 @@
       "import": "./lib/index.mjs"
     }
   },
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "repository": "git@github.com:mswjs/source.git",
   "author": "Artem Zakharchenko <me@kettanaito.com>",
   "scripts": {
@@ -20,12 +22,15 @@
     "har:fixture": "ts-node ./test/traffic/fixtures/requests/command.ts",
     "prepare": "pnpm simple-git-hooks init",
     "prebuild": "pnpm lint",
-    "build": "tsup src/index.ts --format cjs,esm --out-dir lib --dts --clean",
+    "build": "tsup",
     "test": "vitest",
     "prepublishOnly": "pnpm test && pnpm build"
   },
   "lint-staged": {
-    "*.ts": ["prettier --write", "eslint --fix"]
+    "*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",
@@ -60,7 +65,7 @@
     "ts-node": "^10.9.1",
     "tslib": "^2.3.1",
     "tsup": "^8.0.2",
-    "typescript": "^5.1.3",
+    "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   },
   "dependencies": {
