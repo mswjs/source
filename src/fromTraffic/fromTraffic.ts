@@ -1,184 +1,78 @@
 import { invariant } from 'outvariant'
-import { Har, Entry, Request, Response } from 'har-format'
-import { Cookie, parse } from 'set-cookie-parser'
-import {
-  RestHandler,
-  rest,
-  context,
-  ResponseFunction,
-  ResponseTransformer,
-  ResponseComposition,
-  DefaultBodyType,
-  cleanUrl,
-} from 'msw'
-import { decodeBase64String } from './utils/decodeBase64String.js'
+import type Har from 'har-format'
+import { RequestHandler, HttpHandler, cleanUrl, delay } from 'msw'
+import { toResponse } from './utils/harUtils'
 
-export type MapEntryFn = (entry: Entry) => Entry | undefined
-
-type ResponseProducer = (
-  response: ResponseComposition<DefaultBodyType>,
-  transformers: ResponseTransformer<DefaultBodyType>[],
-) => ReturnType<ResponseFunction>
-
-const defaultResponseProducer: ResponseProducer = (response, transformers) => {
-  return response(...transformers)
-}
+export type MapEntryFunction = (entry: Har.Entry) => Har.Entry | undefined
 
 /**
- * Create a request handler from the given Network Archive entry.
- */
-function toRequestHandler(
-  entry: Entry,
-  produceResponse: ResponseProducer = defaultResponseProducer,
-): RestHandler {
-  const { request } = entry
-  const method = request.method.toLowerCase() as keyof typeof rest
-  const transformers = toResponseTransformers(entry)
-
-  return rest[method](cleanUrl(request.url), (_, response) => {
-    return produceResponse(response, transformers)
-  })
-}
-
-/**
- * Map a traffic entry to the array of response transformers.
- */
-export function toResponseTransformers(entry: Entry): ResponseTransformer[] {
-  const { response, time } = entry
-
-  const transformers: ResponseTransformer[] = []
-  const responseHeaders = new Headers()
-  const responseCookies: Cookie[] = []
-
-  // Response status and status text.
-  transformers.push(context.status(response.status, response.statusText))
-
-  // Response headers.
-  for (const header of response.headers) {
-    const headerName = header.name.toLowerCase()
-
-    // Skip response cookie headers because a mocked response cookies
-    // are not implemented through headers (security consideration).
-    // Store the list of cookie headers to apply them via `ctx.cookie` later.
-    if (['set-cookie', 'set-cookie2'].includes(headerName)) {
-      responseCookies.push(...parse(header.value))
-      continue
-    }
-
-    // Skip the "Content-Encoding" header to prevent "incorrect header check" errors.
-    // MSW must not attempt to compress the response body, even if it was originally
-    // compressed. All response bodies are sent uncompressed.
-    if (headerName === 'content-encoding') {
-      continue
-    }
-
-    responseHeaders.set(header.name, header.value)
-  }
-
-  transformers.push(context.set(Object.fromEntries(responseHeaders.entries())))
-
-  // Response cookies.
-  for (const cookie of responseCookies) {
-    const { name, value, ...options } = cookie
-
-    transformers.push(
-      context.cookie(name, value, {
-        ...options,
-        sameSite: options.sameSite === '',
-      }),
-    )
-  }
-
-  // Response delay.
-  if (time) {
-    transformers.push(context.delay(time))
-  }
-
-  // Response body.
-  const responseBody = toResponseBody(response)
-
-  if (responseBody) {
-    transformers.push(context.body(responseBody))
-  }
-
-  return transformers
-}
-
-/**
- * Extract a response body from the given HAR response entry.
- * Decodes any base64-encoded text response bodies.
- */
-export function toResponseBody(
-  response: Response,
-): Uint8Array | string | undefined {
-  const { text, encoding, mimeType } = response.content
-
-  if (!text) {
-    return
-  }
-
-  if (encoding === 'base64' && mimeType.includes('text')) {
-    return decodeBase64String(text)
-  }
-
-  return text
-}
-
-/**
- * Generate request handlers from the given HAR file.
+ * Generate request handlers from the given
+ * network archive (HAR) file.
+ *
+ * @example
+ * import har from './traffic.har'
+ * fromTraffic(har)
  */
 export function fromTraffic(
-  har: Har,
-  mapEntry?: MapEntryFn,
-): Array<RestHandler> {
+  archive: Har.Har,
+  mapEntry?: MapEntryFunction,
+): Array<RequestHandler> {
   invariant(
-    har,
+    archive,
     'Failed to generate request handlers from traffic: expected an HAR object but got %s.',
-    typeof har,
+    typeof archive,
   )
 
   invariant(
-    har.log.entries.length > 0,
+    archive.log.entries.length > 0,
     'Failed to generate request handlers from traffic: given HAR object has no entries.',
   )
 
   const requestIds = new Set<string>()
+  const handlers: Array<RequestHandler> = []
 
-  const handlers = har.log.entries.reduceRight<RestHandler[]>(
-    (handlers, entry) => {
-      const resolvedEntry = mapEntry ? mapEntry(entry) : entry
+  // Loop over the HAR entries from right to left.
+  for (let i = archive.log.entries.length - 1; i >= 0; i--) {
+    const rawEntry = archive.log.entries[i]
+    const entry = mapEntry ? mapEntry(rawEntry) : rawEntry
 
-      if (!resolvedEntry) {
-        return handlers
-      }
+    if (!entry) {
+      continue
+    }
 
-      const requestId = createRequestId(resolvedEntry.request)
-      const isUniqueHandler = !requestIds.has(requestId)
+    const { request } = entry
 
-      const handler = toRequestHandler(resolvedEntry, (res, transformers) => {
-        // Reducing the entries from right to left implies that the first
-        // entry we meet is, in fact, the last entry recorded.
-        // Always create a regular handler for the last entry.
-        // If there are any consecutive entries for the same URL,
-        // create a one-time handler instead to preserve response order.
-        const responseFn = isUniqueHandler ? res : res.once
-        return responseFn(...transformers)
-      })
+    const requestId = createRequestId(request)
+    const isUniqueHandler = !requestIds.has(requestId)
+    const method = request.method.toLowerCase()
+    const path = cleanUrl(request.url)
+    const response = toResponse(entry.response)
 
-      // Prepend the handler to the list of handler because we're reducing
-      // from right to left, but the order of handlers must correspond
-      // to the chronological order of requests.
-      handlers.unshift(handler)
-      requestIds.add(requestId)
+    const handler = new HttpHandler(
+      method,
+      path,
+      async () => {
+        if (entry.time) {
+          await delay(entry.time)
+        }
 
-      return handlers
-    },
-    [],
-  )
+        return response
+      },
+      {
+        once: !isUniqueHandler,
+      },
+    )
+
+    // Prepend the handler to the list of handler because we're reducing
+    // from right to left, but the order of handlers must correspond
+    // to the chronological order of requests.
+    handlers.unshift(handler)
+    requestIds.add(requestId)
+  }
 
   return handlers
 }
 
-function createRequestId(request: Request): string {
+function createRequestId(request: Har.Request): string {
   return `${request.method}+${request.url}`
 }

@@ -1,10 +1,11 @@
 /**
  * @vitest-environment node
  */
-import { Har, Response } from 'har-format'
-import { fromTraffic, toResponseBody } from '../../src/fromTraffic/fromTraffic'
+import Har from 'har-format'
+import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
 import { decodeBase64String } from '../../src/fromTraffic/utils/decodeBase64String'
 import { readArchive } from './utils'
+import { toResponse } from '../../src/fromTraffic/utils/harUtils'
 
 describe('fromTraffic', () => {
   it('throws an exception given no HAR object', () => {
@@ -70,7 +71,7 @@ describe('fromTraffic', () => {
             },
           ],
         },
-      } as Har,
+      } as Har.Har,
       (entry) => {
         if (entry.request.url === 'https://api.stripe.com') {
           return entry
@@ -79,7 +80,7 @@ describe('fromTraffic', () => {
     )
 
     expect(handlers).toHaveLength(1)
-    expect(handlers[0].info.path).toEqual('https://api.stripe.com')
+    expect(handlers[0].info.header).toEqual('GET https://api.stripe.com')
   })
 })
 
@@ -87,7 +88,7 @@ describe('toResponseBody', () => {
   function createResponse(
     body?: string,
     options?: { encoding?: string },
-  ): Response {
+  ): Har.Response {
     return {
       status: 200,
       statusText: 'OK',
@@ -107,7 +108,7 @@ describe('toResponseBody', () => {
   }
 
   it('returns undefined given response with no body', () => {
-    expect(toResponseBody(createResponse(undefined))).toEqual(undefined)
+    expect(toResponse(createResponse(undefined))).toEqual(undefined)
   })
 
   it('returns a decoded text body given a base64-encoded response body', () => {
@@ -118,11 +119,11 @@ describe('toResponseBody', () => {
     )
 
     expect(
-      toResponseBody(createResponse(body.toString(), { encoding: 'base64' })),
+      toResponse(createResponse(body.toString(), { encoding: 'base64' })),
     ).toEqual(expectedBody)
   })
 
   it('returns a plain text response body as-is', () => {
-    expect(toResponseBody(createResponse('hello world'))).toEqual('hello world')
+    expect(toResponse(createResponse('hello world'))).toEqual('hello world')
   })
 })

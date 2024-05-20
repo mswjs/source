@@ -2,7 +2,7 @@ import { RequestHandler } from 'msw'
 import { setupServer } from 'msw/node'
 
 export async function withHandlers<R>(
-  handlers: RequestHandler[],
+  handlers: Array<RequestHandler>,
   callback: () => Promise<R>,
 ): Promise<R> {
   const server = setupServer(...handlers)
