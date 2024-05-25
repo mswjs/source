@@ -1,8 +1,8 @@
 import * as fs from 'fs'
-import { Har, Header } from 'har-format'
-import { MapEntryFn } from '../../../src/fromTraffic/fromTraffic'
+import * as Har from 'har-format'
+import { MapEntryFunction } from '../../../src/fromTraffic/fromTraffic'
 
-export function readArchive(archivePath: string): Har {
+export function readArchive(archivePath: string): Har.Har {
   return JSON.parse(fs.readFileSync(archivePath, 'utf8'))
 }
 
@@ -11,17 +11,34 @@ export function readArchive(archivePath: string): Har {
  * - Replaces `127.0.0.1` with `localhost`.
  * - Removes ports to prevent request mismatches.
  */
-export const normalizeLocalhost: MapEntryFn = (entry) => {
-  const { request } = entry
-  entry.request = {
-    ...request,
-    url: request.url.replace(/(127\.0\.0\.1)(:\d{4,})/, 'localhost'),
-  }
-
+export const normalizeLocalhost: MapEntryFunction = (entry) => {
+  const url = new URL(entry.request.url)
+  // Disregard the original request host so we can always
+  // assert against "localhost" in tests.
+  url.host = 'localhost'
+  // Disregard the original port for the same reason.
+  url.port = ''
+  entry.request.url = url.href
   return entry
 }
 
-function toHeaders(trafficHeaders: Header[]): Headers {
+export function _toHeaders(
+  trafficHeaders: Array<Har.Header>,
+): Array<[string, string]> {
+  const headers: Array<[string, string]> = []
+
+  for (const header of trafficHeaders) {
+    headers.push([header.name.toLowerCase(), header.value])
+  }
+
+  // Sort the headers alphabetically so their order
+  // doesn't matter when asserting in test.
+  headers.sort()
+
+  return headers
+}
+
+function toHeaders(trafficHeaders: Array<Har.Header>): Headers {
   return trafficHeaders.reduce((headers, { name, value }) => {
     headers.set(name, value)
     return headers
@@ -29,7 +46,7 @@ function toHeaders(trafficHeaders: Header[]): Headers {
 }
 
 export function headersAfterMsw(
-  trafficHeaders: Header[],
+  trafficHeaders: Array<Har.Header>,
 ): Record<string, unknown> {
   const headers = toHeaders(trafficHeaders)
 
