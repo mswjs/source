@@ -1,6 +1,8 @@
-export function decodeBase64String(text: string): Uint8Array {
-  return Uint8Array.from(
-    Buffer.from(text, 'base64').toString('binary'),
-    (char) => char.charCodeAt(0),
-  )
+export function decodeBase64String(data: string): Uint8Array {
+  const binaryString = atob(data)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  return bytes
 }
