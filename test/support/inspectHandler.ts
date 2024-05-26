@@ -17,11 +17,15 @@ type SerializedHandler<H extends RequestHandler> = H extends HttpHandler
       }
     : never
 
-interface SerializedResponse {
+export interface SerializedResponse {
   status: number
   statusText?: string
   headers: Array<[string, string]>
   body?: string
+}
+
+function isAbsoluteUrl(url: string) {
+  return (url.indexOf('://') > 0 || url.indexOf('//') === 0)
 }
 
 async function inspectHandler<H extends RequestHandler>(
@@ -30,9 +34,14 @@ async function inspectHandler<H extends RequestHandler>(
   const requestId = Math.random().toString(16).slice(2)
 
   if (handler instanceof HttpHandler) {
+    const pathOfHandler = handler.info.path as string
+
+    const locationOrigin = typeof location !== 'undefined' ? location.origin : 'http://localhost'
+    const fullQualifiedUrl = isAbsoluteUrl(pathOfHandler) ? pathOfHandler : `${locationOrigin}${pathOfHandler}`
+
     const result = await handler.run({
-      request: new Request(handler.info.path, {
-        method: handler.info.method,
+      request: new Request(fullQualifiedUrl, {
+        method: handler.info.method.toString(),
       }),
       requestId,
     })
@@ -40,7 +49,7 @@ async function inspectHandler<H extends RequestHandler>(
     return {
       handler: {
         method: handler.info.method.toString().toUpperCase(),
-        path: handler.info.path,
+        path: fullQualifiedUrl,
       },
       response: await serializeResponse(result?.response),
     }
