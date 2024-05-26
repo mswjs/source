@@ -38,7 +38,6 @@ export function createResponseResolver(
         (responses.default as OpenAPIV3.ResponseObject)
 
       if (!fallbackResponse) {
-        console.log(`fallbackResponse missing`)
         return new Response('Not implemented', { status: 501 })
       }
 
@@ -61,7 +60,6 @@ export function toHeaders(
 ): Headers | undefined {
   const { content } = responseObject
   if (!content) {
-    console.log(`content missing`)
     return undefined
   }
 

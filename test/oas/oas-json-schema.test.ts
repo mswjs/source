@@ -49,7 +49,6 @@ it('supports JSON Schema object', async () => {
   const res = await withHandlers(handlers, () => {
     return fetch('http://localhost/cart')
   })
-  console.log(`response:`, res)
 
   expect(res.status).toEqual(200)
   expect(res.headers.get('content-type')).toEqual('application/json')
@@ -160,7 +159,6 @@ it('responds with 501 to a request for explicit non-existing response status', a
   await withHandlers(handlers, () =>
     fetch('http://localhost/resource?response=200'),
   ).then(async (res) => {
-    console.log(res)
     expect(res.status).toEqual(501)
     expect(await res.text()).toEqual('Not implemented')
   })
