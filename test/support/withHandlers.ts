@@ -5,6 +5,9 @@ import { setupServer } from 'msw/node'
  * Creates an MSW `server` instance, populates it
  * with the given `handlers`, runs the `callback`,
  * and cleans up afterward.
+ *
+ * @deprecated Remove this once all tests are migrated
+ * NOT to use this. Use `inspectHandlers` instead.
  */
 export async function withHandlers<R>(
   handlers: Array<RequestHandler>,

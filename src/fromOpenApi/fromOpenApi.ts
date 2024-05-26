@@ -4,7 +4,7 @@ import SwaggerParser from '@apidevtools/swagger-parser'
 import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl.js'
 import { getServers } from './utils/getServers.js'
 import { isAbsoluteUrl, joinPaths } from './utils/url.js'
-import { createResponseResolver, createResponseResolverFromContent } from './utils/openApiUtils.js'
+import { createResponseResolver } from './utils/openApiUtils.js'
 
 type SupportedHttpMethods = keyof typeof http
 const supportedHttpMethods = Object.keys(
@@ -95,7 +95,6 @@ export async function fromOpenApi(
 
           requestHandlers.push(handler)
         }
-
       }
     }
   }
