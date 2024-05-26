@@ -4,7 +4,7 @@ export function createOpenApiSpec(
   document: Partial<OpenAPI.Document>,
 ): OpenAPI.Document {
   return Object.assign(
-    {},
+    {} as OpenAPI.Document,
     {
       openapi: '3.0.0',
       info: {

@@ -38,6 +38,7 @@ export function createResponseResolver(
         (responses.default as OpenAPIV3.ResponseObject)
 
       if (!fallbackResponse) {
+        console.log(`fallbackResponse missing`)
         return new Response('Not implemented', { status: 501 })
       }
 
@@ -46,7 +47,7 @@ export function createResponseResolver(
 
     return new Response(toBody(request, responseObject), {
       status: Number(explicitResponseStatus || '200'),
-      headers: toHeaders(responseObject),
+      headers: toHeaders(request, responseObject),
     })
   }
 }
@@ -55,21 +56,65 @@ export function createResponseResolver(
  * Get the Fetch API `Headers` from the OpenAPI response object.
  */
 export function toHeaders(
+  request: Request,
   responseObject: OpenAPIV3.ResponseObject,
 ): Headers | undefined {
-  if (!responseObject.headers) {
+  console.log(`toHeaders() request:`, request)
+  const { content } = responseObject
+  if (!content) {
+    console.log(`content missing`)
+    return undefined
+  }
+
+  // See what "Content-Type" the request accepts.
+  const accept = request.headers.get('accept') || ''
+  const acceptedContentTypes = accept
+    .split(',')
+    .filter((item) => item.length !== 0)
+
+  const responseContentTypes = Object.keys(content)
+
+  // Lookup the first response content type that satisfies
+  // the expected request's "Accept" header.
+  let selectedContentType: string | undefined
+  if (acceptedContentTypes.length > 0) {
+    for (const acceptedContentType of acceptedContentTypes) {
+      const contentTypeRegExp = contentTypeToRegExp(acceptedContentType)
+      const matchingResponseContentType = responseContentTypes.find(
+        (responseContentType) => {
+          return contentTypeRegExp.test(responseContentType)
+        },
+      )
+
+      if (matchingResponseContentType) {
+        selectedContentType = matchingResponseContentType
+        break
+      }
+    }
+  } else {
+    // If the request didn't specify any "Accept" header,
+    // use the first response content type from the spec.
+    selectedContentType = responseContentTypes[0] as string
+  }
+
+  if (typeof responseObject.headers === 'undefined' && selectedContentType) {
+    const headers = new Headers()
+    headers.set('content-type', selectedContentType)
+    return headers
+  }
+
+  const responseHeaders = responseObject.headers ?? {}
+  const headerNames = Object.keys(responseHeaders)
+  if (headerNames.length === 0) {
     return undefined
   }
 
   const headers = new Headers()
 
-  for (const [headerName, headerObject] of Object.entries(
-    responseObject.headers,
-  )) {
+  for (const [headerName, headerObject] of Object.entries(responseHeaders)) {
     const headerSchema = (headerObject as OpenAPIV3.HeaderObject).schema as
       | OpenAPIV3.SchemaObject
       | undefined
-
     if (!headerSchema) {
       continue
     }
@@ -80,6 +125,10 @@ export function toHeaders(
     }
 
     headers.append(headerName, toString(headerValue))
+  }
+
+  if (headers.get('content-type') === null && selectedContentType) {
+    headers.set('content-type', selectedContentType)
   }
 
   return headers
@@ -93,20 +142,22 @@ export function toBody(
   responseObject: OpenAPIV3.ResponseObject,
 ): BodyInit {
   const { content } = responseObject
-
   if (!content) {
     return null
   }
 
   // See what "Content-Type" the request accepts.
   const accept = request.headers.get('accept') || ''
-  const acceptedContentTypes = accept.split(',')
+  const acceptedContentTypes = accept
+    .split(',')
+    .filter((item) => item.length !== 0)
 
   let mediaTypeObject: OpenAPIV3.MediaTypeObject | undefined
   const responseContentTypes = Object.keys(content)
 
   // Lookup the first response content type that satisfies
   // the expected request's "Accept" header.
+  let selectedContentType: string | undefined
   if (acceptedContentTypes.length > 0) {
     for (const acceptedContentType of acceptedContentTypes) {
       const contentTypeRegExp = contentTypeToRegExp(acceptedContentType)
@@ -117,14 +168,16 @@ export function toBody(
       )
 
       if (matchingResponseContentType) {
-        mediaTypeObject = content[matchingResponseContentType]
+        selectedContentType = matchingResponseContentType
+        mediaTypeObject = content[selectedContentType]
         break
       }
     }
   } else {
     // If the request didn't specify any "Accept" header,
     // use the first response content type from the spec.
-    mediaTypeObject = content[responseContentTypes[0]]
+    selectedContentType = responseContentTypes[0] as string
+    mediaTypeObject = content[selectedContentType]
   }
 
   if (!mediaTypeObject) {
@@ -133,6 +186,10 @@ export function toBody(
 
   // If the response object has the body example, use it.
   if (mediaTypeObject.example) {
+    if (typeof mediaTypeObject.example === 'object') {
+      return JSON.stringify(mediaTypeObject.example)
+    }
+
     return mediaTypeObject.example
   }
 
@@ -156,12 +213,20 @@ export function toBody(
       mediaTypeObject.examples,
     )[0] as OpenAPIV3.ExampleObject
 
+    if (typeof firstExample.value === 'object') {
+      return JSON.stringify(firstExample.value)
+    }
+
     return firstExample.value
   }
 
   // If the response is a JSON Schema, evolve and use it.
   if (mediaTypeObject.schema) {
-    return evolveJsonSchema(mediaTypeObject.schema as OpenAPIV3.SchemaObject)
+    const resolvedResponse = evolveJsonSchema(
+      mediaTypeObject.schema as OpenAPIV3.SchemaObject,
+    )
+
+    return JSON.stringify(resolvedResponse, null, 2)
   }
 
   return null

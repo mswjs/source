@@ -1,10 +1,10 @@
-import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
+import { OpenAPIV2, OpenAPIV3, OpenAPI } from 'openapi-types'
 
 /**
  * Returns the list of servers specified in the given OpenAPI document.
  */
 export function getServers(
-  document: OpenAPIV2.Document | OpenAPIV3.Document,
+  document: OpenAPI.Document | OpenAPIV2.Document | OpenAPIV3.Document,
 ): Array<string> {
   if ('basePath' in document && typeof document.basePath !== 'undefined') {
     return [document.basePath]

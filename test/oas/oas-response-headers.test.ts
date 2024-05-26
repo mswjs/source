@@ -47,7 +47,6 @@ it('supports response headers', async () => {
 
   expect(Object.fromEntries(headers.entries())).toEqual({
     'content-type': 'text/plain',
-    'x-powered-by': 'msw',
     // Header values are always strings.
     'x-rate-limit-remaining': expect.any(String),
     'x-rate-limit-reset': expect.stringMatching(

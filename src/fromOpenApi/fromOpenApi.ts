@@ -1,10 +1,10 @@
 import { RequestHandler, HttpHandler, http } from 'msw'
-import type { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
+import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
 import SwaggerParser from '@apidevtools/swagger-parser'
 import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl.js'
 import { getServers } from './utils/getServers.js'
 import { isAbsoluteUrl, joinPaths } from './utils/url.js'
-import { createResponseResolver } from './utils/openApiUtils.js'
+import { createResponseResolver, createResponseResolverFromContent } from './utils/openApiUtils.js'
 
 type SupportedHttpMethods = keyof typeof http
 const supportedHttpMethods = Object.keys(
@@ -19,13 +19,19 @@ const supportedHttpMethods = Object.keys(
  * await fromOpenApi(specification)
  */
 export async function fromOpenApi(
-  document: string | OpenAPIV3.Document | OpenAPIV2.Document,
+  document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
 ): Promise<Array<RequestHandler>> {
   const specification = await SwaggerParser.dereference(document)
-  const handlers: Array<RequestHandler> = []
+  const requestHandlers: Array<RequestHandler> = []
 
-  for (const url in Object.entries(specification.paths)) {
-    const pathItem = specification.paths[url] as
+  if (typeof specification.paths === 'undefined') {
+    return []
+  }
+
+  const pathItems = Object.entries(specification.paths ?? {})
+  for (const item of pathItems) {
+    const [url, handlers] = item
+    const pathItem = handlers as
       | OpenAPIV2.PathItemObject
       | OpenAPIV3.PathItemObject
 
@@ -38,7 +44,6 @@ export async function fromOpenApi(
       }
 
       const operation = pathItem[method] as OpenAPIV3.OperationObject
-
       if (!operation) {
         continue
       }
@@ -51,23 +56,51 @@ export async function fromOpenApi(
           ? new URL(path, baseUrl).href
           : joinPaths(path, baseUrl)
 
-        const handler = new HttpHandler(
-          method,
-          requestUrl,
-          createResponseResolver(operation),
-          {
-            /**
-             * @fixme Support `once` the same as in HAR?
-             */
-          },
-        )
+        if (
+          typeof operation.responses === 'undefined' ||
+          operation.responses === null
+        ) {
+          const handler = new HttpHandler(
+            method,
+            requestUrl,
+            () => new Response('Not implemented', { status: 501 }),
+            {
+              /**
+               * @fixme Support `once` the same as in HAR?
+               */
+            },
+          )
 
-        handlers.push(handler)
+          requestHandlers.push(handler)
+
+          continue
+        }
+
+        for (const responseStatus of Object.keys(operation.responses)) {
+          const content = operation.responses[responseStatus]
+          if (!content) {
+            continue
+          }
+
+          const handler = new HttpHandler(
+            method,
+            requestUrl,
+            createResponseResolver(operation),
+            {
+              /**
+               * @fixme Support `once` the same as in HAR?
+               */
+            },
+          )
+
+          requestHandlers.push(handler)
+        }
+
       }
     }
   }
 
-  return handlers
+  return requestHandlers
 }
 
 function isSupportedHttpMethod(method: string): method is SupportedHttpMethods {

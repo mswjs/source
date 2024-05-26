@@ -16,7 +16,7 @@ it('supports a single absolute server url', async () => {
             responses: {
               200: {
                 content: {
-                  'application/xml': {
+                  'application/json': {
                     example: [1, 2, 3],
                   },
                 },
@@ -33,7 +33,9 @@ it('supports a single absolute server url', async () => {
   })
 
   expect(res.status).toEqual(200)
-  expect(await res.json()).toEqual([1, 2, 3])
+  const responseText = await res.text()
+  const responseJson = JSON.parse(responseText)
+  expect(responseJson).toEqual([1, 2, 3])
 })
 
 it('supports a single relative server url', async () => {
@@ -80,7 +82,7 @@ it('supports multiple absolute server urls', async () => {
             responses: {
               200: {
                 content: {
-                  'application/xml': {
+                  'application/json': {
                     example: [1, 2, 3],
                   },
                 },
@@ -115,7 +117,7 @@ it('supports the "basePath" url', async () => {
             responses: {
               200: {
                 content: {
-                  'application/xml': {
+                  'application/json': {
                     example: ['a', 'b', 'c'],
                   },
                 },

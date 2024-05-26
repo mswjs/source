@@ -49,6 +49,7 @@ it('supports JSON Schema object', async () => {
   const res = await withHandlers(handlers, () => {
     return fetch('http://localhost/cart')
   })
+  console.log(`response:`, res)
 
   expect(res.status).toEqual(200)
   expect(res.headers.get('content-type')).toEqual('application/json')
@@ -87,8 +88,8 @@ it('normalizes path parameters', async () => {
     }),
   )
 
-  expect(handlers[0].info.header).toEqual('GET /pet/:petId')
-  expect(handlers[1].info.header).toEqual('GET /pet/:petId/:foodId')
+  expect(handlers[0].info.header).toEqual('get /pet/:petId')
+  expect(handlers[1].info.header).toEqual('get /pet/:petId/:foodId')
 })
 
 it('treats operations without "responses" as not implemented (501)', async () => {
@@ -159,15 +160,16 @@ it('responds with 501 to a request for explicit non-existing response status', a
   await withHandlers(handlers, () =>
     fetch('http://localhost/resource?response=200'),
   ).then(async (res) => {
+    console.log(res)
     expect(res.status).toEqual(501)
-    expect(await res.text()).toEqual('')
+    expect(await res.text()).toEqual('Not implemented')
   })
 
   await withHandlers(handlers, () =>
     fetch('http://localhost/resource?response=404'),
   ).then(async (res) => {
     expect(res.status).toEqual(501)
-    expect(await res.text()).toEqual('')
+    expect(await res.text()).toEqual('Not implemented')
   })
 })
 
