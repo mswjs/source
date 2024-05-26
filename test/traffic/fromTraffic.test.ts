@@ -6,6 +6,7 @@ import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
 import { decodeBase64String } from '../../src/fromTraffic/utils/decodeBase64String'
 import { readArchive } from './utils'
 import { toResponse } from '../../src/fromTraffic/utils/harUtils'
+import { inspectHandlers } from '../support/inspectHandler'
 
 describe('fromTraffic', () => {
   it('throws an exception given no HAR object', () => {
@@ -42,7 +43,7 @@ describe('fromTraffic', () => {
     })
   })
 
-  it('supports skipping an entry using the "mapEntry" function', () => {
+  it('supports skipping an entry using the "mapEntry" function', async () => {
     const handlers = fromTraffic(
       {
         log: {
@@ -80,7 +81,11 @@ describe('fromTraffic', () => {
     )
 
     expect(handlers).toHaveLength(1)
-    expect(handlers[0].info.header).toEqual('get https://api.stripe.com')
+    const [initialRequestHandler] = await inspectHandlers(handlers)
+    expect(initialRequestHandler.handler).toEqual({
+      method: 'GET',
+      path: 'https://api.stripe.com',
+    })
   })
 })
 
