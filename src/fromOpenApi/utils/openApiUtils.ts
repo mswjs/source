@@ -59,7 +59,6 @@ export function toHeaders(
   request: Request,
   responseObject: OpenAPIV3.ResponseObject,
 ): Headers | undefined {
-  console.log(`toHeaders() request:`, request)
   const { content } = responseObject
   if (!content) {
     console.log(`content missing`)
