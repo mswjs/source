@@ -1,3 +1,5 @@
+import { encodeBase64String } from './encodeBase64String'
+import { isEqualBytes } from './isEqualBytes'
 import { toHeaders, toResponse, toResponseBody } from './harUtils'
 
 describe(toHeaders, () => {
@@ -61,15 +63,17 @@ describe(toResponseBody, () => {
   })
 
   it('decodes the base64-encoded response body', () => {
-    expect(
-      toResponseBody({
-        text: btoa('hello world'),
-        size: 11,
-        mimeType: 'text/plain',
-        encoding: 'base64',
-      }),
-    ).toEqual(Uint8Array.from('hello world', (c) => c.charCodeAt(0)))
-  })
+    const bodyBytes = Uint8Array.from('hello world', (c) => c.charCodeAt(0))
+    const responseBody = toResponseBody({
+      text: btoa('hello world'),
+      size: 11,
+      mimeType: 'text/plain',
+      encoding: 'base64',
+    })
+
+    expect(responseBody).toBeDefined()
+    expect(isEqualBytes(bodyBytes, responseBody as Uint8Array)).toBe(true)
+ })
 
   it.todo('handles a compressed response body')
 })

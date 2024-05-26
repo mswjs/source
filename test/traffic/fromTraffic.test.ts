@@ -80,7 +80,7 @@ describe('fromTraffic', () => {
     )
 
     expect(handlers).toHaveLength(1)
-    expect(handlers[0].info.header).toEqual('GET https://api.stripe.com')
+    expect(handlers[0].info.header).toEqual('get https://api.stripe.com')
   })
 })
 
@@ -123,7 +123,9 @@ describe('toResponseBody', () => {
     ).toEqual(expectedBody)
   })
 
-  it('returns a plain text response body as-is', () => {
-    expect(toResponse(createResponse('hello world'))).toEqual('hello world')
+  it('returns a plain text response body as-is', async () => {
+    const bodyResponse = toResponse(createResponse('hello world'))
+    const textOfResponse = await bodyResponse.text()
+    expect(textOfResponse).toEqual('hello world')
   })
 })
