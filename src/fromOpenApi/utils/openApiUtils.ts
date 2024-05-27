@@ -1,3 +1,4 @@
+import { STATUS_CODES } from 'node:http'
 import type { ResponseResolver } from 'msw'
 import { OpenAPIV3 } from 'openapi-types'
 import { evolveJsonSchema } from '../schema/evolve'
@@ -44,8 +45,10 @@ export function createResponseResolver(
       responseObject = fallbackResponse
     }
 
+    const status = Number(explicitResponseStatus || '200')
     return new Response(toBody(request, responseObject), {
-      status: Number(explicitResponseStatus || '200'),
+      status,
+      statusText: STATUS_CODES[status],
       headers: toHeaders(request, responseObject),
     })
   }

@@ -1,15 +1,11 @@
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { createOpenApiSpec } from '../support/createOpenApiSpec'
-import { withHandlers } from '../support/withHandlers'
+import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
 
-it('supports a single absolute server url', async () => {
+it('supports absolute server url', async () => {
   const handlers = await fromOpenApi(
     createOpenApiSpec({
-      servers: [
-        {
-          url: 'https://example.com',
-        },
-      ],
+      servers: [{ url: 'https://example.com' }],
       paths: {
         '/numbers': {
           get: {
@@ -27,28 +23,30 @@ it('supports a single absolute server url', async () => {
       },
     }),
   )
-
-  const res = await withHandlers(handlers, () => {
-    return fetch('https://example.com/numbers')
-  })
-
-  expect(res.status).toEqual(200)
-  const responseText = await res.text()
-  const responseJson = JSON.parse(responseText)
-  expect(responseJson).toEqual([1, 2, 3])
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    {
+      handler: {
+        method: 'GET',
+        // Must rebase request URLs against the "servers[0].url"
+        path: 'https://example.com/numbers',
+      },
+      response: {
+        status: 200,
+        statusText: 'OK',
+        headers: expect.arrayContaining([['content-type', 'application/json']]),
+        body: JSON.stringify([1, 2, 3]),
+      },
+    },
+  ])
 })
 
-it('supports a single relative server url', async () => {
+it('supports relative server url', async () => {
   const handlers = await fromOpenApi(
     createOpenApiSpec({
-      servers: [
-        {
-          url: '/v2',
-        },
-      ],
+      servers: [{ url: '/v2' }],
       paths: {
         '/token': {
-          get: {
+          post: {
             responses: {
               200: {
                 content: {
@@ -63,16 +61,23 @@ it('supports a single relative server url', async () => {
       },
     }),
   )
-
-  const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/v2/token')
-  })
-
-  expect(res.status).toEqual(200)
-  expect(await res.text()).toEqual('abc-123')
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    {
+      handler: {
+        method: 'POST',
+        path: 'http://localhost/v2/token',
+      },
+      response: {
+        status: 200,
+        statusText: 'OK',
+        headers: expect.arrayContaining([['content-type', 'plain/text']]),
+        body: 'abc-123',
+      },
+    },
+  ])
 })
 
-it('supports multiple absolute server urls', async () => {
+it('supports multiple server urls', async () => {
   const handlers = await fromOpenApi(
     createOpenApiSpec({
       servers: [{ url: 'https://example.com' }, { url: 'https://v2.mswjs.io' }],
@@ -93,18 +98,32 @@ it('supports multiple absolute server urls', async () => {
       },
     }),
   )
-
-  const responses = await withHandlers(handlers, () => {
-    return Promise.all([
-      fetch('https://example.com/numbers'),
-      fetch('https://v2.mswjs.io/numbers'),
-    ])
-  })
-
-  for (const res of responses) {
-    expect(res.status).toEqual(200)
-    expect(await res.json()).toEqual([1, 2, 3])
-  }
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    {
+      handler: {
+        method: 'GET',
+        path: 'https://example.com/numbers',
+      },
+      response: {
+        status: 200,
+        statusText: 'OK',
+        headers: expect.arrayContaining([['content-type', 'application/json']]),
+        body: JSON.stringify([1, 2, 3]),
+      },
+    },
+    {
+      handler: {
+        method: 'GET',
+        path: 'https://v2.mswjs.io/numbers',
+      },
+      response: {
+        status: 200,
+        statusText: 'OK',
+        headers: expect.arrayContaining([['content-type', 'application/json']]),
+        body: JSON.stringify([1, 2, 3]),
+      },
+    },
+  ])
 })
 
 it('supports the "basePath" url', async () => {
@@ -128,11 +147,18 @@ it('supports the "basePath" url', async () => {
       },
     }),
   )
-
-  const res = await withHandlers(handlers, () => {
-    return fetch('https://example.com/strings')
-  })
-
-  expect(res.status).toEqual(200)
-  expect(await res.json()).toEqual(['a', 'b', 'c'])
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    {
+      handler: {
+        method: 'GET',
+        path: 'https://example.com/strings',
+      },
+      response: {
+        status: 200,
+        statusText: 'OK',
+        headers: expect.arrayContaining([['content-type', 'application/json']]),
+        body: JSON.stringify(['a', 'b', 'c']),
+      },
+    },
+  ])
 })
