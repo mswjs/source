@@ -1,13 +1,10 @@
 import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
 import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
-import { normalizeLocalhost, readArchive } from './utils'
-
-const requestOrder = readArchive(
-  'test/traffic/fixtures/archives/request-order.har',
-)
+import { _toHeaders, normalizeLocalhost, readArchive } from './utils'
 
 it('respects the response sequence when repeatedly requesting the same endpoint', async () => {
-  const handlers = fromTraffic(requestOrder, normalizeLocalhost)
+  const har = readArchive('test/traffic/fixtures/archives/request-order.har')
+  const handlers = fromTraffic(har, normalizeLocalhost)
   expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
     // The first request handler returns a unique response.
     {
@@ -18,7 +15,7 @@ it('respects the response sequence when repeatedly requesting the same endpoint'
       response: {
         status: 200,
         statusText: 'OK',
-        headers: expect.any(Array),
+        headers: _toHeaders(har.log.entries[0].response.headers),
         body: 'one',
       },
     },
@@ -31,7 +28,7 @@ it('respects the response sequence when repeatedly requesting the same endpoint'
       response: {
         status: 200,
         statusText: 'OK',
-        headers: expect.any(Array),
+        headers: _toHeaders(har.log.entries[1].response.headers),
         body: 'two',
       },
     },
