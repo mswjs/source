@@ -1,7 +1,6 @@
 import { datatype, internet, finance } from 'faker'
 import { OpenAPIV3 } from 'openapi-types'
 import { randexp } from 'randexp'
-import { toBase64 } from '../../utils/toBase64.js'
 import { toBinary } from '../../utils/toBinary.js'
 
 export function evolveString(schema: OpenAPIV3.SchemaObject): string {
@@ -11,7 +10,7 @@ export function evolveString(schema: OpenAPIV3.SchemaObject): string {
 
   switch (schema.format?.toLowerCase()) {
     case 'byte': {
-      return toBase64(datatype.string())
+      return btoa(datatype.string())
     }
 
     case 'binary': {

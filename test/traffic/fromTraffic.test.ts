@@ -1,10 +1,11 @@
 /**
  * @vitest-environment node
  */
-import { Har, Response } from 'har-format'
-import { fromTraffic, toResponseBody } from '../../src/fromTraffic/fromTraffic'
-import { decodeBase64String } from '../../src/fromTraffic/utils/decodeBase64String'
+import Har from 'har-format'
+import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
 import { readArchive } from './utils'
+import { toResponse } from '../../src/fromTraffic/utils/harUtils'
+import { inspectHandlers } from '../support/inspectHandler'
 
 describe('fromTraffic', () => {
   it('throws an exception given no HAR object', () => {
@@ -41,7 +42,7 @@ describe('fromTraffic', () => {
     })
   })
 
-  it('supports skipping an entry using the "mapEntry" function', () => {
+  it('supports skipping an entry using the "mapEntry" function', async () => {
     const handlers = fromTraffic(
       {
         log: {
@@ -70,7 +71,7 @@ describe('fromTraffic', () => {
             },
           ],
         },
-      } as Har,
+      } as Har.Har,
       (entry) => {
         if (entry.request.url === 'https://api.stripe.com') {
           return entry
@@ -79,7 +80,11 @@ describe('fromTraffic', () => {
     )
 
     expect(handlers).toHaveLength(1)
-    expect(handlers[0].info.path).toEqual('https://api.stripe.com')
+    const [initialRequestHandler] = await inspectHandlers(handlers)
+    expect(initialRequestHandler.handler).toEqual({
+      method: 'GET',
+      path: 'https://api.stripe.com',
+    })
   })
 })
 
@@ -87,7 +92,7 @@ describe('toResponseBody', () => {
   function createResponse(
     body?: string,
     options?: { encoding?: string },
-  ): Response {
+  ): Har.Response {
     return {
       status: 200,
       statusText: 'OK',
@@ -107,22 +112,22 @@ describe('toResponseBody', () => {
   }
 
   it('returns undefined given response with no body', () => {
-    expect(toResponseBody(createResponse(undefined))).toEqual(undefined)
+    expect(toResponse(createResponse(undefined)).body).toBeNull()
   })
 
-  it('returns a decoded text body given a base64-encoded response body', () => {
-    const encoder = new TextEncoder()
-    const body = encoder.encode('hello world')
-    const expectedBody = decodeBase64String(
-      encoder.encode('hello world').toString(),
+  it('returns a decoded text body given a base64-encoded response body', async () => {
+    const exepctedBody = 'hello world'
+    const response = toResponse(
+      createResponse(btoa(exepctedBody), { encoding: 'base64' }),
     )
+    const responseText = await response.text()
 
-    expect(
-      toResponseBody(createResponse(body.toString(), { encoding: 'base64' })),
-    ).toEqual(expectedBody)
+    expect(responseText).toEqual(exepctedBody)
   })
 
-  it('returns a plain text response body as-is', () => {
-    expect(toResponseBody(createResponse('hello world'))).toEqual('hello world')
+  it('returns a plain text response body as-is', async () => {
+    const bodyResponse = toResponse(createResponse('hello world'))
+    const textOfResponse = await bodyResponse.text()
+    expect(textOfResponse).toEqual('hello world')
   })
 })

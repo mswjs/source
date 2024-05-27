@@ -1,6 +1,10 @@
 import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
 import { withHandlers } from '../support/withHandlers'
 import { createOpenApiSpec } from '../support/createOpenApiSpec'
+import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
+
+const ID_REGEXP =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 it('supports JSON Schema object', async () => {
   const handlers = await fromOpenApi(
@@ -46,30 +50,25 @@ it('supports JSON Schema object', async () => {
       },
     }),
   )
-  const res = await withHandlers(handlers, () => {
+
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/cart')
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/json')
-
-  const json: {
-    id: string
-    items: Array<{ id: string; price: number }>
-  } = await res.json()
-
-  expect(Object.keys(json)).toEqual(['id', 'items'])
-  expect(json.id).toMatch(
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-  )
-  expect(json.items).toBeInstanceOf(Array)
-
-  json.items.forEach((item) => {
-    expect(Object.keys(item)).toEqual(['id', 'price'])
-    expect(item.id).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-    )
-    expect(typeof item.price).toEqual('number')
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/json')
+  expect(await response.json()).toEqual({
+    id: expect.stringMatching(ID_REGEXP),
+    items: [
+      expect.objectContaining({
+        id: expect.stringMatching(ID_REGEXP),
+        price: expect.any(Number),
+      }),
+      expect.objectContaining({
+        id: expect.stringMatching(ID_REGEXP),
+        price: expect.any(Number),
+      }),
+    ],
   })
 })
 
@@ -86,9 +85,20 @@ it('normalizes path parameters', async () => {
       },
     }),
   )
-
-  expect(handlers[0].info.header).toEqual('GET /pet/:petId')
-  expect(handlers[1].info.header).toEqual('GET /pet/:petId/:foodId')
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    expect.objectContaining({
+      handler: {
+        method: 'GET',
+        path: 'http://localhost/pet/:petId',
+      },
+    }),
+    expect.objectContaining({
+      handler: {
+        method: 'GET',
+        path: 'http://localhost/pet/:petId/:foodId',
+      },
+    }),
+  ])
 })
 
 it('treats operations without "responses" as not implemented (501)', async () => {
@@ -104,21 +114,35 @@ it('treats operations without "responses" as not implemented (501)', async () =>
       },
     }),
   )
-
-  await withHandlers(handlers, () =>
-    fetch('http://localhost/no-responses'),
-  ).then((res) => {
-    expect(res.status).toEqual(501)
-  })
-
-  await withHandlers(handlers, () =>
-    fetch('http://localhost/empty-responses'),
-  ).then((res) => {
-    expect(res.status).toEqual(501)
-  })
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    {
+      handler: {
+        method: 'GET',
+        path: 'http://localhost/no-responses',
+      },
+      response: {
+        status: 501,
+        statusText: 'Not Implemented',
+        headers: [['content-type', 'text/plain;charset=UTF-8']],
+        body: 'Not Implemented',
+      },
+    },
+    {
+      handler: {
+        method: 'GET',
+        path: 'http://localhost/empty-responses',
+      },
+      response: {
+        status: 501,
+        statusText: 'Not Implemented',
+        headers: [['content-type', 'text/plain;charset=UTF-8']],
+        body: 'Not Implemented',
+      },
+    },
+  ])
 })
 
-it('responds with an empty 200 to a request without explicit 200 response', async () => {
+it('treats responses without a 200 scenario as not implemented', async () => {
   const handlers = await fromOpenApi(
     createOpenApiSpec({
       paths: {
@@ -134,11 +158,11 @@ it('responds with an empty 200 to a request without explicit 200 response', asyn
     }),
   )
 
-  const res = await withHandlers(handlers, () =>
-    fetch('http://localhost/no-200'),
-  )
-  expect(res.status).toEqual(200)
-  expect(await res.text()).toEqual('')
+  expect(
+    await withHandlers(handlers, () => {
+      return fetch('http://localhost/no-200')
+    }),
+  ).toEqualResponse(new Response('Not Implemented', { status: 501 }))
 })
 
 it('responds with 501 to a request for explicit non-existing response status', async () => {
@@ -156,19 +180,17 @@ it('responds with 501 to a request for explicit non-existing response status', a
     }),
   )
 
-  await withHandlers(handlers, () =>
-    fetch('http://localhost/resource?response=200'),
-  ).then(async (res) => {
-    expect(res.status).toEqual(501)
-    expect(await res.text()).toEqual('')
-  })
+  await expect(
+    await withHandlers(handlers, () => {
+      return fetch('http://localhost/resource?response=200')
+    }),
+  ).toEqualResponse(new Response('Not Implemented', { status: 501 }))
 
-  await withHandlers(handlers, () =>
-    fetch('http://localhost/resource?response=404'),
-  ).then(async (res) => {
-    expect(res.status).toEqual(501)
-    expect(await res.text()).toEqual('')
-  })
+  await expect(
+    await withHandlers(handlers, () => {
+      return fetch('http://localhost/resource?response=404')
+    }),
+  ).toEqualResponse(new Response('Not Implemented', { status: 501 }))
 })
 
 it('respects the "Accept" request header', async () => {
@@ -196,27 +218,56 @@ it('respects the "Accept" request header', async () => {
   )
 
   // The "Accept" request header with a single value.
-  await withHandlers(handlers, () => {
-    return fetch('http://localhost/user', {
+  await expect(
+    await withHandlers(handlers, () => {
+      return fetch('http://localhost/user', {
+        headers: {
+          Accept: 'application/xml',
+        },
+      })
+    }),
+  ).toEqualResponse(
+    new Response('<id>xml-1</id>', {
+      status: 200,
       headers: {
-        Accept: 'application/xml',
+        'Content-Type': 'application/xml',
       },
-    })
-  }).then(async (res) => {
-    expect(res.status).toEqual(200)
-    expect(await res.text()).toEqual(`<id>xml-1</id>`)
-  })
+    }),
+  )
 
-  // The "Accept" request header with multiple values.
-  await withHandlers(handlers, () => {
-    return fetch('http://localhost/user', {
+  await expect(
+    await withHandlers(handlers, () => {
+      return fetch('http://localhost/user', {
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+    }),
+  ).toEqualResponse(
+    new Response(JSON.stringify({ id: 'user-1' }), {
+      status: 200,
       headers: {
-        Accept: 'application/json, application/xml',
+        'Content-Type': 'application/json',
       },
-    })
-  }).then(async (res) => {
-    expect(res.status).toEqual(200)
-    // The first MimeType is used for the mocked data.
-    expect(await res.text()).toEqual(`{"id":"user-1"}`)
-  })
+    }),
+  )
+
+  // Uses the response matching the first value of the "Accept"
+  // request header if multiple response mime types are accepted.
+  await expect(
+    await withHandlers(handlers, () => {
+      return fetch('http://localhost/user', {
+        headers: {
+          Accept: 'application/json, application/xml',
+        },
+      })
+    }),
+  ).toEqualResponse(
+    new Response(JSON.stringify({ id: 'user-1' }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }),
+  )
 })

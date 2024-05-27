@@ -10,6 +10,7 @@ export function evolveJsonSchema(
   schema: OpenAPIV3.SchemaObject,
 ): string | number | boolean | unknown[] | Record<string, unknown> | undefined {
   // Always use an explicit example first.
+  // A "schema" field may equal an example if it's a resolved reference.
   if (schema.example) {
     return schema.example
   }
