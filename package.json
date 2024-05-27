@@ -6,15 +6,15 @@
   "module": "./lib/esm/index.mjs",
   "types": "./lib/cjs/index.d.ts",
   "exports": {
-    ".": {
-      "require": "./lib/cjs/index.cjs",
-      "import": "./lib/esm/index.mjs",
-      "default": "./lib/cjs/index.js"
-    }
+    "./open-api": {
+      "default": "./lib/open-api/fromOpenApi.mjs"
+    },
+    "./traffic": {
+      "default": "./lib/traffic/fromTraffic.mjs"
+    },
+    "./package.json": "./package.json"
   },
-  "files": [
-    "lib"
-  ],
+  "files": ["lib"],
   "repository": "git@github.com:mswjs/source.git",
   "author": "Artem Zakharchenko <me@kettanaito.com>",
   "scripts": {
@@ -27,9 +27,7 @@
     "prepublishOnly": "pnpm test && pnpm build"
   },
   "lint-staged": {
-    "*.ts": [
-      "prettier --write"
-    ]
+    "*.ts": ["prettier --write"]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",

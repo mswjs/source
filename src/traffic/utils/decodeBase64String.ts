@@ -3,5 +3,4 @@ export function decodeBase64String(data: string): Uint8Array {
   const encoder = new TextEncoder()
   const bytes = encoder.encode(binaryString)
   return bytes
-
 }

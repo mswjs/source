@@ -1,28 +1,12 @@
-import { defineConfig, Options } from 'tsup'
+import { defineConfig } from 'tsup'
 
-const commonOptions = {
+export default defineConfig({
+  entry: ['!**/*.test.ts', 'src/open-api/**/*.ts', 'src/traffic/**/*.ts'],
+  format: 'esm',
+  outDir: './lib',
+  bundle: false,
+  splitting: true,
   clean: true,
   sourcemap: true,
   tsconfig: './tsconfig.build.json',
-  // dts: true,
-} satisfies Options
-
-const esm = defineConfig({
-  entry: ['src/**/*.ts'],
-  format: 'esm',
-  outDir: './lib/esm',
-  bundle: false,
-  splitting: true,
-  ...commonOptions,
 })
-
-const cjs = defineConfig({
-  entry: ['src/index.ts'],
-  format: 'cjs',
-  outDir: './lib/cjs',
-  bundle: true,
-  splitting: false,
-  ...commonOptions,
-})
-
-export default [esm, cjs]

@@ -1,6 +1,6 @@
-import { encodeBase64String } from '../encodeBase64String'
-import { decodeBase64String } from '../decodeBase64String'
-import { fromByteArray } from '../fromByteArray'
+import { encodeBase64String } from './encodeBase64String'
+import { decodeBase64String } from './decodeBase64String'
+import { fromByteArray } from './fromByteArray'
 
 describe('base64strings', () => {
   test('should be able to decode base64 string', () => {
@@ -17,5 +17,4 @@ describe('base64strings', () => {
     const asString = fromByteArray(encodedString)
     expect(asString).toEqual(base64String)
   })
-
 })
