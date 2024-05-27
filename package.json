@@ -2,9 +2,6 @@
   "name": "@mswjs/source",
   "version": "0.0.0",
   "description": "Generate MSW request handlers from OpenAPI documents, HAR archives, and other sources.",
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.mjs",
-  "types": "./lib/cjs/index.d.ts",
   "exports": {
     "./open-api": {
       "default": "./lib/open-api/fromOpenApi.mjs"
