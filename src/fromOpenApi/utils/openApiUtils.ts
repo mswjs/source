@@ -226,7 +226,7 @@ export function toBody(
       mediaTypeObject.schema as OpenAPIV3.SchemaObject,
     )
 
-    return JSON.stringify(resolvedResponse, null, 2)
+    return JSON.stringify(resolvedResponse)
   }
 
   return null
