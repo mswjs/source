@@ -50,23 +50,23 @@ const entities = {
 }
 
 it('POST /pet', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/pet', { method: 'POST' })
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/xml')
-  expect(await res.json()).toEqual(entities.pet)
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/xml')
+  expect(await response.json()).toEqual(entities.pet)
 })
 
 it('PUT /pet', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/pet', { method: 'PUT' })
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/xml')
-  expect(await res.json()).toEqual(entities.pet)
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/xml')
+  expect(await response.json()).toEqual(entities.pet)
 })
 
 it('GET /pet/findByStatus', async () => {
@@ -82,60 +82,56 @@ it('GET /pet/findByStatus', async () => {
 })
 
 it('GET /pet/findByTags', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/pet/findByTags')
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/xml')
-  expect(await res.json()).toEqual(
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/xml')
+  expect(await response.json()).toEqual(
     expect.arrayContaining([expect.objectContaining(entities.pet)]),
   )
 })
 
 it('GET /pet/{petId}', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/pet/abc-123')
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/xml')
-  expect(await res.json()).toEqual(entities.pet)
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/xml')
+  expect(await response.json()).toEqual(entities.pet)
 })
 
 it('POST /pet/{petId}', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/pet/abc-123', { method: 'POST' })
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual(null)
-  expect(await res.text()).toEqual('')
+  // Petstore does not describe a 200 scenario for this POST endpoint.
+  expect(response.status).toEqual(501)
+  expect(await response.text()).toEqual('Not Implemented')
 })
 
 it('DELETE /pet/{petId}', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/pet/abc-123', { method: 'DELETE' })
   })
 
-  // The "DELETE /pet/{petId}" does not describe a 200 response.
-  // This implies that successful resource deletion is responded with
-  // an empty 200 OK response that needs no explicit specification.
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual(null)
-  expect(await res.text()).toEqual('')
+  expect(response.status).toEqual(501)
+  expect(await response.text()).toEqual('Not Implemented')
 })
 
 it('POST http://localhost/v3/pet/:petId/uploadImage', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/pet/abc-123/uploadImage', {
       method: 'POST',
     })
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/json')
-  expect(await res.json()).toEqual({
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/json')
+  expect(await response.json()).toEqual({
     code: expect.any(Number),
     message: expect.any(String),
     type: expect.any(String),
@@ -146,14 +142,14 @@ it('POST http://localhost/v3/pet/:petId/uploadImage', async () => {
  * Inventory.
  */
 it('GET /store/inventory', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/store/inventory')
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/json')
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/json')
 
-  const json = await res.json()
+  const json = await response.json()
   const keys = Object.keys(json)
 
   // Empty response is also okay, additional properties are optional.
@@ -169,98 +165,97 @@ it('GET /store/inventory', async () => {
 })
 
 it('POST /store/order', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/store/order', { method: 'POST' })
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/json')
-  expect(await res.json()).toEqual(entities.order)
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/json')
+  expect(await response.json()).toEqual(entities.order)
 })
 
 it('GET /store/order/{orderId}', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/store/order/abc-123')
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/xml')
-  expect(await res.json()).toEqual(entities.order)
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/xml')
+  expect(await response.json()).toEqual(entities.order)
 })
 
 /**
  * User.
  */
 it('POST /user', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/user', { method: 'POST' })
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/json')
-  expect(await res.json()).toEqual(entities.user)
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/json')
+  expect(await response.json()).toEqual(entities.user)
 })
 
 it('POST /user/createWithList', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/user/createWithList', {
       method: 'POST',
     })
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/xml')
-  expect(await res.json()).toEqual(entities.user)
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/xml')
+  expect(await response.json()).toEqual(entities.user)
 })
 
 it('GET /user/login', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/user/login')
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/xml')
-  expect(await res.text()).toEqual(expect.any(String))
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/xml')
+  expect(await response.text()).toEqual(expect.any(String))
 })
 
 it('GET /user/logout', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/user/logout')
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual(null)
-  expect(await res.text()).toEqual('')
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual(null)
+  expect(await response.text()).toEqual('')
 })
 
 it('GET /user/:username', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/user/john-james')
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual('application/xml')
-  expect(await res.json()).toEqual(entities.user)
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual('application/xml')
+  expect(await response.json()).toEqual(entities.user)
 })
 
 it('PUT /user/:username', async () => {
-  const res = await withHandlers(handlers, () => {
+  const response = await withHandlers(handlers, () => {
     return fetch('http://localhost/v3/user/john-james', { method: 'PUT' })
   })
 
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual(null)
-  expect(await res.text()).toEqual('')
+  expect(response.status).toEqual(200)
+  expect(response.headers.get('content-type')).toEqual(null)
+  expect(await response.text()).toEqual('')
 })
 
 it('DELETE /user/:username', async () => {
-  const res = await withHandlers(handlers, () => {
-    return fetch('http://localhost/v3/user/john-james', {
-      method: 'DELETE',
-    })
-  })
-
-  expect(res.status).toEqual(200)
-  expect(res.headers.get('content-type')).toEqual(null)
-  expect(await res.text()).toEqual('')
+  // Does not describe the 200 response example.
+  await expect(
+    await withHandlers(handlers, () => {
+      return fetch('http://localhost/v3/user/john-james', {
+        method: 'DELETE',
+      })
+    }),
+  ).toEqualResponse(new Response('Not Implemented', { status: 501 }))
 })
