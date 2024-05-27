@@ -12,10 +12,16 @@ export function createResponseResolver(
 
     // Treat operations that describe no responses as not implemented.
     if (responses == null) {
-      return new Response('Not implemented', { status: 501 })
+      return new Response('Not Implemented', {
+        status: 501,
+        statusText: 'Not Implemented',
+      })
     }
     if (Object.keys(responses).length === 0) {
-      return new Response('Not implemented', { status: 501 })
+      return new Response('Not Implemented', {
+        status: 501,
+        statusText: 'Not Implemented',
+      })
     }
 
     let responseObject: OpenAPIV3.ResponseObject
@@ -29,7 +35,10 @@ export function createResponseResolver(
       ] as OpenAPIV3.ResponseObject
 
       if (!responseByStatus) {
-        return new Response('Not implemented', { status: 501 })
+        return new Response('Not Implemented', {
+          status: 501,
+          statusText: 'Not Implemented',
+        })
       }
 
       responseObject = responseByStatus
@@ -39,7 +48,10 @@ export function createResponseResolver(
         (responses.default as OpenAPIV3.ResponseObject)
 
       if (!fallbackResponse) {
-        return new Response('Not implemented', { status: 501 })
+        return new Response('Not Implemented', {
+          status: 501,
+          statusText: 'Not Implemented',
+        })
       }
 
       responseObject = fallbackResponse

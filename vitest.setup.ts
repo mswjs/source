@@ -1,11 +1,11 @@
 import { invariant } from 'outvariant'
 
 expect.extend({
-  toEqualBytes(expected: unknown, actual: unknown) {
-    invariant(isUint8Array(expected), '')
-    invariant(isUint8Array(actual), '')
+  toEqualBytes(actual: unknown, expected: unknown) {
+    invariant(isUint8Array(actual), 'Expected actual to be a Uint8Array')
+    invariant(isUint8Array(expected), 'Expected expected to be a Uint8Array')
 
-    if (expected.length !== actual.length) {
+    if (actual.length !== expected.length) {
       return {
         pass: false,
         message: () =>
@@ -30,6 +30,55 @@ expect.extend({
     return {
       pass: true,
       message: () => '...',
+    }
+  },
+  async toEqualResponse(actual: Response, expected: Record<string, unknown>) {
+    invariant(
+      actual instanceof Response,
+      'Expected actual to be an instance of Response',
+    )
+    invariant(
+      expected instanceof Response,
+      'Expected expected to be an instance of Response',
+    )
+
+    // Status code.
+    if (actual.status !== expected.status) {
+      return {
+        pass: false,
+        message: () => 'Response status codes are not equal',
+        actual: actual.status,
+        expected: expected.status,
+      }
+    }
+
+    // Headers.
+    if (
+      !this.equals(Array.from(actual.headers), Array.from(expected.headers))
+    ) {
+      return {
+        pass: false,
+        message: () => 'Response headers are not equal',
+        actual: Array.from(actual.headers),
+        expected: Array.from(expected.headers),
+      }
+    }
+
+    // Body.
+    const actualBody = await actual.text()
+    const expectedBody = await expected.text()
+    if (actualBody !== expectedBody) {
+      return {
+        pass: false,
+        message: () => 'Response bodies are not equal',
+        actual: actualBody,
+        expected: expectedBody,
+      }
+    }
+
+    return {
+      pass: true,
+      message: () => 'Responses are equal',
     }
   },
 })

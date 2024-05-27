@@ -63,7 +63,11 @@ export async function fromOpenApi(
           const handler = new HttpHandler(
             method,
             requestUrl,
-            () => new Response('Not implemented', { status: 501 }),
+            () =>
+              new Response('Not Implemented', {
+                status: 501,
+                statusText: 'Not Implemented',
+              }),
             {
               /**
                * @fixme Support `once` the same as in HAR?
