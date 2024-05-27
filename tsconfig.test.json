@@ -10,5 +10,5 @@
     "types": ["vitest/globals"],
     "lib": ["dom", "DOM.Iterable"]
   },
-  "include": ["test", "src/**/*.test.ts"]
+  "include": ["./vitest.d.ts", "./vitest.setup.ts", "test", "src/**/*.test.ts"]
 }

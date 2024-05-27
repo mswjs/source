@@ -3,12 +3,9 @@
  */
 import Har from 'har-format'
 import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
-import { decodeBase64String } from '../../src/fromTraffic/utils/decodeBase64String'
 import { readArchive } from './utils'
 import { toResponse } from '../../src/fromTraffic/utils/harUtils'
 import { inspectHandlers } from '../support/inspectHandler'
-import { encodeBase64String } from '../../src/fromTraffic/utils/encodeBase64String'
-import { isEqualBytes } from '../../src/fromTraffic/utils/isEqualBytes'
 
 describe('fromTraffic', () => {
   it('throws an exception given no HAR object', () => {
@@ -120,12 +117,12 @@ describe('toResponseBody', () => {
 
   it('returns a decoded text body given a base64-encoded response body', async () => {
     const exepctedBody = 'hello world'
-    const response = toResponse(createResponse(btoa(exepctedBody), { encoding: 'base64' }))
+    const response = toResponse(
+      createResponse(btoa(exepctedBody), { encoding: 'base64' }),
+    )
     const responseText = await response.text()
 
-    expect(
-      responseText
-    ).toEqual(exepctedBody)
+    expect(responseText).toEqual(exepctedBody)
   })
 
   it('returns a plain text response body as-is', async () => {

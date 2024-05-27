@@ -1,5 +1,3 @@
-import { encodeBase64String } from './encodeBase64String'
-import { isEqualBytes } from './isEqualBytes'
 import { toHeaders, toResponse, toResponseBody } from './harUtils'
 
 describe(toHeaders, () => {
@@ -71,9 +69,8 @@ describe(toResponseBody, () => {
       encoding: 'base64',
     })
 
-    expect(responseBody).toBeDefined()
-    expect(isEqualBytes(bodyBytes, responseBody as Uint8Array)).toBe(true)
- })
+    expect(responseBody).toEqualBytes(bodyBytes)
+  })
 
   it.todo('handles a compressed response body')
 })
