@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "@mswjs/source",
   "version": "0.0.0",
   "description": "Generate MSW request handlers from OpenAPI documents, HAR archives, and other sources.",
@@ -11,7 +12,9 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["lib"],
+  "files": [
+    "lib"
+  ],
   "repository": "git@github.com:mswjs/source.git",
   "author": "Artem Zakharchenko <me@kettanaito.com>",
   "scripts": {
@@ -24,7 +27,9 @@
     "prepublishOnly": "pnpm test && pnpm build"
   },
   "lint-staged": {
-    "*.ts": ["prettier --write"]
+    "*.ts": [
+      "prettier --write"
+    ]
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",
