@@ -1,5 +1,5 @@
-import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
-import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
+import { fromOpenApi } from '../../src/open-api/from-open-api.js'
+import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
 
 it('supports explicit response example', async () => {
   const document = require('./fixtures/response-example.json')

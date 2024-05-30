@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
-import { readArchive, normalizeLocalhost, _toHeaders } from './utils'
-import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
+import { fromTraffic } from '../../src/traffic/from-traffic.js'
+import { readArchive, normalizeLocalhost, _toHeaders } from './utils/index.js'
+import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
 
 it('creates a request handler from a recorded text response', async () => {
   const har = readArchive('test/traffic/fixtures/archives/response-text.har')

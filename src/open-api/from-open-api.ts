@@ -1,10 +1,10 @@
 import { RequestHandler, HttpHandler, http } from 'msw'
 import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
 import SwaggerParser from '@apidevtools/swagger-parser'
-import { normalizeSwaggerUrl } from './utils/normalizeSwaggerUrl.js'
-import { getServers } from './utils/getServers.js'
+import { normalizeSwaggerUrl } from './utils/normalize-swagger-url.js'
+import { getServers } from './utils/get-servers.js'
 import { isAbsoluteUrl, joinPaths } from './utils/url.js'
-import { createResponseResolver } from './utils/openApiUtils.js'
+import { createResponseResolver } from './utils/open-api-utils.js'
 
 type SupportedHttpMethods = keyof typeof http
 const supportedHttpMethods = Object.keys(

@@ -1,6 +1,6 @@
-import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
-import { withHandlers } from '../../test/support/withHandlers'
-import { normalizeLocalhost, readArchive } from './utils'
+import { fromTraffic } from '../../src/traffic/from-traffic.js'
+import { withHandlers } from '../../test/support/with-handlers.js'
+import { normalizeLocalhost, readArchive } from './utils/index.js'
 
 const responseTiming = readArchive(
   'test/traffic/fixtures/archives/response-timing.har',

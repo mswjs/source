@@ -2,12 +2,14 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "module": "preserve",
-    "target": "es2015",
+    "module": "es2020",
+    "target": "es2022",
     "moduleResolution": "bundler",
+    "rootDir": "./src",
     "outDir": "./lib",
+    "sourceMap": true,
     "declaration": true
   },
-  "include": ["src"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

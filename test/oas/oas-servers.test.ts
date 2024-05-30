@@ -1,6 +1,6 @@
-import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
-import { createOpenApiSpec } from '../support/createOpenApiSpec'
-import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
+import { fromOpenApi } from '../../src/open-api/from-open-api.js'
+import { createOpenApiSpec } from '../support/create-open-api-spec.js'
+import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
 
 it('supports absolute server url', async () => {
   const handlers = await fromOpenApi(

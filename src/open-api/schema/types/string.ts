@@ -1,7 +1,7 @@
 import { datatype, internet, finance } from 'faker'
 import { OpenAPIV3 } from 'openapi-types'
 import { randexp } from 'randexp'
-import { toBinary } from '../../utils/toBinary.js'
+import { toBinary } from '../../utils/to-binary.js'
 
 export function evolveString(schema: OpenAPIV3.SchemaObject): string {
   if (schema.pattern) {

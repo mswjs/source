@@ -1,7 +1,7 @@
 import { invariant } from 'outvariant'
 import type Har from 'har-format'
 import { RequestHandler, HttpHandler, cleanUrl, delay } from 'msw'
-import { toResponse } from './utils/harUtils'
+import { toResponse } from './utils/har-utils.js'
 
 export type MapEntryFunction = (entry: Har.Entry) => Har.Entry | undefined
 
@@ -34,8 +34,11 @@ export function fromTraffic(
   // Loop over the HAR entries from right to left.
   for (let i = archive.log.entries.length - 1; i >= 0; i--) {
     const rawEntry = archive.log.entries[i]
-    const entry = mapEntry ? mapEntry(rawEntry) : rawEntry
+    if (!rawEntry) {
+      continue
+    }
 
+    const entry = mapEntry ? mapEntry(rawEntry) : rawEntry
     if (!entry) {
       continue
     }

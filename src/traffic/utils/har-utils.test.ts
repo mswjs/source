@@ -1,4 +1,4 @@
-import { toHeaders, toResponse, toResponseBody } from './harUtils'
+import { toHeaders, toResponse, toResponseBody } from './har-utils'
 
 describe(toHeaders, () => {
   it('supports a single har headers', () => {

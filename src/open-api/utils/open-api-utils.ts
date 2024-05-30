@@ -2,7 +2,7 @@ import { STATUS_CODES } from 'node:http'
 import type { ResponseResolver } from 'msw'
 import { OpenAPIV3 } from 'openapi-types'
 import { evolveJsonSchema } from '../schema/evolve'
-import { toString } from './toString'
+import { toString } from './to-string.js'
 
 export function createResponseResolver(
   operation: OpenAPIV3.OperationObject,
@@ -152,7 +152,7 @@ export function toHeaders(
 export function toBody(
   request: Request,
   responseObject: OpenAPIV3.ResponseObject,
-): BodyInit {
+): RequestInit['body'] {
   const { content } = responseObject
   if (!content) {
     return null

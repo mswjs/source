@@ -1,6 +1,6 @@
 import { RequestHandler } from 'msw'
-import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
-import { withHandlers } from '../../test/support/withHandlers'
+import { fromOpenApi } from '../../src/open-api/from-open-api.js'
+import { withHandlers } from '../../test/support/with-handlers.js'
 
 const petstoreSpecification = require('./fixtures/petstore.json')
 

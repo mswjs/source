@@ -1,16 +1,18 @@
 {
+  "type": "module",
   "name": "@mswjs/source",
   "version": "0.0.0",
   "description": "Generate MSW request handlers from OpenAPI documents, HAR archives, and other sources.",
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.mjs",
-  "types": "./lib/cjs/index.d.ts",
   "exports": {
-    ".": {
-      "require": "./lib/cjs/index.cjs",
-      "import": "./lib/esm/index.mjs",
-      "default": "./lib/cjs/index.js"
-    }
+    "./open-api": {
+      "types": "./lib/open-api/from-open-api.d.ts",
+      "default": "./lib/open-api/from-open-api.js"
+    },
+    "./traffic": {
+      "types": "./lib/traffic/from-traffic.d.ts",
+      "default": "./lib/traffic/from-traffic.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "lib"
@@ -22,9 +24,9 @@
     "har:fixture": "ts-node ./test/traffic/fixtures/requests/command.ts",
     "prepare": "pnpm simple-git-hooks init",
     "prebuild": "pnpm lint",
-    "build": "tsup",
+    "build": "tsc -p ./tsconfig.build.json",
     "test": "vitest",
-    "prepublishOnly": "pnpm test && pnpm build"
+    "prepack": "pnpm test && pnpm build"
   },
   "lint-staged": {
     "*.ts": [
@@ -58,7 +60,6 @@
     "simple-git-hooks": "^2.8.1",
     "ts-node": "^10.9.1",
     "tslib": "^2.3.1",
-    "tsup": "^8.0.2",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   },
