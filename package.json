@@ -26,7 +26,7 @@
     "prebuild": "pnpm lint",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "vitest",
-    "prepublishOnly": "pnpm test && pnpm build"
+    "prepack": "pnpm test && pnpm build"
   },
   "lint-staged": {
     "*.ts": [
