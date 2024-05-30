@@ -2,11 +2,12 @@
   "compilerOptions": {
     "strict": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
     "downlevelIteration": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
-    "lib": ["DOM.Iterable"]
+    "lib": ["es2022"]
   }
 }

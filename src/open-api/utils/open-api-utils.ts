@@ -152,7 +152,7 @@ export function toHeaders(
 export function toBody(
   request: Request,
   responseObject: OpenAPIV3.ResponseObject,
-): BodyInit {
+): RequestInit['body'] {
   const { content } = responseObject
   if (!content) {
     return null

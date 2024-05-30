@@ -5,10 +5,12 @@
   "description": "Generate MSW request handlers from OpenAPI documents, HAR archives, and other sources.",
   "exports": {
     "./open-api": {
-      "default": "./lib/open-api/fromOpenApi.mjs"
+      "types": "./lib/open-api/from-open-api.d.ts",
+      "default": "./lib/open-api/from-open-api.js"
     },
     "./traffic": {
-      "default": "./lib/traffic/fromTraffic.mjs"
+      "types": "./lib/traffic/from-traffic.d.ts",
+      "default": "./lib/traffic/from-traffic.js"
     },
     "./package.json": "./package.json"
   },
@@ -22,7 +24,7 @@
     "har:fixture": "ts-node ./test/traffic/fixtures/requests/command.ts",
     "prepare": "pnpm simple-git-hooks init",
     "prebuild": "pnpm lint",
-    "build": "tsup",
+    "build": "tsc -p ./tsconfig.build.json",
     "test": "vitest",
     "prepublishOnly": "pnpm test && pnpm build"
   },
@@ -58,7 +60,6 @@
     "simple-git-hooks": "^2.8.1",
     "ts-node": "^10.9.1",
     "tslib": "^2.3.1",
-    "tsup": "^8.0.2",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   },
