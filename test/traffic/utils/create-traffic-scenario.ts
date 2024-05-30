@@ -1,5 +1,5 @@
 import { HttpServer, HttpServerMiddleware } from '@open-draft/test-server/http'
-import { generateHttpArchive, TrafficDefinition } from './generateHttpArchive'
+import { generateHttpArchive, TrafficDefinition } from './generate-http-archive'
 
 export async function createTrafficScenario(
   middleware: HttpServerMiddleware,

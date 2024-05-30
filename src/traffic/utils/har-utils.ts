@@ -1,5 +1,5 @@
 import type Har from 'har-format'
-import { decodeBase64String } from './decodeBase64String'
+import { decodeBase64String } from './decode-base64-string.js'
 
 export function toHeaders(harHeaders: Array<Har.Header>): Headers {
   return new Headers(

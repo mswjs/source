@@ -1,8 +1,8 @@
 /**
  * @vitest-environment jsdom
  */
-import { getServers } from '../../../src/fromOpenApi/utils/getServers'
-import { createOpenApiSpec } from '../../support/createOpenApiSpec'
+import { createOpenApiSpec } from '../../../test/support/create-open-api-spec.js'
+import { getServers } from './get-servers.js'
 
 it('returns the "basePath" if present', () => {
   const servers = getServers(

@@ -1,7 +1,7 @@
-import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
-import { withHandlers } from '../support/withHandlers'
-import { createOpenApiSpec } from '../support/createOpenApiSpec'
-import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
+import { fromOpenApi } from '../../src/open-api/from-open-api.js'
+import { withHandlers } from '../support/with-handlers.js'
+import { createOpenApiSpec } from '../support/create-open-api-spec.js'
+import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
 
 const ID_REGEXP =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/

@@ -1,4 +1,4 @@
-import { normalizeSwaggerUrl } from '../../../src/fromOpenApi/utils/normalizeSwaggerUrl'
+import { normalizeSwaggerUrl } from './normalize-swagger-url.js'
 
 it('replaces swagger path parameters with colons', () => {
   expect(normalizeSwaggerUrl('/user/{userId}')).toEqual('/user/:userId')

@@ -1,6 +1,6 @@
-import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
-import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
-import { normalizeLocalhost, readArchive, _toHeaders } from './utils'
+import { fromTraffic } from '../../src/traffic/from-traffic.js'
+import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
+import { normalizeLocalhost, readArchive, _toHeaders } from './utils/index.js'
 
 it('mocks a recorded response stream', async () => {
   const har = readArchive('test/traffic/fixtures/archives/response-stream.har')

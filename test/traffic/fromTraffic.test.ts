@@ -2,10 +2,10 @@
  * @vitest-environment node
  */
 import Har from 'har-format'
-import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
-import { readArchive } from './utils'
-import { toResponse } from '../../src/fromTraffic/utils/harUtils'
-import { inspectHandlers } from '../support/inspectHandler'
+import { fromTraffic } from '../../src/traffic/from-traffic.js'
+import { toResponse } from '../../src/traffic/utils/har-utils.js'
+import { inspectHandlers } from '../support/inspect.js'
+import { readArchive } from './utils/index.js'
 
 describe('fromTraffic', () => {
   it('throws an exception given no HAR object', () => {

@@ -1,6 +1,6 @@
-import { encodeBase64String } from './encodeBase64String'
-import { decodeBase64String } from './decodeBase64String'
-import { fromByteArray } from './fromByteArray'
+import { encodeBase64String } from './encode-base64-string.js'
+import { decodeBase64String } from './decode-base64-string.js'
+import { fromByteArray } from './from-byte-array.js'
 
 describe('base64strings', () => {
   test('should be able to decode base64 string', () => {

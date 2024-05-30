@@ -1,6 +1,6 @@
-import { fromOpenApi } from '../../src/fromOpenApi/fromOpenApi'
-import { createOpenApiSpec } from '../../test/support/createOpenApiSpec'
-import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
+import { fromOpenApi } from '../../src/open-api/from-open-api.js'
+import { createOpenApiSpec } from '../../test/support/create-open-api-spec.js'
+import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
 
 it('supports response headers', async () => {
   const handlers = await fromOpenApi(

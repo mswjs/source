@@ -1,7 +1,7 @@
 import { invariant } from 'outvariant'
 import type Har from 'har-format'
 import { RequestHandler, HttpHandler, cleanUrl, delay } from 'msw'
-import { toResponse } from './utils/harUtils'
+import { toResponse } from './utils/har-utils.js'
 
 export type MapEntryFunction = (entry: Har.Entry) => Har.Entry | undefined
 

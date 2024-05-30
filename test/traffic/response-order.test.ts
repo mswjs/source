@@ -1,6 +1,6 @@
-import { fromTraffic } from '../../src/fromTraffic/fromTraffic'
-import { InspectedHandler, inspectHandlers } from '../support/inspectHandler'
-import { _toHeaders, normalizeLocalhost, readArchive } from './utils'
+import { fromTraffic } from '../../src/traffic/from-traffic.js'
+import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
+import { _toHeaders, normalizeLocalhost, readArchive } from './utils/index.js'
 
 it('respects the response sequence when repeatedly requesting the same endpoint', async () => {
   const har = readArchive('test/traffic/fixtures/archives/request-order.har')

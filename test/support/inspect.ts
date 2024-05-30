@@ -25,7 +25,7 @@ export interface SerializedResponse {
 }
 
 function isAbsoluteUrl(url: string) {
-  return (url.indexOf('://') > 0 || url.indexOf('//') === 0)
+  return url.indexOf('://') > 0 || url.indexOf('//') === 0
 }
 
 async function inspectHandler<H extends RequestHandler>(
@@ -36,8 +36,11 @@ async function inspectHandler<H extends RequestHandler>(
   if (handler instanceof HttpHandler) {
     const pathOfHandler = handler.info.path as string
 
-    const locationOrigin = typeof location !== 'undefined' ? location.origin : 'http://localhost'
-    const fullQualifiedUrl = isAbsoluteUrl(pathOfHandler) ? pathOfHandler : `${locationOrigin}${pathOfHandler}`
+    const locationOrigin =
+      typeof location !== 'undefined' ? location.origin : 'http://localhost'
+    const fullQualifiedUrl = isAbsoluteUrl(pathOfHandler)
+      ? pathOfHandler
+      : `${locationOrigin}${pathOfHandler}`
 
     const result = await handler.run({
       request: new Request(fullQualifiedUrl, {

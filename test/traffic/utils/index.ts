@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as Har from 'har-format'
-import { MapEntryFunction } from '../../../src/fromTraffic/fromTraffic'
+import { MapEntryFunction } from '../../../src/traffic/from-traffic.js'
 
 export function readArchive(archivePath: string): Har.Har {
   return JSON.parse(fs.readFileSync(archivePath, 'utf8'))
