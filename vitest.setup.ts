@@ -1,4 +1,9 @@
 import { invariant } from 'outvariant'
+import { faker } from '@yellow-ticket/seed-json-schema'
+
+beforeEach(() => {
+  faker.seed(1)
+})
 
 expect.extend({
   toEqualBytes(actual: unknown, expected: unknown) {

@@ -12,11 +12,11 @@ beforeAll(async () => {
 
 const entities = {
   pet: {
-    id: 10,
-    name: 'doggie',
+    id: expect.any(Number),
+    name: expect.any(String),
     category: {
-      id: 1,
-      name: 'Dogs',
+      id: expect.any(Number),
+      name: expect.any(String),
     },
     photoUrls: expect.arrayContaining([expect.any(String)]),
     tags: expect.arrayContaining([
@@ -28,9 +28,9 @@ const entities = {
     status: expect.stringMatching(/^(available|pending|sold)$/),
   },
   order: {
-    id: 10,
-    petId: 198772,
-    quantity: 7,
+    id: 42,
+    petId: 100,
+    quantity: 72,
     shipDate: expect.stringMatching(
       /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+?Z$/,
     ),
@@ -38,14 +38,14 @@ const entities = {
     complete: expect.any(Boolean),
   },
   user: {
-    id: 10,
-    username: 'theUser',
-    firstName: 'John',
-    lastName: 'James',
-    email: 'john@email.com',
-    password: 12345,
-    phone: 12345,
-    userStatus: 1,
+    id: 42,
+    email: 'abaft',
+    firstName: 'fooey',
+    lastName: 'fully',
+    password: 'lined',
+    phone: 'waste',
+    userStatus: 81,
+    username: 'wetly',
   },
 }
 
