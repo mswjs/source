@@ -1,7 +1,7 @@
 import { STATUS_CODES } from 'node:http'
 import type { ResponseResolver } from 'msw'
 import { OpenAPIV3 } from 'openapi-types'
-import { evolveJsonSchema } from '../schema/evolve'
+import { seedSchema } from '@yellow-ticket/seed-json-schema'
 import { toString } from './to-string.js'
 
 export function createResponseResolver(
@@ -17,6 +17,7 @@ export function createResponseResolver(
         statusText: 'Not Implemented',
       })
     }
+
     if (Object.keys(responses).length === 0) {
       return new Response('Not Implemented', {
         status: 501,
@@ -58,6 +59,7 @@ export function createResponseResolver(
     }
 
     const status = Number(explicitResponseStatus || '200')
+
     return new Response(toBody(request, responseObject), {
       status,
       statusText: STATUS_CODES[status],
@@ -127,11 +129,13 @@ export function toHeaders(
     const headerSchema = (headerObject as OpenAPIV3.HeaderObject).schema as
       | OpenAPIV3.SchemaObject
       | undefined
+
     if (!headerSchema) {
       continue
     }
 
-    const headerValue = evolveJsonSchema(headerSchema)
+    const headerValue = seedSchema(headerSchema as any)
+
     if (typeof headerValue === 'undefined') {
       continue
     }
@@ -154,7 +158,8 @@ export function toBody(
   responseObject: OpenAPIV3.ResponseObject,
 ): RequestInit['body'] {
   const { content } = responseObject
-  if (!content) {
+
+  if (content == null) {
     return null
   }
 
@@ -196,15 +201,15 @@ export function toBody(
     return null
   }
 
-  // If the response object has the body example, use it.
+  // First, if the response has a literal example, use it.
   if (mediaTypeObject.example) {
     if (typeof mediaTypeObject.example === 'object') {
       return JSON.stringify(mediaTypeObject.example)
     }
-
     return mediaTypeObject.example
   }
 
+  // If the response has multiple literal examples, use the first one.
   if (mediaTypeObject.examples) {
     // Support exact response example specified in the
     // "example" request URL search parameter.
@@ -232,11 +237,25 @@ export function toBody(
     return firstExample.value
   }
 
+  /**
+   * Then, if the response has a schema example, use it.
+   * @note `example` is always nested under `schema`.
+   * `examples` is a sibling to `schema`.
+   */
+  const schemaExample = (mediaTypeObject.schema as OpenAPIV3.SchemaObject)
+    ?.example
+
+  if (schemaExample) {
+    if (typeof schemaExample === 'object') {
+      return JSON.stringify(schemaExample)
+    }
+
+    return schemaExample
+  }
+
   // If the response is a JSON Schema, evolve and use it.
   if (mediaTypeObject.schema) {
-    const resolvedResponse = evolveJsonSchema(
-      mediaTypeObject.schema as OpenAPIV3.SchemaObject,
-    )
+    const resolvedResponse = seedSchema(mediaTypeObject.schema as any)
 
     return JSON.stringify(resolvedResponse)
   }

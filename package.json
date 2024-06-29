@@ -65,11 +65,9 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.0.2",
-    "@types/faker": "^5.5.9",
     "@types/har-format": "^1.2.7",
-    "faker": "5.x",
+    "@yellow-ticket/seed-json-schema": "^0.1.6",
     "openapi-types": "^7.2.3",
-    "outvariant": "^1.2.1",
-    "randexp": "^0.5.3"
+    "outvariant": "^1.2.1"
   }
 }

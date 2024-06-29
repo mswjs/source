@@ -25,7 +25,8 @@ it('supports JSON Schema object', async () => {
                         },
                         items: {
                           type: 'array',
-                          maxLength: 2,
+                          minItems: 2,
+                          maxItems: 2,
                           items: {
                             type: 'object',
                             properties: {
