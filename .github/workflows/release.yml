@@ -15,7 +15,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_ADMIN_TOKEN }}
 
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -32,8 +31,8 @@ jobs:
         run: |
           git config --local user.name "Artem Zakharchenko"
           git config --local user.email "kettanaito@gmail.com"
-      
-       - name: Install dependencies
+
+      - name: Install dependencies
         run: pnpm install
 
       - name: Build
