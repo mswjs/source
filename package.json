@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@mswjs/source",
   "version": "0.0.0",
-  "description": "Generate MSW request handlers from OpenAPI documents, HAR archives, and other sources.",
+  "description": "Generate MSW request handlers from OpenAPI documents, HAR files, and other sources.",
   "exports": {
     "./open-api": {
       "types": "./lib/open-api/from-open-api.d.ts",
@@ -14,11 +14,6 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "lib"
-  ],
-  "repository": "git@github.com:mswjs/source.git",
-  "author": "Artem Zakharchenko <me@kettanaito.com>",
   "scripts": {
     "start": "pnpm build --watch",
     "har:fixture": "ts-node ./test/traffic/fixtures/requests/command.ts",
@@ -26,8 +21,17 @@
     "prebuild": "pnpm lint",
     "build": "tsc -p ./tsconfig.build.json",
     "test": "vitest",
-    "prepack": "pnpm test && pnpm build"
+    "prepack": "pnpm test && pnpm build",
+    "release": "release publish"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": "git@github.com:mswjs/source.git",
+  "author": "Artem Zakharchenko <me@kettanaito.com>",
   "lint-staged": {
     "*.ts": [
       "prettier --write"
@@ -48,6 +52,7 @@
     "@commitlint/cli": "^17.6.5",
     "@commitlint/config-conventional": "^17.6.5",
     "@open-draft/test-server": "^0.5.1",
+    "@ossjs/release": "^0.8.1",
     "@types/compression": "^1.7.1",
     "@types/node": "18",
     "compression": "^1.7.4",
