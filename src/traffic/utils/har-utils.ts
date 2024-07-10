@@ -44,3 +44,29 @@ export function toResponse(responseEntry: Har.Response): Response {
   })
   return response
 }
+
+/**
+ * Checks if the query parameters of a request match the recorded parameters.
+ * @param request - The request URL.
+ * @param recordedParams - The recorded query parameters.
+ * @returns A boolean indicating whether the query parameters match or not.
+ */
+export function matchesQueryParameters(
+  request: string,
+  recordedParams: URLSearchParams,
+): boolean {
+  const requestUrl = new URL(request)
+  const requestParams = requestUrl.searchParams
+
+  if (requestParams === recordedParams) {
+    return true
+  }
+
+  for (const [key, value] of recordedParams) {
+    if (!requestParams.has(key) || requestParams.get(key) !== value) {
+      return false
+    }
+  }
+
+  return true
+}

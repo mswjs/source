@@ -1,4 +1,9 @@
-import { toHeaders, toResponse, toResponseBody } from './har-utils'
+import {
+  matchesQueryParameters,
+  toHeaders,
+  toResponse,
+  toResponseBody,
+} from './har-utils'
 
 describe(toHeaders, () => {
   it('supports a single har headers', () => {
@@ -76,3 +81,74 @@ describe(toResponseBody, () => {
 })
 
 describe.todo(toResponse)
+
+describe('matchesQueryParameters', () => {
+  it('should exact match query parameters', () => {
+    expect(
+      matchesQueryParameters(
+        'https://example.com/?a=1&b=2',
+        new URLSearchParams('a=1&b=2'),
+      ),
+    ).toBe(true)
+  })
+
+  it('should fail when having missing query parameter', () => {
+    expect(
+      matchesQueryParameters(
+        'https://example.com/?a=1',
+        new URLSearchParams('a=1&b=2'),
+      ),
+    ).toBe(false)
+  })
+
+  it('should fail when having missing query parameter', () => {
+    expect(
+      matchesQueryParameters(
+        'https://example.com/?a=1&b=3',
+        new URLSearchParams('a=1&b=2'),
+      ),
+    ).toBe(false)
+  })
+
+  it('should support when query string is empty', () => {
+    expect(
+      matchesQueryParameters('https://example.com/', new URLSearchParams('')),
+    ).toBe(true)
+  })
+
+  it('should support encoded query parameters', () => {
+    expect(
+      matchesQueryParameters(
+        'https://example.com/?key=hello%20world',
+        new URLSearchParams('key=hello world'),
+      ),
+    ).toBe(true)
+  })
+
+  it('should fail when query parameters have multiple values', () => {
+    expect(
+      matchesQueryParameters(
+        'https://example.com/?key=value1&key=value2',
+        new URLSearchParams('key=value1&key=value2'),
+      ),
+    ).toBe(false)
+  })
+
+  it('should fail when query parameters differ in case', () => {
+    expect(
+      matchesQueryParameters(
+        'https://example.com/?Key=Value',
+        new URLSearchParams('key=value'),
+      ),
+    ).toBe(false)
+  })
+
+  it('should match when query parameters order differ', () => {
+    expect(
+      matchesQueryParameters(
+        'https://example.com/?b=2&a=1',
+        new URLSearchParams('a=1&b=2'),
+      ),
+    ).toBe(true)
+  })
+})
