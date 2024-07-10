@@ -101,7 +101,7 @@ describe('matchesQueryParameters', () => {
     ).toBe(false)
   })
 
-  it('should fail when having missing query parameter', () => {
+  it('should fail when query parameter values differ', () => {
     expect(
       matchesQueryParameters(
         'https://example.com/?a=1&b=3',
