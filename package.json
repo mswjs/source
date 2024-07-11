@@ -74,5 +74,11 @@
     "@yellow-ticket/seed-json-schema": "^0.1.6",
     "openapi-types": "^7.2.3",
     "outvariant": "^1.2.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "ws@>=8.0.0 <8.17.1": ">=8.17.1",
+      "braces@<3.0.3": ">=3.0.3"
+    }
   }
 }
