@@ -4,11 +4,6 @@ export default defineConfig({
   test: {
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
-    environment: 'jsdom',
-    environmentOptions: {
-      jsdom: {
-        url: 'http://localhost',
-      },
-    },
+    environment: 'happy-dom',
   },
 })
