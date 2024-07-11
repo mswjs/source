@@ -82,73 +82,104 @@ describe(toResponseBody, () => {
 
 describe.todo(toResponse)
 
-describe('matchesQueryParameters', () => {
-  it('should exact match query parameters', () => {
+describe(matchesQueryParameters, () => {
+  it('returns true if search parameters are empty', () => {
+    expect(matchesQueryParameters(new URLSearchParams([]), [])).toBe(true)
+  })
+
+  it('returns true on exact search parameters match', () => {
     expect(
       matchesQueryParameters(
-        'https://example.com/?a=1&b=2',
-        new URLSearchParams('a=1&b=2'),
+        new URLSearchParams([
+          ['a', '1'],
+          ['b', '2'],
+        ]),
+        [
+          { name: 'a', value: '1' },
+          { name: 'b', value: '2' },
+        ],
       ),
     ).toBe(true)
   })
 
-  it('should fail when having missing query parameter', () => {
+  it('returns false if missing some search parameters', () => {
     expect(
-      matchesQueryParameters(
-        'https://example.com/?a=1',
-        new URLSearchParams('a=1&b=2'),
-      ),
+      matchesQueryParameters(new URLSearchParams([['a', '1']]), [
+        { name: 'a', value: '1' },
+        { name: 'b', value: '2' },
+      ]),
     ).toBe(false)
   })
 
-  it('should fail when query parameter values differ', () => {
+  it('returns false if search parameter value differs', () => {
     expect(
-      matchesQueryParameters(
-        'https://example.com/?a=1&b=3',
-        new URLSearchParams('a=1&b=2'),
-      ),
+      matchesQueryParameters(new URLSearchParams([['a', '000']]), [
+        { name: 'a', value: '1' },
+      ]),
     ).toBe(false)
   })
 
-  it('should support when query string is empty', () => {
+  it('supports encoded search parameters', () => {
     expect(
-      matchesQueryParameters('https://example.com/', new URLSearchParams('')),
+      matchesQueryParameters(new URLSearchParams('?key=hello%20world'), [
+        { name: 'key', value: 'hello world' },
+      ]),
     ).toBe(true)
   })
 
-  it('should support encoded query parameters', () => {
+  it('supports multi-value search parameters', () => {
     expect(
       matchesQueryParameters(
-        'https://example.com/?key=hello%20world',
-        new URLSearchParams('key=hello world'),
+        new URLSearchParams([
+          ['a', '1'],
+          ['a', '2'],
+          ['b', '3'],
+        ]),
+        [
+          { name: 'a', value: '1' },
+          { name: 'a', value: '2' },
+          { name: 'b', value: '3' },
+        ],
       ),
     ).toBe(true)
   })
 
-  it('should fail when query parameters have multiple values', () => {
+  it('returns false if search parameters differ in casing', () => {
     expect(
-      matchesQueryParameters(
-        'https://example.com/?key=value1&key=value2',
-        new URLSearchParams('key=value1&key=value2'),
-      ),
+      matchesQueryParameters(new URLSearchParams([['Key', 'Value']]), [
+        { name: 'key', value: 'value' },
+      ]),
     ).toBe(false)
   })
 
-  it('should fail when query parameters differ in case', () => {
+  it('disregards the order of search parameters', () => {
     expect(
       matchesQueryParameters(
-        'https://example.com/?Key=Value',
-        new URLSearchParams('key=value'),
-      ),
-    ).toBe(false)
-  })
-
-  it('should match when query parameters order differ', () => {
-    expect(
-      matchesQueryParameters(
-        'https://example.com/?b=2&a=1',
-        new URLSearchParams('a=1&b=2'),
+        new URLSearchParams([
+          ['b', '2'],
+          ['a', '1'],
+        ]),
+        [
+          { name: 'a', value: '1' },
+          { name: 'b', value: '2' },
+        ],
       ),
     ).toBe(true)
+  })
+
+  it('returns false on extra search parameters', () => {
+    expect(matchesQueryParameters(new URLSearchParams([['a', '1']]), [])).toBe(
+      false,
+    )
+
+    expect(
+      matchesQueryParameters(
+        new URLSearchParams([
+          ['b', '2'],
+          ['a', '1'],
+        ]),
+        [{ name: 'a', value: '1' }],
+      ),
+    ).toBe(false)
   })
 })

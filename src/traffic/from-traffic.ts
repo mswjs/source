@@ -43,23 +43,24 @@ export function fromTraffic(
       continue
     }
 
-    const { request } = entry
-    const requestId = createRequestId(request)
+    const requestId = createRequestId(entry.request)
     const isUniqueHandler = !requestIds.has(requestId)
-    const method = request.method.toLowerCase()
-    const queryParameters = fromQueryParameters(entry.request.queryString ?? [])
-    const path = cleanUrl(request.url)
+    const method = entry.request.method.toLowerCase()
+    const path = cleanUrl(entry.request.url)
     const response = toResponse(entry.response)
 
     const handler = new HttpHandler(
       method,
       path,
-      async ({ request, requestId }) => {
+      async ({ request }) => {
         // If the recorded request has query parameters and the
         // intercepted request doesn't match them all, skip it.
         if (
-          request.url &&
-          !matchesQueryParameters(request.url, queryParameters)
+          entry.request.queryString &&
+          !matchesQueryParameters(
+            new URL(request.url).searchParams,
+            entry.request.queryString,
+          )
         ) {
           return
         }
@@ -87,14 +88,4 @@ export function fromTraffic(
 
 function createRequestId(request: Har.Request): string {
   return `${request.method}+${request.url}`
-}
-
-function fromQueryParameters(
-  input: Array<{ name: string; value: string }>,
-): URLSearchParams {
-  const params = new URLSearchParams()
-  for (const param of input) {
-    params.append(param.name, param.value)
-  }
-  return params
 }

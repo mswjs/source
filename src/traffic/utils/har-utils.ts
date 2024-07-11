@@ -46,26 +46,35 @@ export function toResponse(responseEntry: Har.Response): Response {
 }
 
 /**
- * Checks if the query parameters of a request match the recorded parameters.
- * @param request - The request URL.
- * @param recordedParams - The recorded query parameters.
- * @returns A boolean indicating whether the query parameters match or not.
+ * Check if the search parameters of a request match the recorded parameters.
+ * @param searchParams Actual request search parameters.
+ * @param queryString Expected recorded HAR query parameters.
+ * @returns A boolean indicating whether the search parameters match.
  */
 export function matchesQueryParameters(
-  request: string,
-  recordedParams: URLSearchParams,
+  searchParams: URLSearchParams,
+  queryString: Array<Har.QueryString>,
 ): boolean {
-  const requestUrl = new URL(request)
-  const requestParams = requestUrl.searchParams
-
-  if (requestParams === recordedParams) {
-    return true
-  }
-
-  for (const [key, value] of recordedParams) {
-    if (!requestParams.has(key) || requestParams.get(key) !== value) {
+  for (const { name, value } of queryString) {
+    if (!searchParams.has(name)) {
       return false
     }
+
+    // Coerce each search parameter to a multi-value parameter.
+    if (!searchParams.getAll(name).includes(value)) {
+      return false
+    }
+
+    // Delete the search parameters that match.
+    // Provide an explicit value to support multi-value parameters.
+    // That will delete only the matching name/value pair.
+    searchParams.delete(name, value)
+  }
+
+  // Forbid extra search parameters in the actual request.
+  // Extra search parameters may indicate a different request altogether.
+  if (searchParams.size > 0) {
+    return false
   }
 
   return true

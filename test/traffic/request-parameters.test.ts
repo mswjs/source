@@ -1,44 +1,45 @@
-import * as fs from 'fs'
-import * as path from 'path'
 import { fromTraffic } from '../../src/traffic/from-traffic.js'
 import { readArchive, normalizeLocalhost, _toHeaders } from './utils/index.js'
-import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
-import { RequestHandler } from 'msw'
 
-it('should return response for query parameter', async () => {
+it('responds to a request where all search parameters match', async () => {
   const har = readArchive(
     'test/traffic/fixtures/archives/request-parameters.har',
   )
 
   const handlers = fromTraffic(har, normalizeLocalhost)
-  expect(handlers).toHaveLength(1)
-  const [requestHandler] = handlers as Array<RequestHandler>
-  expect(requestHandler).toBeDefined()
+  const requestHandler = handlers[0]!
 
-  const result = await requestHandler!.run({
-    request: new Request('https://localhost/docs/?selected=hello', {
-      method: 'GET',
-    }),
-    requestId: 'strict-query-string',
+  const result = await requestHandler.run({
+    request: new Request('https://localhost/docs/?hello=world&userId=abc-123'),
+    requestId: crypto.randomUUID(),
   })
-  expect(result).toBeDefined()
   expect(result?.response).toBeDefined()
-  const responseText = await result?.response?.text()
 
-  expect(responseText).toContain(
-    'Source is designed to breach that gap and allow you to generate request handlers from supported inputs, like OpenAPI documents or HAR files.',
-  )
+  await expect(result?.response?.text()).resolves.toBe('hello world')
 })
 
-it('should not return response when query parameter is missing', async () => {
+it('does not respond to a request where some search parameters match', async () => {
   const har = readArchive(
     'test/traffic/fixtures/archives/request-parameters.har',
   )
 
   const handlers = fromTraffic(har, normalizeLocalhost)
-  expect(handlers).toHaveLength(1)
-  const [requestHandler] = handlers as Array<RequestHandler>
-  expect(requestHandler).toBeDefined()
+  const requestHandler = handlers[0]!
+
+  const result = await requestHandler.run({
+    request: new Request('https://localhost/docs/?hello=world'),
+    requestId: crypto.randomUUID(),
+  })
+  expect(result?.response).toBeUndefined()
+})
+
+it('does not respond to a request where no search parameters match', async () => {
+  const har = readArchive(
+    'test/traffic/fixtures/archives/request-parameters.har',
+  )
+
+  const handlers = fromTraffic(har, normalizeLocalhost)
+  const requestHandler = handlers[0]!
 
   const result = await requestHandler!.run({
     request: new Request('https://localhost/docs', {
@@ -46,6 +47,5 @@ it('should not return response when query parameter is missing', async () => {
     }),
     requestId: 'query-string',
   })
-  expect(result).toBeDefined()
-  expect(result?.response).not.toBeDefined()
+  expect(result?.response).toBeUndefined()
 })
