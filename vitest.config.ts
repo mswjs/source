@@ -5,5 +5,10 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
     environment: 'happy-dom',
+    environmentOptions: {
+      happyDOM: {
+        url: 'http://localhost',
+      },
+    },
   },
 })
