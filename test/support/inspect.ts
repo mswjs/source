@@ -85,6 +85,16 @@ export async function inspectHandlers(handlers: Array<RequestHandler>) {
   return await Promise.all(handlers.map(inspectHandler))
 }
 
+export function normalizeHeaders(headers: Headers) {
+  const nextHeaders = Array.from(headers.entries()).map<[string, string]>(
+    ([name, value]) => {
+      return [name.toLowerCase(), value]
+    },
+  )
+  nextHeaders.sort()
+  return nextHeaders
+}
+
 async function serializeResponse(
   response?: Response,
 ): Promise<SerializedResponse | undefined> {
@@ -95,7 +105,7 @@ async function serializeResponse(
   return {
     status: response.status,
     statusText: response.statusText,
-    headers: Array.from(response.headers),
+    headers: normalizeHeaders(response.headers),
     body: await response.text(),
   }
 }

@@ -1,6 +1,3 @@
-/**
- * @vitest-environment jsdom
- */
 import { createOpenApiSpec } from '../../../test/support/create-open-api-spec.js'
 import { getServers } from './get-servers.js'
 

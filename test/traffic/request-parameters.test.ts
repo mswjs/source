@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import { fromTraffic } from '../../src/traffic/from-traffic.js'
 import { readArchive, normalizeLocalhost, _toHeaders } from './utils/index.js'
 

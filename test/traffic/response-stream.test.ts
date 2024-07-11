@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { fromTraffic } from '../../src/traffic/from-traffic.js'
 import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
 import { normalizeLocalhost, readArchive, _toHeaders } from './utils/index.js'
