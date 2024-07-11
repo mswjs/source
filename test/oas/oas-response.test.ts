@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { fromOpenApi } from '../../src/open-api/from-open-api.js'
 import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
 

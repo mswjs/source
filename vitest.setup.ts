@@ -1,5 +1,6 @@
 import { invariant } from 'outvariant'
 import { faker } from '@yellow-ticket/seed-json-schema'
+import { normalizeHeaders } from './test/support/inspect'
 
 beforeEach(() => {
   faker.seed(1)
@@ -59,7 +60,10 @@ expect.extend({
 
     // Headers.
     if (
-      !this.equals(Array.from(actual.headers), Array.from(expected.headers))
+      !this.equals(
+        normalizeHeaders(actual.headers),
+        normalizeHeaders(expected.headers),
+      )
     ) {
       return {
         pass: false,

@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { RequestHandler } from 'msw'
 import { fromOpenApi } from '../../src/open-api/from-open-api.js'
 import { withHandlers } from '../../test/support/with-handlers.js'

@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { fromOpenApi } from '../../src/open-api/from-open-api.js'
 import { withHandlers } from '../support/with-handlers.js'
 import { createOpenApiSpec } from '../support/create-open-api-spec.js'

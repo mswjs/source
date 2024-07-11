@@ -1,7 +1,7 @@
 import { invariant } from 'outvariant'
 import type Har from 'har-format'
 import { RequestHandler, HttpHandler, cleanUrl, delay } from 'msw'
-import { toResponse } from './utils/har-utils.js'
+import { matchesQueryParameters, toResponse } from './utils/har-utils.js'
 
 export type MapEntryFunction = (entry: Har.Entry) => Har.Entry | undefined
 
@@ -43,18 +43,28 @@ export function fromTraffic(
       continue
     }
 
-    const { request } = entry
-
-    const requestId = createRequestId(request)
+    const requestId = createRequestId(entry.request)
     const isUniqueHandler = !requestIds.has(requestId)
-    const method = request.method.toLowerCase()
-    const path = cleanUrl(request.url)
+    const method = entry.request.method.toLowerCase()
+    const path = cleanUrl(entry.request.url)
     const response = toResponse(entry.response)
 
     const handler = new HttpHandler(
       method,
       path,
-      async () => {
+      async ({ request }) => {
+        // If the recorded request has query parameters and the
+        // intercepted request doesn't match them all, skip it.
+        if (
+          entry.request.queryString &&
+          !matchesQueryParameters(
+            new URL(request.url).searchParams,
+            entry.request.queryString,
+          )
+        ) {
+          return
+        }
+
         if (entry.time) {
           await delay(entry.time)
         }
