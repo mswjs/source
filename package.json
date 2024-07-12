@@ -73,7 +73,8 @@
     "@types/har-format": "^1.2.7",
     "@yellow-ticket/seed-json-schema": "^0.1.6",
     "openapi-types": "^7.2.3",
-    "outvariant": "^1.2.1"
+    "outvariant": "^1.2.1",
+    "yaml": "^2.4.5"
   },
   "pnpm": {
     "overrides": {

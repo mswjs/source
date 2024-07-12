@@ -1,5 +1,6 @@
 import { RequestHandler, HttpHandler, http } from 'msw'
 import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
+import { parse } from 'yaml'
 import { normalizeSwaggerUrl } from './utils/normalize-swagger-url.js'
 import { getServers } from './utils/get-servers.js'
 import { isAbsoluteUrl, joinPaths } from './utils/url.js'
@@ -21,6 +22,10 @@ const supportedHttpMethods = Object.keys(
 export async function fromOpenApi(
   document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
 ): Promise<Array<RequestHandler>> {
+  if (typeof document === 'string') {
+    // Supports both JSON and YAML strings.
+    document = parse(document)
+  }
   const specification = await dereference(document)
   const requestHandlers: Array<RequestHandler> = []
 
