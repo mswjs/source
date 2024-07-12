@@ -69,7 +69,7 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
-    "@apidevtools/swagger-parser": "^10.0.2",
+    "@stoplight/json": "^3.21.0",
     "@types/har-format": "^1.2.7",
     "@yellow-ticket/seed-json-schema": "^0.1.6",
     "openapi-types": "^7.2.3",

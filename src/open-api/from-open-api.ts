@@ -1,10 +1,10 @@
 import { RequestHandler, HttpHandler, http } from 'msw'
 import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
-import SwaggerParser from '@apidevtools/swagger-parser'
 import { normalizeSwaggerUrl } from './utils/normalize-swagger-url.js'
 import { getServers } from './utils/get-servers.js'
 import { isAbsoluteUrl, joinPaths } from './utils/url.js'
 import { createResponseResolver } from './utils/open-api-utils.js'
+import { dereference } from './utils/dereference.js'
 
 type SupportedHttpMethods = keyof typeof http
 const supportedHttpMethods = Object.keys(
@@ -21,7 +21,7 @@ const supportedHttpMethods = Object.keys(
 export async function fromOpenApi(
   document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
 ): Promise<Array<RequestHandler>> {
-  const specification = await SwaggerParser.dereference(document)
+  const specification = await dereference(document)
   const requestHandlers: Array<RequestHandler> = []
 
   if (typeof specification.paths === 'undefined') {
