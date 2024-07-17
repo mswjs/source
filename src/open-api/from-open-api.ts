@@ -1,7 +1,7 @@
 import { RequestHandler, HttpHandler, http } from 'msw'
 import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
 import SwaggerParser from '@apidevtools/swagger-parser'
-import { normalizeSwaggerUrl } from './utils/normalize-swagger-url.js'
+import { normalizeSwaggerPath } from './utils/normalize-swagger-path.js'
 import { getServers } from './utils/get-servers.js'
 import { isAbsoluteUrl, joinPaths } from './utils/url.js'
 import { createResponseResolver } from './utils/open-api-utils.js'
@@ -12,7 +12,7 @@ const supportedHttpMethods = Object.keys(
 ) as unknown as SupportedHttpMethods
 
 export type MapOperationFunction = (args: {
-  url: string
+  path: string
   method: SupportedHttpMethods
   operation: OpenAPIV3.OperationObject
 }) => OpenAPIV3.OperationObject | undefined
@@ -37,7 +37,7 @@ export async function fromOpenApi(
 
   const pathItems = Object.entries(specification.paths ?? {})
   for (const item of pathItems) {
-    const [url, handlers] = item
+    const [path, handlers] = item
     const pathItem = handlers as
       | OpenAPIV2.PathItemObject
       | OpenAPIV3.PathItemObject
@@ -56,7 +56,7 @@ export async function fromOpenApi(
       }
 
       const operation = mapOperation
-        ? mapOperation({ url, method, operation: rowOperation })
+        ? mapOperation({ path, method, operation: rowOperation })
         : rowOperation
 
       if (!operation) {
@@ -66,10 +66,10 @@ export async function fromOpenApi(
       const serverUrls = getServers(specification)
 
       for (const baseUrl of serverUrls) {
-        const path = normalizeSwaggerUrl(url)
+        const normalizedPath = normalizeSwaggerPath(path)
         const requestUrl = isAbsoluteUrl(baseUrl)
-          ? new URL(path, baseUrl).href
-          : joinPaths(path, baseUrl)
+          ? new URL(normalizedPath, baseUrl).href
+          : joinPaths(normalizedPath, baseUrl)
 
         if (
           typeof operation.responses === 'undefined' ||
