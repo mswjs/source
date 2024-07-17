@@ -49,7 +49,7 @@ it('creates handlers based on provided filter', async () => {
     },
   })
 
-  const mapOperation: MapOperationFunction = (url, method, operation) => {
+  const mapOperation: MapOperationFunction = ({ url, method, operation }) => {
     return url === '/numbers' && method === 'get' ? operation : undefined
   }
   const handlers = await fromOpenApi(openApiSpec, mapOperation)

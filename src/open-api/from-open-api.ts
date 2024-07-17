@@ -11,11 +11,11 @@ const supportedHttpMethods = Object.keys(
   http,
 ) as unknown as SupportedHttpMethods
 
-export type MapOperationFunction = (
-  url: string,
-  method: SupportedHttpMethods,
-  operation: OpenAPIV3.OperationObject,
-) => OpenAPIV3.OperationObject | undefined
+export type MapOperationFunction = (args: {
+  url: string
+  method: SupportedHttpMethods
+  operation: OpenAPIV3.OperationObject
+}) => OpenAPIV3.OperationObject | undefined
 
 /**
  * Generates request handlers from the given OpenAPI V2/V3 document.
@@ -56,7 +56,7 @@ export async function fromOpenApi(
       }
 
       const operation = mapOperation
-        ? mapOperation(url, method, rowOperation)
+        ? mapOperation({ url, method, operation: rowOperation })
         : rowOperation
 
       if (!operation) {
