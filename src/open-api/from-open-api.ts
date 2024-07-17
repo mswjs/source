@@ -15,6 +15,7 @@ export type MapOperationFunction = (args: {
   path: string
   method: SupportedHttpMethods
   operation: OpenAPIV3.OperationObject
+  document: OpenAPI.Document
 }) => OpenAPIV3.OperationObject | undefined
 
 /**
@@ -56,7 +57,12 @@ export async function fromOpenApi(
       }
 
       const operation = mapOperation
-        ? mapOperation({ path, method, operation: rawOperation })
+        ? mapOperation({
+            path,
+            method,
+            operation: rawOperation,
+            document: specification,
+          })
         : rawOperation
 
       if (!operation) {
