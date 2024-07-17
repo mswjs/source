@@ -53,7 +53,9 @@ it('creates handlers based on provided filter', async () => {
     },
   )
 
-  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+  const inspectedHandlers = await inspectHandlers(handlers)
+  expect(inspectHandlers.length).toBe(1)
+  expect(inspectedHandlers).toEqual<InspectedHandler[]>([
     {
       handler: {
         method: 'GET',
