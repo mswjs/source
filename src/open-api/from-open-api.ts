@@ -36,7 +36,6 @@ export async function fromOpenApi(
   }
 
   const pathItems = Object.entries(specification.paths ?? {})
-
   for (const item of pathItems) {
     const [url, handlers] = item
     const pathItem = handlers as
