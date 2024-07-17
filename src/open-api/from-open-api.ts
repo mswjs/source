@@ -50,14 +50,14 @@ export async function fromOpenApi(
         continue
       }
 
-      const rowOperation = pathItem[method] as OpenAPIV3.OperationObject
-      if (!rowOperation) {
+      const rawOperation = pathItem[method] as OpenAPIV3.OperationObject
+      if (!rawOperation) {
         continue
       }
 
       const operation = mapOperation
-        ? mapOperation({ path, method, operation: rowOperation })
-        : rowOperation
+        ? mapOperation({ path, method, operation: rawOperation })
+        : rawOperation
 
       if (!operation) {
         continue
