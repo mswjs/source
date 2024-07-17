@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import {
   fromOpenApi,
-  MapPathItemFunction,
+  MapOperationFunction,
 } from '../../src/open-api/from-open-api.js'
 import { createOpenApiSpec } from '../support/create-open-api-spec.js'
 import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
@@ -11,6 +11,17 @@ it('creates handlers based on provided filter', async () => {
     paths: {
       '/numbers': {
         get: {
+          responses: {
+            200: {
+              content: {
+                'application/json': {
+                  example: [1, 2, 3],
+                },
+              },
+            },
+          },
+        },
+        put: {
           responses: {
             200: {
               content: {
@@ -38,8 +49,9 @@ it('creates handlers based on provided filter', async () => {
     },
   })
 
-  const mapPathItem: MapPathItemFunction = (pathItemTuple) =>
-    pathItemTuple[0] === '/numbers' ? pathItemTuple : undefined
+  const mapPathItem: MapOperationFunction = (url, method, operation) => {
+    return url === '/numbers' && method === 'get' ? operation : undefined
+  }
   const handlers = await fromOpenApi(openApiSpec, mapPathItem)
 
   expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([

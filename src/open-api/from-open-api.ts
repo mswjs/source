@@ -11,13 +11,11 @@ const supportedHttpMethods = Object.keys(
   http,
 ) as unknown as SupportedHttpMethods
 
-type PathItemTuple = [
+export type MapOperationFunction = (
   url: string,
-  OpenAPIV3.PathItemObject | OpenAPIV2.PathItemObject | undefined,
-]
-export type MapPathItemFunction = (
-  pathItem: PathItemTuple,
-) => PathItemTuple | undefined
+  method: SupportedHttpMethods,
+  operation: OpenAPIV3.OperationObject,
+) => OpenAPIV3.OperationObject | undefined
 
 /**
  * Generates request handlers from the given OpenAPI V2/V3 document.
@@ -28,7 +26,7 @@ export type MapPathItemFunction = (
  */
 export async function fromOpenApi(
   document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
-  mapPathItem?: MapPathItemFunction,
+  mapOperation?: MapOperationFunction,
 ): Promise<Array<RequestHandler>> {
   const specification = await SwaggerParser.dereference(document)
   const requestHandlers: Array<RequestHandler> = []
@@ -37,16 +35,9 @@ export async function fromOpenApi(
     return []
   }
 
-  const pathItems = Object.entries(
-    specification.paths ?? {},
-  ) as Array<PathItemTuple>
+  const pathItems = Object.entries(specification.paths ?? {})
 
-  for (const rowPathItem of pathItems) {
-    const item = mapPathItem ? mapPathItem(rowPathItem) : rowPathItem
-    if (!item) {
-      continue
-    }
-
+  for (const item of pathItems) {
     const [url, handlers] = item
     const pathItem = handlers as
       | OpenAPIV2.PathItemObject
@@ -60,7 +51,15 @@ export async function fromOpenApi(
         continue
       }
 
-      const operation = pathItem[method] as OpenAPIV3.OperationObject
+      const rowOperation = pathItem[method] as OpenAPIV3.OperationObject
+      if (!rowOperation) {
+        continue
+      }
+
+      const operation = mapOperation
+        ? mapOperation(url, method, rowOperation)
+        : rowOperation
+
       if (!operation) {
         continue
       }
