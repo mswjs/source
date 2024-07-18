@@ -3,6 +3,7 @@ import { fromOpenApi } from '../../src/open-api/from-open-api.js'
 import { withHandlers } from '../support/with-handlers.js'
 import { createOpenApiSpec } from '../support/create-open-api-spec.js'
 import { InspectedHandler, inspectHandlers } from '../support/inspect.js'
+import { OpenAPI } from 'openapi-types'
 
 const ID_REGEXP =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
@@ -15,6 +16,7 @@ it('supports JSON Schema object', async () => {
           get: {
             responses: {
               '200': {
+                description: 'Cart response',
                 content: {
                   'application/json': {
                     schema: {
@@ -79,10 +81,10 @@ it('normalizes path parameters', async () => {
     createOpenApiSpec({
       paths: {
         '/pet/{petId}': {
-          get: { responses: { 200: {} } },
+          get: { responses: { 200: { description: '' } } },
         },
         '/pet/{petId}/{foodId}': {
-          get: { responses: { 200: {} } },
+          get: { responses: { 200: { description: '' } } },
         },
       },
     }),
@@ -114,7 +116,7 @@ it('treats operations without "responses" as not implemented (501)', async () =>
           get: { responses: null },
         },
       },
-    }),
+    } as unknown as OpenAPI.Document),
   )
   expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
     {
@@ -203,6 +205,7 @@ it('respects the "Accept" request header', async () => {
           get: {
             responses: {
               200: {
+                description: 'User response',
                 content: {
                   'application/json': {
                     example: { id: 'user-1' },
