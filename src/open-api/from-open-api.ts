@@ -11,13 +11,19 @@ const supportedHttpMethods = Object.keys(
   http,
 ) as unknown as SupportedHttpMethods
 
+type OpenApiDocument =
+  | string
+  | OpenAPI.Document
+  | OpenAPIV2.Document
+  | OpenAPIV3.Document
+
 type ExtractPaths<T> = T extends { paths: infer P } ? keyof P : never
 
 export type MapOperationFunction<TPath extends string> = (args: {
   path: TPath
   method: SupportedHttpMethods
   operation: OpenAPIV3.OperationObject
-  document: OpenAPI.Document
+  document: OpenApiDocument
 }) => OpenAPIV3.OperationObject | undefined
 
 /**
@@ -28,9 +34,7 @@ export type MapOperationFunction<TPath extends string> = (args: {
  * await fromOpenApi(specification)
  */
 
-export async function fromOpenApi<
-  T extends string | OpenAPI.Document | OpenAPIV2.Document | OpenAPIV3.Document,
->(
+export async function fromOpenApi<T extends OpenApiDocument>(
   document: T,
   mapOperation?: MapOperationFunction<
     T extends string ? string : ExtractPaths<T>
