@@ -11,6 +11,7 @@ it('supports response headers', async () => {
           get: {
             responses: {
               200: {
+                description: 'User response',
                 headers: {
                   'X-Rate-Limit-Remaining': {
                     schema: {

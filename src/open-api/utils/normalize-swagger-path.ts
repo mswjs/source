@@ -1,4 +1,4 @@
-export function normalizeSwaggerPath(path: string): string {
+export function normalizeSwaggerPath<T extends string>(path: T) {
   return (
     path
       // Replace OpenAPI style parameters (/pet/{petId})

@@ -11,8 +11,10 @@ const supportedHttpMethods = Object.keys(
   http,
 ) as unknown as SupportedHttpMethods
 
-export type MapOperationFunction = (args: {
-  path: string
+type ExtractPaths<T> = T extends { paths: infer P } ? keyof P : never
+
+export type MapOperationFunction<TPaths extends string> = (args: {
+  path: TPaths
   method: SupportedHttpMethods
   operation: OpenAPIV3.OperationObject
   document: OpenAPI.Document
@@ -25,9 +27,14 @@ export type MapOperationFunction = (args: {
  * import specification from './api.oas.json'
  * await fromOpenApi(specification)
  */
-export async function fromOpenApi(
-  document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
-  mapOperation?: MapOperationFunction,
+
+export async function fromOpenApi<
+  T extends string | OpenAPI.Document | OpenAPIV2.Document | OpenAPIV3.Document,
+>(
+  document: T,
+  mapOperation?: MapOperationFunction<
+    T extends string ? string : ExtractPaths<T>
+  >,
 ): Promise<Array<RequestHandler>> {
   const specification = await SwaggerParser.dereference(document)
   const requestHandlers: Array<RequestHandler> = []
@@ -38,7 +45,7 @@ export async function fromOpenApi(
 
   const pathItems = Object.entries(specification.paths ?? {})
   for (const item of pathItems) {
-    const [path, handlers] = item
+    const [path, handlers] = item as [ExtractPaths<T>, any]
     const pathItem = handlers as
       | OpenAPIV2.PathItemObject
       | OpenAPIV3.PathItemObject

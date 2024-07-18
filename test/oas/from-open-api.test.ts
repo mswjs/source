@@ -10,6 +10,7 @@ it('creates handlers based on provided filter', async () => {
         get: {
           responses: {
             200: {
+              description: 'Numbers response',
               content: {
                 'application/json': {
                   example: [1, 2, 3],
@@ -21,6 +22,7 @@ it('creates handlers based on provided filter', async () => {
         put: {
           responses: {
             200: {
+              description: 'Numbers response',
               content: {
                 'application/json': {
                   example: [1, 2, 3],
@@ -34,6 +36,7 @@ it('creates handlers based on provided filter', async () => {
         get: {
           responses: {
             200: {
+              description: 'Orders response',
               content: {
                 'application/json': {
                   example: [{ id: 1 }, { id: 2 }, { id: 3 }],
@@ -79,6 +82,7 @@ it('creates handler with modified response', async () => {
         get: {
           responses: {
             200: {
+              description: 'Numbers response',
               content: {
                 'application/json': {
                   example: [1, 2, 3],
@@ -90,6 +94,7 @@ it('creates handler with modified response', async () => {
         put: {
           responses: {
             200: {
+              description: 'Numbers response',
               content: {
                 'application/json': {
                   example: [1, 2, 3],
@@ -103,6 +108,7 @@ it('creates handler with modified response', async () => {
         get: {
           responses: {
             200: {
+              description: 'Orders response',
               content: {
                 'application/json': {
                   example: [{ id: 1 }, { id: 2 }, { id: 3 }],
