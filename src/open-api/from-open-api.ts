@@ -13,8 +13,8 @@ const supportedHttpMethods = Object.keys(
 
 type ExtractPaths<T> = T extends { paths: infer P } ? keyof P : never
 
-export type MapOperationFunction<TPaths extends string> = (args: {
-  path: TPaths
+export type MapOperationFunction<TPath extends string> = (args: {
+  path: TPath
   method: SupportedHttpMethods
   operation: OpenAPIV3.OperationObject
   document: OpenAPI.Document
