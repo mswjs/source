@@ -78,6 +78,43 @@ it('supports relative server url', async () => {
   ])
 })
 
+it('supports server url with subdirectory', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      servers: [{ url: 'https://example.com/subdir' }],
+      paths: {
+        '/numbers': {
+          get: {
+            responses: {
+              200: {
+                content: {
+                  'application/json': {
+                    example: [1, 2, 3],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+  )
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    {
+      handler: {
+        method: 'GET',
+        path: 'https://example.com/subdir/numbers',
+      },
+      response: {
+        status: 200,
+        statusText: 'OK',
+        headers: expect.arrayContaining([['content-type', 'application/json']]),
+        body: JSON.stringify([1, 2, 3]),
+      },
+    },
+  ])
+})
+
 it('supports multiple server urls', async () => {
   const handlers = await fromOpenApi(
     createOpenApiSpec({

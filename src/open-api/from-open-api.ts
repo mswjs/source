@@ -53,7 +53,7 @@ export async function fromOpenApi(
       for (const baseUrl of serverUrls) {
         const path = normalizeSwaggerUrl(url)
         const requestUrl = isAbsoluteUrl(baseUrl)
-          ? new URL(path, baseUrl).href
+          ? new URL(`${baseUrl}${path}`).href
           : joinPaths(path, baseUrl)
 
         if (
