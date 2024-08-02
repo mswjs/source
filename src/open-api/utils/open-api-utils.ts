@@ -1,8 +1,8 @@
-import { STATUS_CODES } from 'node:http'
 import type { ResponseResolver } from 'msw'
 import { OpenAPIV3 } from 'openapi-types'
 import { seedSchema } from '@yellow-ticket/seed-json-schema'
 import { toString } from './to-string.js'
+import { STATUS_CODES } from './status-codes.js'
 
 export function createResponseResolver(
   operation: OpenAPIV3.OperationObject,
