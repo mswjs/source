@@ -20,7 +20,9 @@
     "prepare": "pnpm simple-git-hooks init",
     "prebuild": "pnpm lint",
     "build": "tsc -p ./tsconfig.build.json",
-    "test": "vitest",
+    "test": "pnpm test:node && pnpm test:browser",
+    "test:node": "vitest --project node",
+    "test:browser": "vitest --project browser",
     "prepack": "pnpm test && pnpm build",
     "release": "release publish"
   },
@@ -55,25 +57,27 @@
     "@ossjs/release": "^0.8.1",
     "@types/compression": "^1.7.1",
     "@types/node": "18",
+    "@vitest/browser": "^2.0.5",
     "compression": "^1.7.4",
     "happy-dom": "^14.12.3",
     "lint-staged": "^10.5.3",
     "msw": "^2.3.0",
-    "playwright": "^1.34.3",
+    "playwright": "^1.44.0",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "simple-git-hooks": "^2.8.1",
     "ts-node": "^10.9.1",
     "tslib": "^2.3.1",
     "typescript": "^5.4.5",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.5"
   },
   "dependencies": {
-    "@apidevtools/swagger-parser": "^10.0.2",
+    "@stoplight/json": "^3.21.0",
     "@types/har-format": "^1.2.7",
     "@yellow-ticket/seed-json-schema": "^0.1.6",
     "openapi-types": "^7.2.3",
-    "outvariant": "^1.2.1"
+    "outvariant": "^1.2.1",
+    "yaml": "^2.4.5"
   },
   "pnpm": {
     "overrides": {
