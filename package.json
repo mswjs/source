@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@mswjs/source",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Generate MSW request handlers from OpenAPI documents, HAR files, and other sources.",
   "exports": {
     "./open-api": {
