@@ -22,11 +22,9 @@ const supportedHttpMethods = Object.keys(
 export async function fromOpenApi(
   document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
 ): Promise<Array<RequestHandler>> {
-  if (typeof document === 'string') {
-    // Supports both JSON and YAML strings.
-    document = parse(document)
-  }
-  const specification = await dereference(document)
+  const parsedDocument =
+    typeof document === 'string' ? parse(document) : document
+  const specification = await dereference(parsedDocument)
   const requestHandlers: Array<RequestHandler> = []
 
   if (typeof specification.paths === 'undefined') {

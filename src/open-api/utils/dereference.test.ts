@@ -1,30 +1,31 @@
 import { dereference } from './dereference.js'
 
 it('dereferences', async () => {
-  const dereferenced = await dereference({
-    foo: {
-      $ref: '#/components/schemas/User',
-    },
-    components: {
-      schemas: {
-        User: {
-          type: 'object',
-          properties: {
-            age: {
-              type: 'string',
-            },
-            name: {
-              $ref: '#/components/schemas/Name',
+  await expect(
+    dereference({
+      foo: {
+        $ref: '#/components/schemas/User',
+      },
+      components: {
+        schemas: {
+          User: {
+            type: 'object',
+            properties: {
+              age: {
+                type: 'string',
+              },
+              name: {
+                $ref: '#/components/schemas/Name',
+              },
             },
           },
-        },
-        Name: {
-          type: 'string',
+          Name: {
+            type: 'string',
+          },
         },
       },
-    },
-  })
-  expect(dereferenced).toMatchInlineSnapshot(`
+    }),
+  ).resolves.toMatchInlineSnapshot(`
     {
       "components": {
         "schemas": {

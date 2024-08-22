@@ -6,11 +6,8 @@ import { pointerToPath } from '@stoplight/json'
  * This function is asynchronous in case we ever want to support remote
  * references.
  */
-export async function dereference(
-  document: any,
-  root: any = null,
-): Promise<any> {
-  if (root === null) {
+export async function dereference(document: unknown, root?: any): Promise<any> {
+  if (root == null) {
     root = document
   }
 
@@ -21,15 +18,18 @@ export async function dereference(
   }
 
   if (typeof document === 'object' && document !== null) {
-    if ('$ref' in document) {
-      const pointer = document['$ref']
-      const path = pointerToPath(pointer)
+    if ('$ref' in document && typeof document['$ref'] === 'string') {
+      const path = pointerToPath(document['$ref'])
       return path.reduce((item, key) => item[key], root)
     }
 
     await Promise.all(
       Object.keys(document).map(async (key) => {
-        document[key] = await dereference(document[key], root)
+        Reflect.set(
+          document,
+          key,
+          await dereference(Reflect.get(document, key), root),
+        )
       }),
     )
 
