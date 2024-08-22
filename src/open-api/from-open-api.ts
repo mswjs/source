@@ -1,10 +1,11 @@
 import { RequestHandler, HttpHandler, http } from 'msw'
 import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
-import SwaggerParser from '@apidevtools/swagger-parser'
+import { parse } from 'yaml'
 import { normalizeSwaggerPath } from './utils/normalize-swagger-path.js'
 import { getServers } from './utils/get-servers.js'
 import { isAbsoluteUrl, joinPaths } from './utils/url.js'
 import { createResponseResolver } from './utils/open-api-utils.js'
+import { dereference } from './utils/dereference.js'
 
 type SupportedHttpMethods = keyof typeof http
 const supportedHttpMethods = Object.keys(
@@ -40,7 +41,9 @@ export async function fromOpenApi<T extends OpenApiDocument>(
     T extends string ? string : ExtractPaths<T>
   >,
 ): Promise<Array<RequestHandler>> {
-  const specification = await SwaggerParser.dereference(document)
+  const parsedDocument =
+    typeof document === 'string' ? parse(document) : document
+  const specification = await dereference(parsedDocument)
   const requestHandlers: Array<RequestHandler> = []
 
   if (typeof specification.paths === 'undefined') {
@@ -85,7 +88,7 @@ export async function fromOpenApi<T extends OpenApiDocument>(
       for (const baseUrl of serverUrls) {
         const normalizedPath = normalizeSwaggerPath(path)
         const requestUrl = isAbsoluteUrl(baseUrl)
-          ? new URL(normalizedPath, baseUrl).href
+          ? new URL(`${baseUrl}${normalizedPath}`).href
           : joinPaths(normalizedPath, baseUrl)
 
         if (
