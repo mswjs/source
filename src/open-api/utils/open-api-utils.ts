@@ -259,7 +259,10 @@ export function toBody(
 
 function getAcceptedContentTypes(request: Request): string[] {
   const accept = request.headers.get('accept') || ''
-  return accept.split(',').filter((item) => item.length !== 0)
+  return accept
+    .split(',')
+    .map((item) => item.trim())
+    .filter((item) => item.length !== 0)
 }
 
 function contentTypeToRegExp(contentType: string): RegExp {
