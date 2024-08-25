@@ -257,7 +257,7 @@ export function toBody(
   return null
 }
 
-function getAcceptedContentTypes(request: Request): string[] {
+export function getAcceptedContentTypes(request: Request): string[] {
   const accept = request.headers.get('accept') || ''
   return accept
     .split(',')

@@ -272,4 +272,23 @@ it('respects the "Accept" request header', async () => {
       },
     }),
   )
+
+  // Skip content-types if the schema does not contain
+  // a matching response.
+  await expect(
+    await withHandlers(handlers, () => {
+      return fetch('http://localhost/user', {
+        headers: {
+          Accept: 'text/html, application/json',
+        },
+      })
+    }),
+  ).toEqualResponse(
+    new Response(JSON.stringify({ id: 'user-1' }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }),
+  )
 })
