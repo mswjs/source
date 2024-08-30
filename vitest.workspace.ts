@@ -4,7 +4,11 @@ export default defineWorkspace([
   {
     test: {
       name: 'node',
-      include: ['!**/*.browser.test.ts', 'test/**/*.test.ts'],
+      include: [
+        '!**/*.browser.test.ts',
+        'test/**/*.test.ts',
+        'src/**/*.test.ts',
+      ],
       globals: true,
       setupFiles: ['./vitest.setup.ts'],
       environment: 'node',

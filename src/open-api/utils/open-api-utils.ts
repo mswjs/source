@@ -81,10 +81,7 @@ export function toHeaders(
   }
 
   // See what "Content-Type" the request accepts.
-  const accept = request.headers.get('accept') || ''
-  const acceptedContentTypes = accept
-    .split(',')
-    .filter((item) => item.length !== 0)
+  const acceptedContentTypes = getAcceptedContentTypes(request.headers)
 
   const responseContentTypes = Object.keys(content)
 
@@ -164,10 +161,7 @@ export function toBody(
   }
 
   // See what "Content-Type" the request accepts.
-  const accept = request.headers.get('accept') || ''
-  const acceptedContentTypes = accept
-    .split(',')
-    .filter((item) => item.length !== 0)
+  const acceptedContentTypes = getAcceptedContentTypes(request.headers)
 
   let mediaTypeObject: OpenAPIV3.MediaTypeObject | undefined
   const responseContentTypes = Object.keys(content)
@@ -261,6 +255,14 @@ export function toBody(
   }
 
   return null
+}
+
+export function getAcceptedContentTypes(headers: Headers): string[] {
+  const accept = headers.get('accept') || ''
+  return accept
+    .split(',')
+    .map((item) => item.trim())
+    .filter((item) => item.length !== 0)
 }
 
 function contentTypeToRegExp(contentType: string): RegExp {
