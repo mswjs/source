@@ -81,7 +81,7 @@ export function toHeaders(
   }
 
   // See what "Content-Type" the request accepts.
-  const acceptedContentTypes = getAcceptedContentTypes(request)
+  const acceptedContentTypes = getAcceptedContentTypes(request.headers)
 
   const responseContentTypes = Object.keys(content)
 
@@ -161,7 +161,7 @@ export function toBody(
   }
 
   // See what "Content-Type" the request accepts.
-  const acceptedContentTypes = getAcceptedContentTypes(request)
+  const acceptedContentTypes = getAcceptedContentTypes(request.headers)
 
   let mediaTypeObject: OpenAPIV3.MediaTypeObject | undefined
   const responseContentTypes = Object.keys(content)
@@ -257,8 +257,8 @@ export function toBody(
   return null
 }
 
-export function getAcceptedContentTypes(request: Request): string[] {
-  const accept = request.headers.get('accept') || ''
+export function getAcceptedContentTypes(headers: Headers): string[] {
+  const accept = headers.get('accept') || ''
   return accept
     .split(',')
     .map((item) => item.trim())

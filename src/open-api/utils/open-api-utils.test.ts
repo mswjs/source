@@ -1,45 +1,47 @@
 import { getAcceptedContentTypes } from './open-api-utils.js'
 
-function requestWithAccept(accept: string): Request {
-  return new Request('https://github.com/mswjs/source', {
-    headers: [['accept', accept]],
-  })
-}
-
-it('handles a single content-type', () => {
-  expect(getAcceptedContentTypes(requestWithAccept('text/html'))).toEqual([
-    'text/html',
-  ])
+it('returns a single content type as-is', () => {
+  expect(
+    getAcceptedContentTypes(new Headers([['accept', 'text/html']])),
+  ).toEqual(['text/html'])
 })
 
-it('ignores optional whitespace', () => {
+it('ignores whitespace separating multiple content types', () => {
   expect(
     getAcceptedContentTypes(
-      requestWithAccept('text/html, application/xhtml+xml, */*'),
+      new Headers([['accept', 'text/html, application/xhtml+xml, */*']]),
     ),
   ).toEqual(['text/html', 'application/xhtml+xml', '*/*'])
 })
 
-it('removed empty content-types', () => {
+it('removes an empty content type', () => {
+  expect(getAcceptedContentTypes(new Headers([['accept', ', ,']]))).toEqual([])
+
   expect(
-    getAcceptedContentTypes(requestWithAccept('text/html, , */*')),
+    getAcceptedContentTypes(new Headers([['accept', 'text/html, , */*']])),
   ).toEqual(['text/html', '*/*'])
 })
 
-describe.skip('handles complex Accept headers', () => {
-  it('like weight reordering', () => {
+describe.skip('complex "accept" headers', () => {
+  it('supports weight reordering', () => {
     expect(
       getAcceptedContentTypes(
-        requestWithAccept(
-          'text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c',
-        ),
+        new Headers([
+          [
+            'accept',
+            'text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c',
+          ],
+        ]),
       ),
     ).toEqual(['text/html', 'text/x-c', 'text/x-dvi', 'text/plain'])
   })
-  it('like specificity reordering', () => {
+
+  it('supports specificity reordering', () => {
     expect(
       getAcceptedContentTypes(
-        requestWithAccept('text/*, text/plain, text/plain;format=flowed, */*'),
+        new Headers([
+          ['accept', 'text/*, text/plain, text/plain;format=flowed, */*'],
+        ]),
       ),
     ).toEqual(['text/plain;format=flowed', 'text/plain', 'text/*', '*/*'])
   })
