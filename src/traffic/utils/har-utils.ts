@@ -36,12 +36,17 @@ export function toResponseBody(
 }
 
 export function toResponse(responseEntry: Har.Response): Response {
+  if (responseEntry.status === 0) {
+    return Response.error()
+  }
+
   const body = toResponseBody(responseEntry.content)
   const response = new Response(body, {
     status: responseEntry.status,
     statusText: responseEntry.statusText,
     headers: toHeaders(responseEntry.headers),
   })
+
   return response
 }
 
