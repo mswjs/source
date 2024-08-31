@@ -12,6 +12,7 @@ it('supports absolute server url', async () => {
           get: {
             responses: {
               200: {
+                description: 'Numbers response',
                 content: {
                   'application/json': {
                     example: [1, 2, 3],
@@ -50,6 +51,7 @@ it('supports relative server url', async () => {
           post: {
             responses: {
               200: {
+                description: 'Token response',
                 content: {
                   'plain/text': {
                     example: 'abc-123',
@@ -124,6 +126,7 @@ it('supports multiple server urls', async () => {
           get: {
             responses: {
               200: {
+                description: 'Numbers response',
                 content: {
                   'application/json': {
                     example: [1, 2, 3],
@@ -173,6 +176,7 @@ it('supports the "basePath" url', async () => {
           get: {
             responses: {
               200: {
+                description: 'Strings response',
                 content: {
                   'application/json': {
                     example: ['a', 'b', 'c'],
