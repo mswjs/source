@@ -69,7 +69,7 @@ export function fromTraffic(
           await delay(entry.time)
         }
 
-        return response
+        return isUniqueHandler ? response.clone() : response
       },
       {
         once: !isUniqueHandler,
