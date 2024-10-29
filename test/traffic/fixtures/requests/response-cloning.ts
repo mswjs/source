@@ -7,10 +7,10 @@ createTrafficScenario(
     app.get('/resource', (req, res) => {
       if (isFirstRequest) {
         isFirstRequest = false
-        return res.send('one')
+        return res.send('first')
       }
 
-      res.send('two')
+      res.send('latest')
     })
   },
   (server) => [
