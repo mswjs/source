@@ -1,10 +1,10 @@
 import { OpenAPI } from 'openapi-types'
 
-export function createOpenApiSpec(
-  document: Partial<OpenAPI.Document>,
-): OpenAPI.Document {
+export function createOpenApiSpec<T extends Partial<OpenAPI.Document>>(
+  document: T,
+) {
   return Object.assign(
-    {} as OpenAPI.Document,
+    {},
     {
       openapi: '3.0.0',
       info: {
@@ -14,5 +14,5 @@ export function createOpenApiSpec(
       paths: {},
     },
     document,
-  )
+  ) satisfies T
 }
