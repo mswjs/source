@@ -7,7 +7,7 @@ beforeEach(() => {
 })
 
 expect.extend({
-  toEqualBytes(actual: unknown, expected: unknown) {
+  toEqualBytes(actual, expected) {
     invariant(isUint8Array(actual), 'Expected actual to be a Uint8Array')
     invariant(isUint8Array(expected), 'Expected expected to be a Uint8Array')
 
@@ -38,7 +38,7 @@ expect.extend({
       message: () => '...',
     }
   },
-  async toEqualResponse(actual: Response, expected: Record<string, unknown>) {
+  async toEqualResponse(actual, expected) {
     invariant(
       actual instanceof Response,
       'Expected actual to be an instance of Response',
