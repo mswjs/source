@@ -1,6 +1,6 @@
 import { invariant } from 'outvariant'
 import type Har from 'har-format'
-import { RequestHandler, HttpHandler, cleanUrl, delay } from 'msw'
+import { HttpHandler, cleanUrl, delay } from 'msw'
 import { matchesQueryParameters, toResponse } from './utils/har-utils.js'
 
 export type MapEntryFunction = (entry: Har.Entry) => Har.Entry | undefined
@@ -16,7 +16,7 @@ export type MapEntryFunction = (entry: Har.Entry) => Har.Entry | undefined
 export function fromTraffic(
   archive: Har.Har,
   mapEntry?: MapEntryFunction,
-): Array<RequestHandler> {
+): Array<HttpHandler> {
   invariant(
     archive,
     'Failed to generate request handlers from traffic: expected an HAR object but got %s.',
@@ -29,7 +29,7 @@ export function fromTraffic(
   )
 
   const requestIds = new Set<string>()
-  const handlers: Array<RequestHandler> = []
+  const handlers: Array<HttpHandler> = []
 
   // Loop over the HAR entries from right to left.
   for (let i = archive.log.entries.length - 1; i >= 0; i--) {

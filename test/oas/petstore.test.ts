@@ -1,14 +1,13 @@
 // @vitest-environment happy-dom
-import { RequestHandler } from 'msw'
+import { HttpHandler } from 'msw'
 import { fromOpenApi } from '../../src/open-api/from-open-api.js'
 import { withHandlers } from '../../test/support/with-handlers.js'
+import petstoreSpecification from './fixtures/petstore.json' assert { type: 'json' }
 
-const petstoreSpecification = require('./fixtures/petstore.json')
-
-let handlers: RequestHandler[]
+let handlers: Array<HttpHandler>
 
 beforeAll(async () => {
-  handlers = await fromOpenApi(petstoreSpecification)
+  handlers = await fromOpenApi(petstoreSpecification as any)
 })
 
 const entities = {

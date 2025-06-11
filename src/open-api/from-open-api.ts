@@ -1,4 +1,4 @@
-import { RequestHandler, HttpHandler, http } from 'msw'
+import { HttpHandler, http } from 'msw'
 import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
 import { parse } from 'yaml'
 import { normalizeSwaggerUrl } from './utils/normalize-swagger-url.js'
@@ -21,11 +21,11 @@ const supportedHttpMethods = Object.keys(
  */
 export async function fromOpenApi(
   document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
-): Promise<Array<RequestHandler>> {
+): Promise<Array<HttpHandler>> {
   const parsedDocument =
     typeof document === 'string' ? parse(document) : document
   const specification = await dereference(parsedDocument)
-  const requestHandlers: Array<RequestHandler> = []
+  const requestHandlers: Array<HttpHandler> = []
 
   if (typeof specification.paths === 'undefined') {
     return []
