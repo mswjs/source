@@ -7,6 +7,7 @@
   ],
   "compilerOptions": {
     "composite": true,
+    "module": "preserve",
     "types": ["vitest/globals"],
     "lib": ["dom", "DOM.Iterable"]
   },
