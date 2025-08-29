@@ -1,5 +1,5 @@
 import { HttpHandler, http } from 'msw'
-import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
+import type { OpenAPIV3_1, OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
 import { parse } from 'yaml'
 import { normalizeSwaggerUrl } from './utils/normalize-swagger-url.js'
 import { getServers } from './utils/get-servers.js'
@@ -20,7 +20,12 @@ const supportedHttpMethods = Object.keys(
  * await fromOpenApi(specification)
  */
 export async function fromOpenApi(
-  document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
+  document:
+    | string
+    | OpenAPI.Document
+    | OpenAPIV3_1.Document
+    | OpenAPIV3.Document
+    | OpenAPIV2.Document,
 ): Promise<Array<HttpHandler>> {
   const parsedDocument =
     typeof document === 'string' ? parse(document) : document
@@ -37,6 +42,7 @@ export async function fromOpenApi(
     const pathItem = handlers as
       | OpenAPIV2.PathItemObject
       | OpenAPIV3.PathItemObject
+      | OpenAPIV3_1.PathItemObject
 
     for (const key of Object.keys(pathItem)) {
       const method = key as keyof OpenAPIV2.PathItemObject
@@ -46,7 +52,9 @@ export async function fromOpenApi(
         continue
       }
 
-      const operation = pathItem[method] as OpenAPIV3.OperationObject
+      const operation = pathItem[method] as
+        | OpenAPIV3.OperationObject
+        | OpenAPIV3_1.OperationObject
       if (!operation) {
         continue
       }
