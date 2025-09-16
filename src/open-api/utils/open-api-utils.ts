@@ -1,11 +1,11 @@
 import type { ResponseResolver } from 'msw'
-import { OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import { OpenAPI, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import { seedSchema } from '@yellow-ticket/seed-json-schema'
 import { toString } from './to-string.js'
 import { STATUS_CODES } from './status-codes.js'
 
 export function createResponseResolver(
-  operation: OpenAPIV3.OperationObject | OpenAPIV3_1.OperationObject,
+  operation: OpenAPI.Operation,
 ): ResponseResolver {
   return ({ request }) => {
     const { responses } = operation
