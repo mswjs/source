@@ -20,7 +20,7 @@ const supportedHttpMethods = Object.keys(
  * await fromOpenApi(specification)
  */
 export async function fromOpenApi(
-  document: string | OpenAPI.Document | OpenAPIV3.Document | OpenAPIV2.Document,
+  document: string | OpenAPI.Document | OpenAPIV2.Document,
 ): Promise<Array<HttpHandler>> {
   const parsedDocument =
     typeof document === 'string' ? parse(document) : document

@@ -1,11 +1,11 @@
 import type { ResponseResolver } from 'msw'
-import { OpenAPIV3 } from 'openapi-types'
+import { OpenAPI, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import { seedSchema } from '@yellow-ticket/seed-json-schema'
 import { toString } from './to-string.js'
 import { STATUS_CODES } from './status-codes.js'
 
 export function createResponseResolver(
-  operation: OpenAPIV3.OperationObject,
+  operation: OpenAPI.Operation,
 ): ResponseResolver {
   return ({ request }) => {
     const { responses } = operation
@@ -25,7 +25,7 @@ export function createResponseResolver(
       })
     }
 
-    let responseObject: OpenAPIV3.ResponseObject
+    let responseObject: OpenAPIV3.ResponseObject | OpenAPIV3_1.ResponseObject
 
     const url = new URL(request.url)
     const explicitResponseStatus = url.searchParams.get('response')
@@ -45,8 +45,12 @@ export function createResponseResolver(
       responseObject = responseByStatus
     } else {
       const fallbackResponse =
-        (responses['200'] as OpenAPIV3.ResponseObject) ||
-        (responses.default as OpenAPIV3.ResponseObject)
+        (responses['200'] as
+          | OpenAPIV3.ResponseObject
+          | OpenAPIV3_1.ResponseObject) ||
+        (responses.default as
+          | OpenAPIV3.ResponseObject
+          | OpenAPIV3_1.ResponseObject)
 
       if (!fallbackResponse) {
         return new Response('Not Implemented', {
@@ -73,7 +77,7 @@ export function createResponseResolver(
  */
 export function toHeaders(
   request: Request,
-  responseObject: OpenAPIV3.ResponseObject,
+  responseObject: OpenAPIV3.ResponseObject | OpenAPIV3_1.ResponseObject,
 ): Headers | undefined {
   const { content } = responseObject
   if (!content) {
@@ -123,9 +127,9 @@ export function toHeaders(
   const headers = new Headers()
 
   for (const [headerName, headerObject] of Object.entries(responseHeaders)) {
-    const headerSchema = (headerObject as OpenAPIV3.HeaderObject).schema as
-      | OpenAPIV3.SchemaObject
-      | undefined
+    const headerSchema = (
+      headerObject as OpenAPIV3.HeaderObject | OpenAPIV3_1.HeaderObject
+    ).schema as OpenAPIV3.SchemaObject | OpenAPIV3_1.SchemaObject | undefined
 
     if (!headerSchema) {
       continue
@@ -152,7 +156,7 @@ export function toHeaders(
  */
 export function toBody(
   request: Request,
-  responseObject: OpenAPIV3.ResponseObject,
+  responseObject: OpenAPIV3.ResponseObject | OpenAPIV3_1.ResponseObject,
 ): RequestInit['body'] {
   const { content } = responseObject
 
@@ -163,7 +167,10 @@ export function toBody(
   // See what "Content-Type" the request accepts.
   const acceptedContentTypes = getAcceptedContentTypes(request.headers)
 
-  let mediaTypeObject: OpenAPIV3.MediaTypeObject | undefined
+  let mediaTypeObject:
+    | OpenAPIV3.MediaTypeObject
+    | OpenAPIV3_1.MediaTypeObject
+    | undefined
   const responseContentTypes = Object.keys(content)
 
   // Lookup the first response content type that satisfies
@@ -213,6 +220,7 @@ export function toBody(
     if (exampleName) {
       const exampleByName = mediaTypeObject.examples[exampleName] as
         | OpenAPIV3.ExampleObject
+        | OpenAPIV3_1.ExampleObject
         | undefined
       return exampleByName
         ? exampleByName.value
@@ -220,9 +228,9 @@ export function toBody(
     }
 
     // Otherwise, use the first example.
-    const firstExample = Object.values(
-      mediaTypeObject.examples,
-    )[0] as OpenAPIV3.ExampleObject
+    const firstExample = Object.values(mediaTypeObject.examples)[0] as
+      | OpenAPIV3.ExampleObject
+      | OpenAPIV3_1.ExampleObject
 
     if (typeof firstExample.value === 'object') {
       return JSON.stringify(firstExample.value)
@@ -236,8 +244,9 @@ export function toBody(
    * @note `example` is always nested under `schema`.
    * `examples` is a sibling to `schema`.
    */
-  const schemaExample = (mediaTypeObject.schema as OpenAPIV3.SchemaObject)
-    ?.example
+  const schemaExample = (
+    mediaTypeObject.schema as OpenAPIV3.SchemaObject | OpenAPIV3_1.SchemaObject
+  )?.example
 
   if (schemaExample) {
     if (typeof schemaExample === 'object') {
