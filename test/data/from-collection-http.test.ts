@@ -14,10 +14,9 @@ it('generates a GET handler to return all records', async () => {
   await users.create({ id: 1, name: 'John' })
   await users.create({ id: 2, name: 'Kate' })
 
-  const handlers = fromCollection({
+  const handlers = fromCollection(users, {
     name: 'users',
     key: 'id',
-    collection: users,
     baseUrl: 'http://localhost/',
   })
 
@@ -43,10 +42,9 @@ it('generates a GET handler to return a single record by key', async () => {
   await users.create({ id: 1, name: 'John' })
   await users.create({ id: 2, name: 'Kate' })
 
-  const handlers = fromCollection({
+  const handlers = fromCollection(users, {
     name: 'users',
     key: 'id',
-    collection: users,
     baseUrl: 'http://localhost/',
   })
 
@@ -66,10 +64,9 @@ it('generates a POST handler to create new records', async () => {
   })
   await users.create({ id: 1, name: 'John' })
 
-  const handlers = fromCollection({
+  const handlers = fromCollection(users, {
     name: 'users',
     key: 'id',
-    collection: users,
     baseUrl: 'http://localhost/',
   })
 
@@ -102,10 +99,9 @@ it('generates a PUT handler to update existing records', async () => {
   })
   await users.create({ id: 1, name: 'John' })
 
-  const handlers = fromCollection({
+  const handlers = fromCollection(users, {
     name: 'users',
     key: 'id',
-    collection: users,
     baseUrl: 'http://localhost/',
   })
 
@@ -139,10 +135,9 @@ it('generates a DELETE handler to delete existing records', async () => {
   })
   await users.create({ id: 1, name: 'John' })
 
-  const handlers = fromCollection({
+  const handlers = fromCollection(users, {
     name: 'users',
     key: 'id',
-    collection: users,
     baseUrl: 'http://localhost/',
   })
 

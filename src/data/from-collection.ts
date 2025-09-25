@@ -15,10 +15,6 @@ interface CollectionInput<Schema extends StandardSchemaV1> {
    */
   key: keyof StandardSchemaV1.InferOutput<Schema> & string
   /**
-   * Reference to the `Collection` instance.
-   */
-  collection: Collection<Schema>
-  /**
    * Base URL to apply to all the generated paths.
    */
   baseUrl?: URL | string
@@ -38,12 +34,13 @@ interface CollectionInput<Schema extends StandardSchemaV1> {
  * })
  */
 export function fromCollection<Schema extends StandardSchemaV1>(
+  collection: Collection<Schema>,
   input: CollectionInput<Schema>,
 ) {
   const httpHandlers = createHttpHandlers(
     input.name,
     input.key,
-    input.collection,
+    collection,
     input.baseUrl?.toString() || '',
   )
 
