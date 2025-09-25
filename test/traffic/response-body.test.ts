@@ -16,7 +16,7 @@ it('creates a request handler from a recorded text response', async () => {
       response: {
         status: 200,
         statusText: 'OK',
-        headers: _toHeaders(har.log.entries[0].response.headers),
+        headers: _toHeaders(har.log.entries[0]!.response.headers),
         body: 'hello world',
       },
     },
@@ -35,7 +35,7 @@ it('creates a request handler from a recorded json response', async () => {
       response: {
         status: 200,
         statusText: 'OK',
-        headers: _toHeaders(har.log.entries[0].response.headers),
+        headers: _toHeaders(har.log.entries[0]!.response.headers),
         body: JSON.stringify({
           id: 'abc-123',
           firstName: 'John',
@@ -63,7 +63,7 @@ it('creates a request handler from a recorded binary response', async () => {
       response: {
         status: 200,
         statusText: 'OK',
-        headers: _toHeaders(har.log.entries[0].response.headers),
+        headers: _toHeaders(har.log.entries[0]!.response.headers),
         body: imageBinary,
       },
     },
@@ -84,7 +84,7 @@ it('creates a request handler from a compressed recorded json response', async (
       response: {
         status: 200,
         statusText: 'OK',
-        headers: _toHeaders(har.log.entries[0].response.headers),
+        headers: _toHeaders(har.log.entries[0]!.response.headers),
         body: JSON.stringify({
           id: 'abc-123',
           firstName: 'John',

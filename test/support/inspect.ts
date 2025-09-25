@@ -30,6 +30,7 @@ function isAbsoluteUrl(url: string) {
 
 async function inspectHandler<H extends RequestHandler>(
   handler: H,
+  baseUrl: string = 'http://localhost/',
 ): Promise<InspectedHandler<H>> {
   const requestId = Math.random().toString(16).slice(2)
 
@@ -47,6 +48,9 @@ async function inspectHandler<H extends RequestHandler>(
         method: handler.info.method.toString(),
       }),
       requestId,
+      resolutionContext: {
+        baseUrl,
+      },
     })
 
     return {
