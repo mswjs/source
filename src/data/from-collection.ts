@@ -3,7 +3,7 @@ import { get, merge } from 'lodash-es'
 import { type Collection, Query } from '@msw/data'
 import { http, HttpResponse, type HttpHandler } from 'msw'
 
-interface CollectionInput<Schema extends StandardSchemaV1> {
+interface CollectionOptions<Schema extends StandardSchemaV1> {
   /**
    * Name of this collection.
    * This gets included in the paths of the generated handlers.
@@ -35,13 +35,13 @@ interface CollectionInput<Schema extends StandardSchemaV1> {
  */
 export function fromCollection<Schema extends StandardSchemaV1>(
   collection: Collection<Schema>,
-  input: CollectionInput<Schema>,
+  options: CollectionOptions<Schema>,
 ) {
   const httpHandlers = createHttpHandlers(
-    input.name,
-    input.key,
+    options.name,
+    options.key,
     collection,
-    input.baseUrl?.toString() || '',
+    options.baseUrl?.toString() || '',
   )
 
   return httpHandlers
