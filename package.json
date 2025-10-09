@@ -64,7 +64,6 @@
     "msw": "^2.10.2",
     "playwright": "^1.53.0",
     "prettier": "^3.5.3",
-    "rimraf": "^6.0.1",
     "simple-git-hooks": "^2.13.0",
     "tsx": "^4.20.1",
     "typescript": "^5.8.3",
