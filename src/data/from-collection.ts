@@ -1,7 +1,21 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec'
-import { get, merge } from 'lodash-es'
+import { capitalize, get, merge } from 'lodash-es'
+import {
+  graphql as executeGraphQL,
+  GraphQLObjectType,
+  GraphQLSchema,
+} from 'graphql'
 import { type Collection, Query } from '@msw/data'
-import { http, HttpResponse, type HttpHandler } from 'msw'
+import {
+  http,
+  HttpResponse,
+  type HttpHandler,
+  GraphQLHandler,
+  graphql,
+} from 'msw'
+import { createGraphQLSchemaFromZod } from './vendors/zod'
+
+export type HandlerFormat = 'http' | 'graphql'
 
 interface CollectionOptions<Schema extends StandardSchemaV1> {
   /**
@@ -14,6 +28,7 @@ interface CollectionOptions<Schema extends StandardSchemaV1> {
    * Property name to use as the primary key.
    */
   key: keyof StandardSchemaV1.InferOutput<Schema> & string
+  format: HandlerFormat | Array<HandlerFormat>
   /**
    * Base URL to apply to all the generated paths.
    */
@@ -42,6 +57,12 @@ export function fromCollection<Schema extends StandardSchemaV1>(
     options.key,
     collection,
     options.baseUrl?.toString() || '',
+  )
+
+  const graphqlHandlers = createGraphQLHandlers(
+    options.name,
+    options.key,
+    collection,
   )
 
   return httpHandlers
@@ -122,5 +143,37 @@ function createHttpHandlers(
         return HttpResponse.json(deletedRecord)
       },
     ),
+  ]
+}
+
+function createGraphQLHandlers(
+  name: string,
+  key: string,
+  collection: Collection<any>,
+): Array<GraphQLHandler> {
+  const schema = collection['options']['schema'] as StandardSchemaV1
+  const capitalizedName = capitalize(name)
+
+  let graphqlSchema: GraphQLSchema
+
+  if (schema['~standard'].vendor === 'zod') {
+    graphqlSchema = createGraphQLSchemaFromZod({
+      schema,
+      name: capitalizedName,
+      key,
+      collection,
+    })
+  }
+
+  return [
+    graphql.operation(async ({ query, variables }) => {
+      const result = await executeGraphQL({
+        schema: graphqlSchema,
+        source: query,
+        variableValues: variables,
+      })
+
+      return HttpResponse.json(result)
+    }),
   ]
 }
