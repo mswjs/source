@@ -5,6 +5,10 @@ on:
     - cron: '0 1 * * *'
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   release:
     runs-on: macos-latest
@@ -48,4 +52,3 @@ jobs:
         run: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_ADMIN_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
