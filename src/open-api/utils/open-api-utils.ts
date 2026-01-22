@@ -26,6 +26,7 @@ export function createResponseResolver(
     }
 
     let responseObject: OpenAPIV3.ResponseObject | OpenAPIV3_1.ResponseObject
+    let status: number = NaN
 
     const url = new URL(request.url)
     const explicitResponseStatus = url.searchParams.get('response')
@@ -43,14 +44,26 @@ export function createResponseResolver(
       }
 
       responseObject = responseByStatus
+      status = Number(explicitResponseStatus)
     } else {
-      const fallbackResponse =
-        (responses['200'] as
+      let fallbackResponse
+
+      for (const [key, _] of Object.entries(STATUS_CODES)) {
+        if (key.startsWith('2') && responses[key]) {
+          fallbackResponse = responses[key] as
+            | OpenAPIV3.ResponseObject
+            | OpenAPIV3_1.ResponseObject
+          status = Number(key)
+          break
+        }
+      }
+
+      if (!fallbackResponse && responses.default) {
+        fallbackResponse = responses.default as
           | OpenAPIV3.ResponseObject
-          | OpenAPIV3_1.ResponseObject) ||
-        (responses.default as
-          | OpenAPIV3.ResponseObject
-          | OpenAPIV3_1.ResponseObject)
+          | OpenAPIV3_1.ResponseObject
+        status = 200
+      }
 
       if (!fallbackResponse) {
         return new Response('Not Implemented', {
@@ -61,8 +74,6 @@ export function createResponseResolver(
 
       responseObject = fallbackResponse
     }
-
-    const status = Number(explicitResponseStatus || '200')
 
     return new Response(toBody(request, responseObject), {
       status,
