@@ -292,3 +292,113 @@ it('respects the "Accept" request header', async () => {
     }),
   )
 })
+
+it('responds with 201 to a POST request with a 201 response defined', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/resource': {
+          post: {
+            responses: {
+              201: { description: 'Created' },
+            },
+          },
+        },
+      },
+    }),
+  )
+
+  const response = await withHandlers(handlers, () => {
+    return fetch('http://localhost/resource', {
+      method: 'POST',
+      body: JSON.stringify({ username: 'example' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  })
+
+  expect(response.status).toEqual(201)
+})
+
+it('responds with 204 to a DELETE request with a 204 response defined', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/resource': {
+          delete: {
+            responses: {
+              204: { description: 'No Content' },
+            },
+          },
+        },
+      },
+    }),
+  )
+
+  const response = await withHandlers(handlers, () => {
+    return fetch('http://localhost/resource', {
+      method: 'DELETE',
+    })
+  })
+
+  expect(response.status).toEqual(204)
+})
+
+it('responds with 201 to a POST request even if defined out of order', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/resource': {
+          post: {
+            responses: {
+              404: { description: 'Not Found' },
+              201: { description: 'Created' },
+            },
+          },
+        },
+      },
+    }),
+  )
+
+  const response = await withHandlers(handlers, () => {
+    return fetch('http://localhost/resource', {
+      method: 'POST',
+      body: JSON.stringify({ username: 'example' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  })
+
+  expect(response.status).toEqual(201)
+})
+
+it('responds with 201 to a POST request even if default is defined', async () => {
+  const handlers = await fromOpenApi(
+    createOpenApiSpec({
+      paths: {
+        '/resource': {
+          post: {
+            responses: {
+              201: { description: 'Created' },
+              default: { description: 'An unexpected error occurred' },
+            },
+          },
+        },
+      },
+    }),
+  )
+
+  const response = await withHandlers(handlers, () => {
+    return fetch('http://localhost/resource', {
+      method: 'POST',
+      body: JSON.stringify({ username: 'example' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  })
+
+  expect(response.status).toEqual(201)
+})
