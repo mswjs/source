@@ -1,86 +1,123 @@
-import type { ResponseResolver } from 'msw'
-import { OpenAPI, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import type { ResponseResolver, StrictRequest, DefaultBodyType } from 'msw'
+import { OpenAPI, OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import { seedSchema } from '@yellow-ticket/seed-json-schema'
 import { toString } from './to-string.js'
 import { STATUS_CODES } from './status-codes.js'
 
+/**
+ * Create a resolver function based on the responses defined for a given operation.
+ */
 export function createResponseResolver(
   operation: OpenAPI.Operation,
 ): ResponseResolver {
   return ({ request }) => {
     const { responses } = operation
 
-    // Treat operations that describe no responses as not implemented.
-    if (responses == null) {
+    // Get the status code that we will return for this request.
+    const responseStatus = getResponseStatusCode(responses, request)
+
+    // Handle default `Not Implemented` response.
+
+    if (responseStatus === 501) {
       return new Response('Not Implemented', {
         status: 501,
         statusText: 'Not Implemented',
       })
     }
 
-    if (Object.keys(responses).length === 0) {
-      return new Response('Not Implemented', {
-        status: 501,
-        statusText: 'Not Implemented',
+    // After this point we know that `responses` is not `null` or `undefined`
+    // since, if it were, `responseStatus` would have been `501`.
+
+    if (responseStatus === 'default') {
+      const responseObject = responses!.default as
+        | OpenAPIV3.ResponseObject
+        | OpenAPIV3_1.ResponseObject
+
+      return new Response(toBody(request, responseObject), {
+        status: 200,
+        statusText: STATUS_CODES[200],
+        headers: toHeaders(request, responseObject),
       })
     }
 
-    let responseObject: OpenAPIV3.ResponseObject | OpenAPIV3_1.ResponseObject
-    let status: number = NaN
+    // After this point we know that `responseStatus` is a number
+    // and that `responses[responseStatus]` is defined.
 
-    const url = new URL(request.url)
-    const explicitResponseStatus = url.searchParams.get('response')
-
-    if (explicitResponseStatus) {
-      const responseByStatus = responses[
-        explicitResponseStatus
-      ] as OpenAPIV3.ResponseObject
-
-      if (!responseByStatus) {
-        return new Response('Not Implemented', {
-          status: 501,
-          statusText: 'Not Implemented',
-        })
-      }
-
-      responseObject = responseByStatus
-      status = Number(explicitResponseStatus)
-    } else {
-      let fallbackResponse
-
-      for (const [key, _] of Object.entries(STATUS_CODES)) {
-        if (key.startsWith('2') && responses[key]) {
-          fallbackResponse = responses[key] as
-            | OpenAPIV3.ResponseObject
-            | OpenAPIV3_1.ResponseObject
-          status = Number(key)
-          break
-        }
-      }
-
-      if (!fallbackResponse && responses.default) {
-        fallbackResponse = responses.default as
-          | OpenAPIV3.ResponseObject
-          | OpenAPIV3_1.ResponseObject
-        status = 200
-      }
-
-      if (!fallbackResponse) {
-        return new Response('Not Implemented', {
-          status: 501,
-          statusText: 'Not Implemented',
-        })
-      }
-
-      responseObject = fallbackResponse
-    }
+    const responseObject = responses![responseStatus.toString()] as
+      | OpenAPIV3.ResponseObject
+      | OpenAPIV3_1.ResponseObject
 
     return new Response(toBody(request, responseObject), {
-      status,
-      statusText: STATUS_CODES[status],
+      status: responseStatus,
+      statusText: STATUS_CODES[responseStatus],
       headers: toHeaders(request, responseObject),
     })
   }
+}
+
+/**
+ * Returns the status code (as a string) that a given handler will return,
+ * based on defined responses to the given operation and the captured url.
+ *
+ * The following logic path is used to determine the status to return:
+ *
+ * - Explicit response status if provided by request query string,
+ *    - 501 Not Implemented if explicit response is provided but not defined in spec,
+ * - 200,
+ * - The first matching 2xx,
+ * - responses.default if defined,
+ * - 501 Not Implemented otherwise.
+ *
+ * @param {ResponseObject} responses - The object mapping defined status codes to response objects.
+ * @param {StrictRequest} request - The request that the handler will be responding to.
+ */
+export function getResponseStatusCode(
+  responses:
+    | OpenAPIV2.ResponsesObject
+    | OpenAPIV3.ResponsesObject
+    | OpenAPIV3_1.ResponsesObject
+    | undefined,
+  request: StrictRequest<DefaultBodyType> | undefined,
+): number | 'default' {
+  // First, if operation has no responses described, always return `Not Implemented`.
+  if (responses == null || Object.keys(responses).length === 0) {
+    return 501
+  }
+
+  // Next, check if client has specified a "response" query in url.
+  // (Wrapped to allow unit testing with blank or incomplete `request` objects.)
+  if (request?.url) {
+    const url = new URL(request.url)
+    const explicitResponseStatus = url.searchParams.get('response')
+    if (explicitResponseStatus) {
+      // If so, send that response, or `Not Implemented` if specified but not defined.
+      if (responses[explicitResponseStatus]) {
+        explicitResponseStatus
+      } else {
+        return 501
+      }
+    }
+  }
+
+  // Next, check for a 200 code response explicitly.
+  if (responses[200]) {
+    return 200
+  }
+
+  // Next, check for success (2XX) status code responses.
+  for (const key of Object.keys(STATUS_CODES)) {
+    if (key.startsWith('2') && responses[key]) {
+      return Number(key)
+    }
+  }
+
+  // Next, check for a `default` response.
+  if (responses.default) {
+    return 'default'
+  }
+
+  // As a last resort, send `Not Implemented`.
+  return 501
 }
 
 /**
