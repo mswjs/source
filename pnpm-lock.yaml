@@ -31,8 +31,8 @@ importers:
         specifier: ^1.4.3
         version: 1.4.3
       yaml:
-        specifier: ^2.8.1
-        version: 2.8.1
+        specifier: ^2.8.2
+        version: 2.8.2
     devDependencies:
       '@commitlint/cli':
         specifier: ^20.1.0
@@ -54,10 +54,10 @@ importers:
         version: 18.19.33
       '@vitest/browser':
         specifier: ^4.0.8
-        version: 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.8)
+        version: 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))(vitest@4.0.8)
       '@vitest/browser-playwright':
         specifier: ^4.0.8
-        version: 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(playwright@1.56.1)(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.8)
+        version: 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(playwright@1.56.1)(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))(vitest@4.0.8)
       compression:
         specifier: ^1.8.1
         version: 1.8.1
@@ -87,7 +87,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.8
-        version: 4.0.8(@types/node@18.19.33)(@vitest/browser-playwright@4.0.8)(happy-dom@20.0.10)(jiti@2.6.1)(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(tsx@4.20.6)(yaml@2.8.1)
+        version: 4.0.8(@types/node@18.19.33)(@vitest/browser-playwright@4.0.8)(happy-dom@20.0.10)(jiti@2.6.1)(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(tsx@4.20.6)(yaml@2.8.2)
 
 packages:
 
@@ -1981,8 +1981,8 @@ packages:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
 
-  yaml@2.8.1:
-    resolution: {integrity: sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==}
+  yaml@2.8.2:
+    resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
@@ -2506,29 +2506,29 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@vitest/browser-playwright@4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(playwright@1.56.1)(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.8)':
+  '@vitest/browser-playwright@4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(playwright@1.56.1)(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))(vitest@4.0.8)':
     dependencies:
-      '@vitest/browser': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.8)
-      '@vitest/mocker': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))
+      '@vitest/browser': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))(vitest@4.0.8)
+      '@vitest/mocker': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))
       playwright: 1.56.1
       tinyrainbow: 3.0.3
-      vitest: 4.0.8(@types/node@18.19.33)(@vitest/browser-playwright@4.0.8)(happy-dom@20.0.10)(jiti@2.6.1)(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(tsx@4.20.6)(yaml@2.8.1)
+      vitest: 4.0.8(@types/node@18.19.33)(@vitest/browser-playwright@4.0.8)(happy-dom@20.0.10)(jiti@2.6.1)(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(tsx@4.20.6)(yaml@2.8.2)
     transitivePeerDependencies:
       - bufferutil
       - msw
       - utf-8-validate
       - vite
 
-  '@vitest/browser@4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.8)':
+  '@vitest/browser@4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))(vitest@4.0.8)':
     dependencies:
-      '@vitest/mocker': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))
+      '@vitest/mocker': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))
       '@vitest/utils': 4.0.8
       magic-string: 0.30.21
       pixelmatch: 7.1.0
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.0.3
-      vitest: 4.0.8(@types/node@18.19.33)(@vitest/browser-playwright@4.0.8)(happy-dom@20.0.10)(jiti@2.6.1)(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(tsx@4.20.6)(yaml@2.8.1)
+      vitest: 4.0.8(@types/node@18.19.33)(@vitest/browser-playwright@4.0.8)(happy-dom@20.0.10)(jiti@2.6.1)(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(tsx@4.20.6)(yaml@2.8.2)
       ws: 8.18.3
     transitivePeerDependencies:
       - bufferutil
@@ -2545,14 +2545,14 @@ snapshots:
       chai: 6.2.0
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))':
+  '@vitest/mocker@4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))':
     dependencies:
       '@vitest/spy': 4.0.8
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
       msw: 2.12.1(@types/node@18.19.33)(typescript@5.9.3)
-      vite: 7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1)
+      vite: 7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2)
 
   '@vitest/pretty-format@4.0.8':
     dependencies:
@@ -3147,7 +3147,7 @@ snapshots:
       nano-spawn: 2.0.0
       pidtree: 0.6.0
       string-argv: 0.3.2
-      yaml: 2.8.1
+      yaml: 2.8.2
 
   listr2@9.0.5:
     dependencies:
@@ -3749,7 +3749,7 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1):
+  vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2):
     dependencies:
       esbuild: 0.25.5
       fdir: 6.5.0(picomatch@4.0.3)
@@ -3762,12 +3762,12 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.6.1
       tsx: 4.20.6
-      yaml: 2.8.1
+      yaml: 2.8.2
 
-  vitest@4.0.8(@types/node@18.19.33)(@vitest/browser-playwright@4.0.8)(happy-dom@20.0.10)(jiti@2.6.1)(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(tsx@4.20.6)(yaml@2.8.1):
+  vitest@4.0.8(@types/node@18.19.33)(@vitest/browser-playwright@4.0.8)(happy-dom@20.0.10)(jiti@2.6.1)(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(tsx@4.20.6)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.8
-      '@vitest/mocker': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))
+      '@vitest/mocker': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))
       '@vitest/pretty-format': 4.0.8
       '@vitest/runner': 4.0.8
       '@vitest/snapshot': 4.0.8
@@ -3784,11 +3784,11 @@ snapshots:
       tinyexec: 0.3.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1)
+      vite: 7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 18.19.33
-      '@vitest/browser-playwright': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(playwright@1.56.1)(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vitest@4.0.8)
+      '@vitest/browser-playwright': 4.0.8(msw@2.12.1(@types/node@18.19.33)(typescript@5.9.3))(playwright@1.56.1)(vite@7.2.2(@types/node@18.19.33)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.2))(vitest@4.0.8)
       happy-dom: 20.0.10
     transitivePeerDependencies:
       - jiti
@@ -3839,7 +3839,7 @@ snapshots:
 
   y18n@5.0.8: {}
 
-  yaml@2.8.1: {}
+  yaml@2.8.2: {}
 
   yargs-parser@21.1.1: {}
 
