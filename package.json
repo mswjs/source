@@ -71,6 +71,7 @@
     "vitest": "^4.0.8"
   },
   "dependencies": {
+    "@mswjs/interceptors": "^0.40.0",
     "@stoplight/json": "^3.21.7",
     "@types/har-format": "^1.2.16",
     "@yellow-ticket/seed-json-schema": "^0.1.7",
