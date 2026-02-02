@@ -1,4 +1,5 @@
 import type { ResponseResolver } from 'msw'
+import { FetchResponse } from '@mswjs/interceptors'
 import { OpenAPI, OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import { seedSchema } from '@yellow-ticket/seed-json-schema'
 import { toString } from './to-string.js'
@@ -50,7 +51,7 @@ export function createResponseResolver(
 
     const normalizedStatus = Number(responseStatus || '200')
 
-    return new Response(toBody(request, responseObject), {
+    return new FetchResponse(toBody(request, responseObject), {
       status: normalizedStatus,
       statusText: STATUS_CODES[normalizedStatus],
       headers: toHeaders(request, responseObject),

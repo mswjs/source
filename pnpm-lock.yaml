@@ -12,6 +12,9 @@ importers:
 
   .:
     dependencies:
+      '@mswjs/interceptors':
+        specifier: ^0.40.0
+        version: 0.40.0
       '@stoplight/json':
         specifier: ^3.21.7
         version: 3.21.7

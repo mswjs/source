@@ -1,4 +1,5 @@
 import type Har from 'har-format'
+import { FetchResponse } from '@mswjs/interceptors'
 import { decodeBase64String } from './base64-utils.js'
 
 export function toHeaders(harHeaders: Array<Har.Header>): Headers {
@@ -41,7 +42,7 @@ export function toResponse(responseEntry: Har.Response): Response {
   }
 
   const body = toResponseBody(responseEntry.content)
-  const response = new Response(body, {
+  const response = new FetchResponse(body, {
     status: responseEntry.status,
     statusText: responseEntry.statusText,
     headers: toHeaders(responseEntry.headers),
