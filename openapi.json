@@ -1,0 +1,549 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "description": "Komga REST API.\n\n## Reference\n\nCheck the API reference:\n- on the [Komga website](https://komga.org/docs/openapi/komga-api)\n- on any running Komga instance at `/swagger-ui.html`\n- on [GitHub](https://raw.githubusercontent.com/gotson/komga/refs/heads/master/komga/docs/openapi.json)\n\n## Authentication\n\nMost endpoints require authentication. Authentication is done using either:\n- Basic Authentication\n- Passing an API Key in the `X-API-Key` header\n\n## Sessions\n\nUpon successful authentication, a session is created, and can be reused.\n\n- By default, a `KOMGA-SESSION` cookie is set via `Set-Cookie` response header. This works well for browsers and clients that can handle cookies.\n- If you specify a header `X-Auth-Token` during authentication, the session ID will be returned via this same header. You can then pass that header again for subsequent requests to reuse the session.\n\nIf you need to set the session cookie later on, you can call `/api/v1/login/set-cookie` with `X-Auth-Token`. The response will contain the `Set-Cookie` header.\n\n## Remember Me\n\nDuring authentication, if a request parameter `remember-me` is passed and set to `true`, the server will also return a `komga-remember-me` cookie. This cookie will be used to login automatically even if the session has expired.\n\n## Logout\n\nYou can explicitly logout an existing session by calling `/api/logout`. This would return a `204`.\n\n## Deprecation\n\nAPI endpoints marked as deprecated will be removed in the next major version.",
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/gotson/komga/blob/master/LICENSE"
+    },
+    "title": "Komga API",
+    "version": "1.21.3"
+  },
+  "externalDocs": {
+    "description": "Komga documentation",
+    "url": "https://komga.org"
+  },
+  "servers": [
+    {
+      "url": "https://demo.komga.org",
+      "description": "Demo server"
+    },
+    {
+      "url": "http://localhost:{port}",
+      "description": "Local development server",
+      "variables": {
+        "port": {
+          "default": "25600",
+          "enum": [
+            "8080",
+            "25600"
+          ]
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "basicAuth": []
+    },
+    {
+      "apiKey": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Deprecated"
+    },
+    {
+      "description": "Manage libraries.",
+      "name": "Libraries"
+    },
+    {
+      "description": "Manage series.",
+      "name": "Series"
+    },
+    {
+      "description": "Manage posters for series.",
+      "name": "Series Poster"
+    },
+    {
+      "description": "Manage books.",
+      "name": "Books"
+    },
+    {
+      "description": "Manage posters for books.",
+      "name": "Book Poster"
+    },
+    {
+      "name": "Book Pages"
+    },
+    {
+      "name": "WebPub Manifest"
+    },
+    {
+      "name": "Import"
+    },
+    {
+      "description": "Provide font files and CSS for the Epub Reader.",
+      "name": "Fonts"
+    },
+    {
+      "description": "Manage duplicate pages. Duplicate pages are identified by a page hash.",
+      "name": "Duplicate Pages"
+    },
+    {
+      "description": "Manage collections.",
+      "name": "Collections"
+    },
+    {
+      "description": "Manage posters for collections.",
+      "name": "Collection Poster"
+    },
+    {
+      "name": "Collection Series"
+    },
+    {
+      "description": "Manage readlists.",
+      "name": "Readlists"
+    },
+    {
+      "description": "Manage posters for readlists.",
+      "name": "Readlist Poster"
+    },
+    {
+      "name": "Readlist Books"
+    },
+    {
+      "description": "Retrieve referential metadata from all items in the Komga server.",
+      "name": "Referential metadata"
+    },
+    {
+      "description": "Manage current user.",
+      "name": "Current user"
+    },
+    {
+      "description": "Manage users.",
+      "name": "Users"
+    },
+    {
+      "description": "Manage API Keys",
+      "name": "API Keys"
+    },
+    {
+      "name": "User session"
+    },
+    {
+      "description": "List registered OAuth2 providers",
+      "name": "OAuth2"
+    },
+    {
+      "description": "Sync points are automatically created during a Kobo sync.",
+      "name": "Sync points"
+    },
+    {
+      "description": "Claim a freshly installed Komga server.",
+      "name": "Claim"
+    },
+    {
+      "description": "Manage server tasks",
+      "name": "Tasks"
+    },
+    {
+      "description": "Server events history",
+      "name": "History"
+    },
+    {
+      "description": "List files from the host server\u0027s file system",
+      "name": "File system"
+    },
+    {
+      "description": "Store and retrieve server settings",
+      "name": "Server settings"
+    },
+    {
+      "description": "Retrieve releases information",
+      "name": "Releases"
+    },
+    {
+      "description": "Retrieve announcements from the Komga website",
+      "name": "Announcements"
+    },
+    {
+      "description": "Manage server",
+      "name": "Management"
+    },
+    {
+      "name": "Mihon"
+    },
+    {
+      "name": "ComicRack"
+    },
+    {
+      "description": "Store and retrieve global and per-user settings. Those settings are not used by Komga itself, but can be stored for convenience by client applications.",
+      "name": "Client settings"
+    }
+  ],
+  "paths": {
+    "/actuator/info": {
+      "get": {
+        "description": "Required role: **ADMIN**",
+        "operationId": "getActuatorInfo",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Example": {
+                    "value": "{\n  \"git\": {\n    \"branch\": \"master\",\n    \"commit\": {\n      \"id\": \"9be980d\",\n      \"time\": \"2025-03-12T03:40:38Z\"\n    }\n  },\n  \"build\": {\n    \"artifact\": \"komga\",\n    \"name\": \"komga\",\n    \"version\": \"1.21.2\",\n    \"group\": \"komga\"\n  },\n  \"java\": {\n    \"version\": \"23.0.2\",\n    \"vendor\": {\n      \"name\": \"Eclipse Adoptium\",\n      \"version\": \"Temurin-23.0.2+7\"\n    },\n    \"runtime\": {\n      \"name\": \"OpenJDK Runtime Environment\",\n      \"version\": \"23.0.2+7\"\n    },\n    \"jvm\": {\n      \"name\": \"OpenJDK 64-Bit Server VM\",\n      \"vendor\": \"Eclipse Adoptium\",\n      \"version\": \"23.0.2+7\"\n    }\n  },\n  \"os\": {\n    \"name\": \"Linux\",\n    \"version\": \"6.8.0-57-generic\",\n    \"arch\": \"amd64\"\n  }\n}"
+                  }
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get server information",
+        "tags": [
+          "Management"
+        ]
+      },
+      "summary": "Get general information about the server"
+    },
+    "/api/logout": {
+      "get": {
+        "description": "Invalidates the current session and clean up any remember-me authentication.",
+        "operationId": "postLogout",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "User session"
+        ]
+      },
+      "post": {
+        "description": "Invalidates the current session and clean up any remember-me authentication.",
+        "operationId": "postLogout_1",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "User session"
+        ]
+      },
+      "summary": "Logout current session"
+    },
+    "/api/v1/announcements": {
+      "get": {
+        "description": "Required role: **ADMIN**",
+        "operationId": "getAnnouncements",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JsonFeedDto"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "summary": "Retrieve announcements",
+        "tags": [
+          "Announcements"
+        ]
+      },
+      "put": {
+        "description": "Required role: **ADMIN**",
+        "operationId": "markAnnouncementsRead",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "uniqueItems": true,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          }
+        },
+        "summary": "Mark announcements as read",
+        "tags": [
+          "Announcements"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ItemAuthorDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Author\u0027s name",
+            "example": "gotson"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL of a site owned by the author",
+            "example": "https://github.com/gotson"
+          }
+        },
+        "description": "Author of the item"
+      },
+      "ItemDto": {
+        "required": [
+          "id",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "_komga": {
+            "$ref": "#/components/schemas/KomgaExtensionDto"
+          },
+          "author": {
+            "$ref": "#/components/schemas/ItemAuthorDto"
+          },
+          "content_html": {
+            "type": "string",
+            "description": "HTML of the item",
+            "example": "\u003cp\u003eA longer text…\u003c/p\u003e"
+          },
+          "date_modified": {
+            "type": "string",
+            "description": "Modification date in RFC 3339 format",
+            "format": "date-time",
+            "example": "2023-12-15T00:00:00Z"
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique for that item for that feed over time",
+            "example": "https://komga.org/blog/ebook-drop2"
+          },
+          "summary": {
+            "type": "string",
+            "description": "A plain text sentence or two describing the item",
+            "example": "Version 1.9.0 contains the second feature drop for Ebooks support."
+          },
+          "tags": {
+            "uniqueItems": true,
+            "type": "array",
+            "description": "Tags describing the item",
+            "items": {
+              "type": "string",
+              "description": "Tags describing the item"
+            }
+          },
+          "title": {
+            "type": "string",
+            "description": "Plain text title",
+            "example": "eBook drop 2"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL of the resource described by the item",
+            "example": "https://komga.org/blog/ebook-drop2"
+          }
+        }
+      },
+      "JsonFeedDto": {
+        "required": [
+          "items",
+          "title",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Provides more detail on what the feed is about",
+            "example": "Latest Komga announcements"
+          },
+          "home_page_url": {
+            "type": "string",
+            "description": "URL of the resource that the feed describes",
+            "example": "https://komga.org/blog"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemDto"
+            }
+          },
+          "title": {
+            "type": "string",
+            "description": "Name of the feed",
+            "example": "Announcements"
+          },
+          "version": {
+            "type": "string",
+            "description": "URL of the version of the format the feed uses",
+            "example": "https://jsonfeed.org/version/1"
+          }
+        }
+      },
+      "KomgaExtensionDto": {
+        "required": [
+          "read"
+        ],
+        "type": "object",
+        "properties": {
+          "read": {
+            "type": "boolean",
+            "description": "Whether the current item has been marked read by the current user",
+            "example": false
+          }
+        },
+        "description": "Additional fields for the item"
+      },
+      "ValidationErrorResponse": {
+        "required": [
+          "violations"
+        ],
+        "type": "object",
+        "properties": {
+          "violations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Violation"
+            }
+          }
+        }
+      },
+      "Violation": {
+        "type": "object",
+        "properties": {
+          "fieldName": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKey": {
+        "in": "header",
+        "name": "X-API-Key",
+        "type": "apiKey"
+      },
+      "basicAuth": {
+        "scheme": "basic",
+        "type": "http"
+      }
+    }
+  },
+  "x-tagGroups": [
+    {
+      "name": "Deprecation",
+      "tags": [
+        "Deprecated"
+      ]
+    },
+    {
+      "name": "Libraries",
+      "tags": [
+        "Libraries"
+      ]
+    },
+    {
+      "name": "Series",
+      "tags": [
+        "Series",
+        "Series Poster"
+      ]
+    },
+    {
+      "name": "Books",
+      "tags": [
+        "Books",
+        "Book Pages",
+        "Book Poster",
+        "Import",
+        "Duplicate Pages",
+        "WebPub Manifest",
+        "Fonts"
+      ]
+    },
+    {
+      "name": "Collections",
+      "tags": [
+        "Collections",
+        "Collection Series",
+        "Collection Poster"
+      ]
+    },
+    {
+      "name": "Readlists",
+      "tags": [
+        "Readlists",
+        "Readlist Books",
+        "Readlist Poster"
+      ]
+    },
+    {
+      "name": "Referential",
+      "tags": [
+        "Referential metadata"
+      ]
+    },
+    {
+      "name": "Users",
+      "tags": [
+        "Current user",
+        "Users",
+        "API Keys",
+        "User session",
+        "OAuth2",
+        "Sync points"
+      ]
+    },
+    {
+      "name": "Server",
+      "tags": [
+        "Claim",
+        "Server settings",
+        "Tasks",
+        "History",
+        "File system",
+        "Releases",
+        "Announcements",
+        "Management"
+      ]
+    },
+    {
+      "name": "Integrations",
+      "tags": [
+        "Client settings",
+        "Mihon",
+        "ComicRack"
+      ]
+    }
+  ]
+}
