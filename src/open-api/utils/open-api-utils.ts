@@ -1,74 +1,74 @@
 import type { ResponseResolver } from 'msw'
-import { OpenAPI, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
+import { OpenAPI, OpenAPIV2, OpenAPIV3, OpenAPIV3_1 } from 'openapi-types'
 import { seedSchema } from '@yellow-ticket/seed-json-schema'
 import { toString } from './to-string.js'
 import { STATUS_CODES } from './status-codes.js'
 
+/**
+ * @note Manually type the `responses` object to be dereferenced.
+ */
+type ResponsesObject =
+  | {
+      [index: string]: OpenAPIV2.ResponseObject | undefined
+      default?: OpenAPIV2.ResponseObject
+    }
+  | {
+      [code: string]: OpenAPIV3.ResponseObject
+    }
+  | {
+      [code: string]: OpenAPIV3_1.ResponseObject
+    }
+
+type ResponseObject = OpenAPIV3.ResponseObject | OpenAPIV3_1.ResponseObject
+
+/**
+ * Create a resolver function based on the responses defined for a given operation.
+ */
 export function createResponseResolver(
   operation: OpenAPI.Operation,
 ): ResponseResolver {
   return ({ request }) => {
-    const { responses } = operation
+    const responses = operation.responses as ResponsesObject
 
-    // Treat operations that describe no responses as not implemented.
-    if (responses == null) {
+    const explicitResponseStatus = new URL(request.url).searchParams.get(
+      'response',
+    )
+
+    const responseStatus =
+      explicitResponseStatus || getResponseStatus(responses)
+
+    const responseObject = responseStatus
+      ? responses[responseStatus]
+      : responses.default
+
+    if (responseObject == null) {
       return new Response('Not Implemented', {
         status: 501,
         statusText: 'Not Implemented',
       })
     }
 
-    if (Object.keys(responses).length === 0) {
-      return new Response('Not Implemented', {
-        status: 501,
-        statusText: 'Not Implemented',
-      })
-    }
-
-    let responseObject: OpenAPIV3.ResponseObject | OpenAPIV3_1.ResponseObject
-
-    const url = new URL(request.url)
-    const explicitResponseStatus = url.searchParams.get('response')
-
-    if (explicitResponseStatus) {
-      const responseByStatus = responses[
-        explicitResponseStatus
-      ] as OpenAPIV3.ResponseObject
-
-      if (!responseByStatus) {
-        return new Response('Not Implemented', {
-          status: 501,
-          statusText: 'Not Implemented',
-        })
-      }
-
-      responseObject = responseByStatus
-    } else {
-      const fallbackResponse =
-        (responses['200'] as
-          | OpenAPIV3.ResponseObject
-          | OpenAPIV3_1.ResponseObject) ||
-        (responses.default as
-          | OpenAPIV3.ResponseObject
-          | OpenAPIV3_1.ResponseObject)
-
-      if (!fallbackResponse) {
-        return new Response('Not Implemented', {
-          status: 501,
-          statusText: 'Not Implemented',
-        })
-      }
-
-      responseObject = fallbackResponse
-    }
-
-    const status = Number(explicitResponseStatus || '200')
+    const normalizedStatus = Number(responseStatus || '200')
 
     return new Response(toBody(request, responseObject), {
-      status,
-      statusText: STATUS_CODES[status],
+      status: normalizedStatus,
+      statusText: STATUS_CODES[normalizedStatus],
       headers: toHeaders(request, responseObject),
     })
+  }
+}
+
+export function getResponseStatus(
+  responses: ResponsesObject,
+): string | undefined {
+  if (responses['200']) {
+    return '200'
+  }
+
+  for (const status in responses) {
+    if (status.startsWith('2')) {
+      return status
+    }
   }
 }
 
@@ -156,7 +156,7 @@ export function toHeaders(
  */
 export function toBody(
   request: Request,
-  responseObject: OpenAPIV3.ResponseObject | OpenAPIV3_1.ResponseObject,
+  responseObject: ResponseObject,
 ): RequestInit['body'] {
   const { content } = responseObject
 
