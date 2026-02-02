@@ -25,3 +25,24 @@ it('supports non-configurable response status codes', async () => {
     },
   ])
 })
+
+it('supports a 304 responses with a body', async () => {
+  const har = readArchive(
+    'test/traffic/fixtures/archives/response-status-304.har',
+  )
+  const handlers = fromTraffic(har, normalizeLocalhost)
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    {
+      handler: {
+        method: 'GET',
+        path: 'http://localhost/redirect',
+      },
+      response: {
+        status: 304,
+        statusText: '',
+        headers: _toHeaders(har.log.entries[0].response.headers),
+        body: '',
+      },
+    },
+  ])
+})
