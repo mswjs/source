@@ -32,7 +32,9 @@
     "src",
     "lib"
   ],
-  "repository": "git@github.com:mswjs/source.git",
+  "repository": {
+    "url": "https://github.com/mswjs/source"
+  },
   "author": "Artem Zakharchenko <me@kettanaito.com>",
   "lint-staged": {
     "*.ts": [
