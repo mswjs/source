@@ -5,12 +5,8 @@ on:
     - cron: '0 1 * * *'
   workflow_dispatch:
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
-  release:
+  build:
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -29,11 +25,6 @@ jobs:
         with:
           version: 9.15.0
 
-      - name: Set up Git
-        run: |
-          git config --local user.name "Artem Zakharchenko"
-          git config --local user.email "kettanaito@gmail.com"
-
       - name: Install dependencies
         run: pnpm install
 
@@ -45,6 +36,50 @@ jobs:
 
       - name: Tests
         run: pnpm test
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: ./lib
+
+  release:
+    needs: [build]
+    runs-on: macos-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_ADMIN_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # NOTE: Trusted Publishing only works with Node.js 24.
+          node-version: 24
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Set up Git
+        run: |
+          git config --local user.name "Artem Zakharchenko"
+          git config --local user.email "kettanaito@gmail.com"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: ./lib
 
       - name: Release
         run: pnpm release

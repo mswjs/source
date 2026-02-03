@@ -22,7 +22,6 @@
     "test": "pnpm test:node && pnpm test:browser",
     "test:node": "vitest --project node",
     "test:browser": "vitest --project browser",
-    "prepack": "pnpm test && pnpm build",
     "release": "release publish"
   },
   "publishConfig": {
