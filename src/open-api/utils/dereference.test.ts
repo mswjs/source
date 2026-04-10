@@ -59,3 +59,59 @@ it('dereferences', async () => {
     }
   `)
 })
+
+it('merges schemas defined using allOf', async () => {
+  await expect(
+    dereference({
+      foo: {
+        allOf: [
+          {
+            $ref: '#/components/schemas/User',
+          },
+          {
+            type: 'object',
+            properties: {
+              street: { type: 'string' },
+            },
+          },
+        ],
+      },
+      components: {
+        schemas: {
+          User: {
+            type: 'object',
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+      },
+    }),
+  ).resolves.toMatchInlineSnapshot(`
+    {
+      "components": {
+        "schemas": {
+          "User": {
+            "properties": {
+              "name": {
+                "type": "string",
+              },
+            },
+            "type": "object",
+          },
+        },
+      },
+      "foo": {
+        "properties": {
+          "name": {
+            "type": "string",
+          },
+          "street": {
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+    }
+  `)
+})

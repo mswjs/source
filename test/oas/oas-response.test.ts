@@ -47,3 +47,29 @@ it('supports a referenced response example', async () => {
     },
   ])
 })
+
+it('supports a response example using allOf', async () => {
+  const document = require('./fixtures/response-all-of.json')
+  const handlers = await fromOpenApi(document)
+  expect(await inspectHandlers(handlers)).toEqual<InspectedHandler[]>([
+    {
+      handler: {
+        method: 'GET',
+        path: 'https://example.com/user',
+      },
+      response: {
+        status: 200,
+        statusText: 'OK',
+        headers: expect.arrayContaining([['content-type', 'application/json']]),
+        body: JSON.stringify({
+          id: 'abc-123',
+          firstName: 'John',
+          lastName: 'Maverick',
+          street: '123 Main St',
+          town: 'Springfield',
+          country: 'USA',
+        }),
+      },
+    },
+  ])
+})

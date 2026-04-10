@@ -1,4 +1,5 @@
 import { pointerToPath } from '@stoplight/json'
+import { mergeSchemas } from './merge-schemas.js'
 
 /**
  * TODO: Support remote references.
@@ -32,6 +33,15 @@ export async function dereference(document: unknown, root?: any): Promise<any> {
         )
       }),
     )
+
+    if ('allOf' in document && Array.isArray(document['allOf'])) {
+      const { allOf, ...siblings } = document
+      const merged = allOf.reduce(mergeSchemas, {})
+      for (const key of Object.keys(document)) {
+        Reflect.deleteProperty(document, key)
+      }
+      Object.assign(document, merged, siblings)
+    }
 
     return document
   }

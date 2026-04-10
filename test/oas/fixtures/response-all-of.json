@@ -1,0 +1,48 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "allOf specification",
+    "version": "1.0.0"
+  },
+  "basePath": "https://example.com",
+  "paths": {
+    "/user": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/UserBase"
+                    },
+                    {
+                      "example": {
+                        "street": "123 Main St",
+                        "town": "Springfield",
+                        "country": "USA"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserBase": {
+        "example": {
+          "id": "abc-123",
+          "firstName": "John",
+          "lastName": "Maverick"
+        }
+      }
+    }
+  }
+}
