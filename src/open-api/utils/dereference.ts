@@ -19,8 +19,28 @@ export async function dereference(document: unknown, root?: any): Promise<any> {
 
   if (typeof document === 'object' && document !== null) {
     if ('$ref' in document && typeof document['$ref'] === 'string') {
-      const path = pointerToPath(document['$ref'])
-      return path.reduce((item, key) => item[key], root)
+      const visited = new Set<string>()
+      let resolved: any = document
+      while (
+        resolved !== null &&
+        typeof resolved === 'object' &&
+        '$ref' in resolved &&
+        typeof resolved['$ref'] === 'string'
+      ) {
+        const ref = resolved['$ref']
+        if (visited.has(ref)) {
+          throw new Error(
+            `Failed to dereference document: circular $ref chain detected (${[
+              ...visited,
+              ref,
+            ].join(' -> ')})`,
+          )
+        }
+        visited.add(ref)
+        const path = pointerToPath(ref)
+        resolved = path.reduce((item, key) => item[key], root)
+      }
+      return dereference(resolved, root)
     }
 
     await Promise.all(
