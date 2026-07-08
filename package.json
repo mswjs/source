@@ -4,6 +4,10 @@
   "version": "0.6.1",
   "description": "Generate MSW request handlers from OpenAPI documents, HAR files, and other sources.",
   "exports": {
+    "./data": {
+      "types": "./lib/data/from-collection.d.ts",
+      "default": "./lib/data/from-collection.js"
+    },
     "./open-api": {
       "types": "./lib/open-api/from-open-api.d.ts",
       "default": "./lib/open-api/from-open-api.js"
@@ -49,11 +53,18 @@
   },
   "packageManager": "pnpm@9.15.0",
   "peerDependencies": {
+    "@msw/data": "^1.1.6",
     "msw": "^2.10.0"
+  },
+  "peerDependenciesMeta": {
+    "@msw/data": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
+    "@msw/data": "^1.1.6",
     "@open-draft/test-server": "^0.7.2",
     "@ossjs/release": "^0.10.1",
     "@types/compression": "^1.8.1",
@@ -69,10 +80,12 @@
     "simple-git-hooks": "^2.13.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "zod": "^4.4.3"
   },
   "dependencies": {
     "@mswjs/interceptors": "^0.40.0",
+    "@standard-schema/spec": "^1.1.0",
     "@stoplight/json": "^3.21.7",
     "@types/har-format": "^1.2.16",
     "@yellow-ticket/seed-json-schema": "^0.1.7",
