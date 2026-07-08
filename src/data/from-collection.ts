@@ -2,15 +2,28 @@ import type { StandardSchemaV1 } from '@standard-schema/spec'
 import { type Collection, OperationError, Query } from '@msw/data'
 import {
   type DefaultBodyType,
+  type GraphQLHandler,
   type HttpResponseResolver,
   type PathParams,
   http,
   HttpHandler,
   HttpResponse,
 } from 'msw'
+import { getValueAtPath } from './utils/get-value-at-path.js'
 import { toSerializable } from './utils/to-serializable.js'
+import {
+  generateGraphQLHandlers,
+  type FromCollectionGraphQLOptions,
+} from './graphql/generate-graphql-handlers.js'
 
-export interface FromCollectionOptions {
+export type { FromCollectionGraphQLOptions }
+
+export interface FromCollectionHttpOptions {
+  /**
+   * Format of the generated handlers.
+   * @default "http"
+   */
+  format?: 'http'
   /**
    * The URL of the resource represented by this collection.
    * Can be a path or an absolute URL. All generated handlers
@@ -31,6 +44,10 @@ export interface FromCollectionOptions {
    */
   primaryKey?: string
 }
+
+export type FromCollectionOptions =
+  | FromCollectionHttpOptions
+  | FromCollectionGraphQLOptions
 
 const paginationParameterNames = ['skip', 'take']
 
@@ -65,17 +82,36 @@ class GeneratedHandlerError extends Error {
  * - `PATCH {baseUrl}/:key`, merges the request body into a record.
  * - `DELETE {baseUrl}/:key`, deletes a record by its `primaryKey`.
  *
+ * Provide the `format: 'graphql'` option to generate GraphQL
+ * handlers instead (see {@link FromCollectionGraphQLOptions}).
+ *
  * @example
  * import { Collection } from '@msw/data'
  * import { fromCollection } from '@msw/source/data'
  *
  * const users = new Collection({ schema: userSchema })
  * const handlers = fromCollection(users, { baseUrl: '/api/users' })
+ *
+ * @example
+ * // Generate GraphQL handlers instead.
+ * fromCollection(users, { format: 'graphql', name: 'user' })
  */
 export function fromCollection<Schema extends StandardSchemaV1>(
   collection: Collection<Schema>,
+  options?: FromCollectionHttpOptions,
+): Array<HttpHandler>
+export function fromCollection<Schema extends StandardSchemaV1>(
+  collection: Collection<Schema>,
+  options: FromCollectionGraphQLOptions,
+): Array<GraphQLHandler>
+export function fromCollection<Schema extends StandardSchemaV1>(
+  collection: Collection<Schema>,
   options: FromCollectionOptions = {},
-): Array<HttpHandler> {
+): Array<HttpHandler> | Array<GraphQLHandler> {
+  if (options.format === 'graphql') {
+    return generateGraphQLHandlers(collection, options)
+  }
+
   const { baseUrl = '/', primaryKey = 'id' } = options
 
   const collectionUrl = baseUrl.replace(/\/+$/, '')
@@ -399,18 +435,4 @@ function createSearchParametersPredicate(
       return filter(record)
     })
   }
-}
-
-function getValueAtPath(target: unknown, path: Array<string>): unknown {
-  let currentValue = target
-
-  for (const segment of path) {
-    if (currentValue == null || typeof currentValue !== 'object') {
-      return undefined
-    }
-
-    currentValue = (currentValue as Record<string, unknown>)[segment]
-  }
-
-  return currentValue
 }
