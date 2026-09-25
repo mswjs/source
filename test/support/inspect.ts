@@ -1,21 +1,15 @@
-import { RequestHandler, HttpHandler, GraphQLHandler } from 'msw'
+import type { AnyHandler } from 'msw'
+import { HttpHandler } from 'msw/http'
 
-export interface InspectedHandler<H extends RequestHandler = HttpHandler> {
-  handler: SerializedHandler<H>
+export interface InspectedHandler {
+  handler: SerializedHandler
   response?: SerializedResponse
 }
 
-type SerializedHandler<H extends RequestHandler> = H extends HttpHandler
-  ? {
-      method: string
-      path: string
-    }
-  : H extends GraphQLHandler
-    ? {
-        kind: string
-        name: string
-      }
-    : never
+interface SerializedHandler {
+  method: string
+  path: string
+}
 
 export interface SerializedResponse {
   status: number
@@ -28,9 +22,7 @@ function isAbsoluteUrl(url: string) {
   return url.indexOf('://') > 0 || url.indexOf('//') === 0
 }
 
-async function inspectHandler<H extends RequestHandler>(
-  handler: H,
-): Promise<InspectedHandler<H>> {
+async function inspectHandler(handler: AnyHandler): Promise<InspectedHandler> {
   const requestId = Math.random().toString(16).slice(2)
 
   if (handler instanceof HttpHandler) {
@@ -58,30 +50,12 @@ async function inspectHandler<H extends RequestHandler>(
     }
   }
 
-  if (handler instanceof GraphQLHandler) {
-    const result = await handler.run({
-      request: new Request('', {
-        method: 'POST',
-        body: JSON.stringify({}),
-      }),
-      requestId,
-    })
-
-    return {
-      handler: {
-        kind: handler.info.operationType,
-        name: handler.info.operationName,
-      },
-      response: await serializeResponse(result?.response),
-    }
-  }
-
   throw new Error(
-    `Failed to inspect handler "${handler.info.header}": unknown handler type`,
+    `Failed to inspect handler of kind "${handler.kind}": unknown handler type`,
   )
 }
 
-export async function inspectHandlers(handlers: Array<RequestHandler>) {
+export async function inspectHandlers(handlers: Array<AnyHandler>) {
   return await Promise.all(handlers.map(inspectHandler))
 }
 

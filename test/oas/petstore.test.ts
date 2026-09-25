@@ -2,7 +2,7 @@
 import { HttpHandler } from 'msw'
 import { fromOpenApi } from '../../src/open-api/from-open-api.js'
 import { withHandlers } from '../../test/support/with-handlers.js'
-import petstoreSpecification from './fixtures/petstore.json' assert { type: 'json' }
+import petstoreSpecification from './fixtures/petstore.json' with { type: 'json' }
 
 let handlers: Array<HttpHandler>
 

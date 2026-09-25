@@ -24,10 +24,7 @@
       "variables": {
         "port": {
           "default": "25600",
-          "enum": [
-            "8080",
-            "25600"
-          ]
+          "enum": ["8080", "25600"]
         }
       }
     }
@@ -193,9 +190,7 @@
           }
         },
         "summary": "Get server information",
-        "tags": [
-          "Management"
-        ]
+        "tags": ["Management"]
       },
       "summary": "Get general information about the server"
     },
@@ -209,9 +204,7 @@
           }
         },
         "summary": "Logout",
-        "tags": [
-          "User session"
-        ]
+        "tags": ["User session"]
       },
       "post": {
         "description": "Invalidates the current session and clean up any remember-me authentication.",
@@ -222,9 +215,7 @@
           }
         },
         "summary": "Logout",
-        "tags": [
-          "User session"
-        ]
+        "tags": ["User session"]
       },
       "summary": "Logout current session"
     },
@@ -255,9 +246,7 @@
           }
         },
         "summary": "Retrieve announcements",
-        "tags": [
-          "Announcements"
-        ]
+        "tags": ["Announcements"]
       },
       "put": {
         "description": "Required role: **ADMIN**",
@@ -292,9 +281,7 @@
           }
         },
         "summary": "Mark announcements as read",
-        "tags": [
-          "Announcements"
-        ]
+        "tags": ["Announcements"]
       }
     }
   },
@@ -317,10 +304,7 @@
         "description": "Author of the item"
       },
       "ItemDto": {
-        "required": [
-          "id",
-          "tags"
-        ],
+        "required": ["id", "tags"],
         "type": "object",
         "properties": {
           "_komga": {
@@ -372,11 +356,7 @@
         }
       },
       "JsonFeedDto": {
-        "required": [
-          "items",
-          "title",
-          "version"
-        ],
+        "required": ["items", "title", "version"],
         "type": "object",
         "properties": {
           "description": {
@@ -408,9 +388,7 @@
         }
       },
       "KomgaExtensionDto": {
-        "required": [
-          "read"
-        ],
+        "required": ["read"],
         "type": "object",
         "properties": {
           "read": {
@@ -422,9 +400,7 @@
         "description": "Additional fields for the item"
       },
       "ValidationErrorResponse": {
-        "required": [
-          "violations"
-        ],
+        "required": ["violations"],
         "type": "object",
         "properties": {
           "violations": {
@@ -462,22 +438,15 @@
   "x-tagGroups": [
     {
       "name": "Deprecation",
-      "tags": [
-        "Deprecated"
-      ]
+      "tags": ["Deprecated"]
     },
     {
       "name": "Libraries",
-      "tags": [
-        "Libraries"
-      ]
+      "tags": ["Libraries"]
     },
     {
       "name": "Series",
-      "tags": [
-        "Series",
-        "Series Poster"
-      ]
+      "tags": ["Series", "Series Poster"]
     },
     {
       "name": "Books",
@@ -493,25 +462,15 @@
     },
     {
       "name": "Collections",
-      "tags": [
-        "Collections",
-        "Collection Series",
-        "Collection Poster"
-      ]
+      "tags": ["Collections", "Collection Series", "Collection Poster"]
     },
     {
       "name": "Readlists",
-      "tags": [
-        "Readlists",
-        "Readlist Books",
-        "Readlist Poster"
-      ]
+      "tags": ["Readlists", "Readlist Books", "Readlist Poster"]
     },
     {
       "name": "Referential",
-      "tags": [
-        "Referential metadata"
-      ]
+      "tags": ["Referential metadata"]
     },
     {
       "name": "Users",
@@ -539,11 +498,7 @@
     },
     {
       "name": "Integrations",
-      "tags": [
-        "Client settings",
-        "Mihon",
-        "ComicRack"
-      ]
+      "tags": ["Client settings", "Mihon", "ComicRack"]
     }
   ]
 }

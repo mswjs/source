@@ -13,7 +13,7 @@ export async function withHandlers<R>(
   const server = setupServer(...handlers)
 
   server.listen({
-    onUnhandledRequest: 'error',
+    onUnhandledFrame: 'error',
   })
 
   try {

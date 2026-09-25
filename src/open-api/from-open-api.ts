@@ -1,4 +1,4 @@
-import { HttpHandler, http } from 'msw'
+import { HttpHandler, http } from 'msw/http'
 import type { OpenAPIV3, OpenAPIV2, OpenAPI } from 'openapi-types'
 import { parse } from 'yaml'
 import { normalizeSwaggerUrl } from './utils/normalize-swagger-url.js'
@@ -35,8 +35,7 @@ export async function fromOpenApi(
   for (const item of pathItems) {
     const [url, handlers] = item
     const pathItem = handlers as
-      | OpenAPIV2.PathItemObject
-      | OpenAPIV3.PathItemObject
+      OpenAPIV2.PathItemObject | OpenAPIV3.PathItemObject
 
     for (const key of Object.keys(pathItem)) {
       const method = key as keyof OpenAPIV2.PathItemObject
