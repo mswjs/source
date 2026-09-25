@@ -76,6 +76,7 @@
     "@stoplight/json": "^3.21.7",
     "@types/har-format": "^1.2.16",
     "@yellow-ticket/seed-json-schema": "^0.1.7",
+    "msw-storybook-addon": "https://pkg.pr.new/mswjs/msw-storybook-addon@199",
     "openapi-types": "^12.1.3",
     "outvariant": "^1.4.3",
     "yaml": "^2.8.2"
