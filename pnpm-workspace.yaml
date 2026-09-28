@@ -3,7 +3,8 @@ allowBuilds:
   msw: set this to true or false
   simple-git-hooks: true
 minimumReleaseAgeExclude:
-  - '@mswjs/interceptors@0.45.1'
+  - '@mswjs/interceptors@0.45.5'
+  - msw@3.0.0
 overrides:
   'ws@>=8.0.0 <8.17.1': '>=8.17.1'
   'braces@<3.0.3': '>=3.0.3'

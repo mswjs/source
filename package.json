@@ -19,7 +19,7 @@
     "har:fixture": "tsx ./test/traffic/fixtures/requests/command.ts",
     "prepare": "pnpm simple-git-hooks init",
     "build": "tsc -p ./tsconfig.build.json",
-    "test": "pnpm test:node && pnpm test:browser",
+    "test": "vitest",
     "test:node": "vitest --project node",
     "test:browser": "vitest --project browser",
     "release": "release publish"
@@ -63,7 +63,7 @@
     "compression": "^1.8.2",
     "happy-dom": "^20.14.5",
     "lint-staged": "^17.5.1",
-    "msw": "https://pkg.pr.new/msw@4104a17",
+    "msw": "^3.0.0",
     "playwright": "^1.63.0",
     "prettier": "^3.9.9",
     "simple-git-hooks": "^2.14.0",
