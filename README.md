@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="media/source-logo.svg" width="100" alt="Source logo" />
+  <img src="media/source-logo.svg" width="100" alt="The Source library logo" />
 </p>
 
-<h1 align="center">Source</h1>
+<h1 align="center"><code>@msw/source</code></h1>
 
 <p align="center">Generate <a href="https://github.com/mswjs/msw">MSW</a> request handlers from HAR files, OpenAPI documents, and other sources.</p>
 
