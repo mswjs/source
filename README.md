@@ -14,9 +14,7 @@ This library has been created to simplify the mocking workflow when working with
 
 ## Documentation
 
-- [**Getting started**](https://source.mswjs.io/docs/getting-started)
-- [Using network archives (HAR)](https://source.mswjs.io/docs/integrations/har)
-- [Using OpenAPI (Swagger) documents](https://source.mswjs.io/docs/integrations/open-api)
+Read the [documentation](https://mswjs.io/ecosystem/source).
 
 ## Support the project
 
